@@ -1,8 +1,9 @@
 #version 450 core
 layout (location = 0) in vec4 a_vert;
 
+out vec4 color;
+
 void main()
 {
-	// Passthrough VS
-	color = vec4(1.f, 0.f, 0.f, 0.f);
+	color = vec4(1.0, 0.0, 0.0, 1.0);
 }
