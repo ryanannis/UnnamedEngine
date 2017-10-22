@@ -27,7 +27,7 @@ else()
     endif()
 endif()
 
-include_directories(Glitter/Headers/
+include_directories(Glitter/Sources/
                     Glitter/Vendor/assimp/include/
                     Glitter/Vendor/bullet/src/
                     Glitter/Vendor/glad/include/
@@ -36,9 +36,9 @@ include_directories(Glitter/Headers/
                     Glitter/Vendor/stb/)
 
 file(GLOB VENDORS_SOURCES Glitter/Vendor/glad/src/glad.c)
-file(GLOB PROJECT_HEADERS Glitter/Sources/*.hpp)
-file(GLOB PROJECT_SOURCES Glitter/Sources/*.cpp)
-file(GLOB PROJECT_SHADERS Glitter/Shaders/*.comp
+file(GLOB_RECURSE PROJECT_HEADERS Glitter/Sources/*.h)
+file(GLOB_RECURSE PROJECT_SOURCES Glitter/Sources/*.cpp)
+file(GLOB_RECURSE PROJECT_SHADERS Glitter/Shaders/*.comp
                           Glitter/Shaders/*.frag
                           Glitter/Shaders/*.geom
                           Glitter/Shaders/*.vert)

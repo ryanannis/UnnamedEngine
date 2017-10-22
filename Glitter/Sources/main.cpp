@@ -1,4 +1,4 @@
-#include "glitter.hpp"
+#include "glitter.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -7,7 +7,6 @@
 #include <cstdlib>
 
 int main(int argc, char * argv[]) {
-
     // Load GLFW and Create a Window
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -18,7 +17,7 @@ int main(int argc, char * argv[]) {
     auto mWindow = glfwCreateWindow(mWidth, mHeight, "OpenGL", nullptr, nullptr);
 
     // Check for Valid Context
-    if (mWindow == nullptr) {
+    if(mWindow == nullptr) {
         fprintf(stderr, "Failed to Create OpenGL Context");
         return EXIT_FAILURE;
     }
@@ -29,9 +28,11 @@ int main(int argc, char * argv[]) {
     fprintf(stderr, "OpenGL %s\n", glGetString(GL_VERSION));
 
     // Rendering Loop
-    while (glfwWindowShouldClose(mWindow) == false) {
-        if (glfwGetKey(mWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-            glfwSetWindowShouldClose(mWindow, true);
+    while(glfwWindowShouldClose(mWindow) == false) {
+		if(glfwGetKey(mWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		{
+			glfwSetWindowShouldClose(mWindow, true);
+		}
 
         // Background Fill Color
         glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
@@ -40,6 +41,8 @@ int main(int argc, char * argv[]) {
         // Flip Buffers and Draw
         glfwSwapBuffers(mWindow);
         glfwPollEvents();
-    }   glfwTerminate();
+    }
+	
+	glfwTerminate();
     return EXIT_SUCCESS;
 }
