@@ -1,7 +1,5 @@
 #pragma once
-
-#include <glm/glm.hpp>
-#include <glm/gtx/quaternion.hpp>
+#include "Engine/Base/Common/Common.h"
 
 #include "Engine/Base/Types/Component.h"
 
