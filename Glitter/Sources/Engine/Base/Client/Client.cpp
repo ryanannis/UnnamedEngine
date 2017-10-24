@@ -1,11 +1,12 @@
 #include "Engine/Base/Common/Common.h"
 
 #include "Client.h"
+#include "Engine/Graphics/Renderer/Renderer.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <cstdio>
-#include <cstdlib>
+
+#include <iostream>
 
 Client::Client() :
 	mShouldTerminate(false),
@@ -21,18 +22,18 @@ Client::~Client()
 
 void Client::Initialize()
 {
-	auto window = InitializeWindow();
-	mContext.SetWindow(window);
+	InitializeWindow();
+	InitializeRenderer();
 }
 
-const Context& Client::GetContext() const
+void Client::InitializeRenderer()
 {
-	return(mContext);
 }
 
-GLFWwindow* Client::InitializeWindow()
+void Client::InitializeWindow()
 {
 	glfwInit();
+	// The GL stuff should really be in the renderer... 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -41,15 +42,14 @@ GLFWwindow* Client::InitializeWindow()
 
 	GLFWwindow* window = glfwCreateWindow(1280, 720, "OpenGL", nullptr, nullptr);
 
-	if(window == nullptr) {
-		fprintf(stderr, "Failed to Create OpenGL Context");
+	if(window == nullptr){
+		std::cerr << "Failed to initialize OpenGL context." << std::endl;
 	}
 
 	glfwMakeContextCurrent(window);
 	gladLoadGL();
-	fprintf(stderr, "OpenGL %s\n", glGetString(GL_VERSION));
 
-	return(window);
+	std::cerr << "Successfully initialized OpenGL context." << std::endl;
 }
 
 void Client::Terminate()
@@ -61,17 +61,18 @@ void Client::Run()
 {
 	// Rendering Loop
 	while(!mShouldTerminate){
-		
-		// Temp
-		if(glfwGetKey(mWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		{
-			mShouldTerminate = true;
-		}
-
-		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glfwSwapBuffers(mWindow);
-		glfwPollEvents();
+		mRenderer.Render();
 	}
-	glfwDestroyWindow(mWindow);
+
+	glfwDestroyWindow(GetWindow());
+}
+
+GLFWwindow* Client::GetWindow()
+{
+	return(mWindow);
+}
+
+Renderer* Client::GetRenderer()
+{
+	return(&mRenderer);
 }

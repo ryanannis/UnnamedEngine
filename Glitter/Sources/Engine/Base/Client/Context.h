@@ -1,6 +1,6 @@
 #pragma once
 
-struct GLFWwindow;
+class Client;
 
 class Context
 {
@@ -8,9 +8,9 @@ public:
 	Context();
 	~Context();
 
-	GLFWwindow* GetWindow() const;
-	GLFWwindow* SetWindow(GLFWwindow* window);
+	Client* GetClient();
 
 private:
-	GLFWwindow* mWindow;
+
+
 };

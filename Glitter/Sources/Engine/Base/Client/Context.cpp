@@ -1,11 +1,16 @@
 #include "Context.h"
 
-GLFWwindow* Context::GetWindow() const
+Context::Context()
 {
-	return(mWindow);
+
 }
 
-void Context::SetWindow(GLFWwindow* window)
+Context::~Context()
 {
-	GLFWwindow = window;
+
+}
+
+Client* Context::GetClient()
+{
+
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Base/Client/Context.h"
+#include "Engine/Graphics/Renderer/Renderer.h"
 
 // Forward decl
 struct GLFWwindow;
@@ -15,13 +16,20 @@ public:
 	void Terminate();
 	void Run();
 
-	const Context& GetContext() const;
+	GLFWwindow* GetWindow();
+	Renderer* GetRenderer();
 
 private:
 	bool mShouldTerminate;
 	Context mContext;
 
-	GLFWwindow* InitializeWindow();
+	GLFWwindow* mWindow;
+	Renderer mRenderer;
+
+	// Initialization convenience functions
+	void InitializeWindow();
+	void InitializeRenderer();
+	void InitializeClient();
 
 	// Disable copying
 	Client& operator=(const Client&) = delete;

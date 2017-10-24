@@ -1,10 +1,10 @@
 #pragma once
 
-// GLM
+//GLM
 #include <glm/glm.hpp>
 
 #define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp> 
 
 // Branch prediction hints
 #define LIKELY(condition) __builtin_expect(static_cast<bool>(condition), 1)

@@ -3,11 +3,12 @@
 #include <queue>
 
 #include "Engine/Base/Client/Context.h"
+#include "Engine/Base/Client/InputEvent.h"
 
 class ClientInputManager
 {
 public:
-	ClientInputManager(Context& context);
+	ClientInputManager(const Context& context);
 	~ClientInputManager();
 
 	void Update();
