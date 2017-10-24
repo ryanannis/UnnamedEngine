@@ -52,6 +52,11 @@ void Client::InitializeWindow()
 	std::cerr << "Successfully initialized OpenGL context." << std::endl;
 }
 
+void Client::InitializeContext()
+{
+	mContext.SetClient(this);
+}
+
 void Client::Terminate()
 {
 	mShouldTerminate = true;

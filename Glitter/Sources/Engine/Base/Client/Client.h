@@ -29,7 +29,7 @@ private:
 	// Initialization convenience functions
 	void InitializeWindow();
 	void InitializeRenderer();
-	void InitializeClient();
+	void InitializeContext();
 
 	// Disable copying
 	Client& operator=(const Client&) = delete;

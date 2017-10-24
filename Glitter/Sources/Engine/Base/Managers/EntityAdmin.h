@@ -16,4 +16,8 @@ public:
 
 private:
 	std::vector<Entity> mEntities;
+
+	// Disable copying
+	EntityAdmin& operator=(const EntityAdmin&) = delete;
+	EntityAdmin(const EntityAdmin&) = delete;
 };
