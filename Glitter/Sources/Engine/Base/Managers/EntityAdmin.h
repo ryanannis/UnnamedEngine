@@ -5,7 +5,6 @@
 #include "Engine/Base/Types/Component.h"
 #include "Engine/Base/Types/Entity.h"
 
-
 class EntityAdmin
 {
 public:

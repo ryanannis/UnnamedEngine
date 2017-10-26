@@ -7,6 +7,7 @@ class Entity
 {
 public:
 	Entity();
+	~Entity();
 	std::vector<Component*> GetComponents();
 
 private:

@@ -12,12 +12,10 @@ Client::Client() :
 	mShouldTerminate(false),
 	mContext()
 {
-
 }
 
 Client::~Client()
 {
-
 }
 
 void Client::Initialize()
