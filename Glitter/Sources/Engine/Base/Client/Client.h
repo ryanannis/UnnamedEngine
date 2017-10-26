@@ -10,7 +10,6 @@ class Client
 {
 public:
 	Client();
-	~Client();
 
 	void Initialize();
 	void Terminate();

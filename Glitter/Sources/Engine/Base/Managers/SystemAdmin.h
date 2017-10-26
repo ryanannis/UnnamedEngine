@@ -17,6 +17,11 @@ public:
 		return(system);
 	}
 
+	inline const std::vector<std::shared_ptr<System>>& GetSystems() const
+	{
+		return(mSystems);
+	}
+
 private:
 	std::vector<std::shared_ptr<System>> mSystems;
 

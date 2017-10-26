@@ -1,11 +1,13 @@
 #pragma once
+#include "Engine/Base/Common/Common.h"
 
-#include <vector>
+#include <map>
 
+#include "Engine/Base/Managers/SystemAdmin.h"
 #include "Engine/Base/Types/Component.h"
 #include "Engine/Base/Types/Entity.h"
 
-class EntityAdmin
+class EntityAdmin : public NonCopyable
 {
 public:
 	EntityAdmin();
@@ -14,9 +16,10 @@ public:
 	void Update(const float delta);
 
 private:
-	std::vector<Entity> mEntities;
+	void RegisterEntity(const Entity const* entity);
 
-	// Disable copying
-	EntityAdmin& operator=(const EntityAdmin&) = delete;
-	EntityAdmin(const EntityAdmin&) = delete;
+	SystemAdmin mSystemAdmin;
+
+	std::vector<Entity> mEntities;
+	std::map<uint32_t, Entity*> mEntityMap;
 };

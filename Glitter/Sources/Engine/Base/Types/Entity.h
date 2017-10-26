@@ -8,6 +8,8 @@ class Entity
 public:
 	Entity();
 	~Entity();
+	inline uint32_t GetEntityId() const { return entityID; }
+
 	std::vector<Component*> GetComponents();
 
 private:
