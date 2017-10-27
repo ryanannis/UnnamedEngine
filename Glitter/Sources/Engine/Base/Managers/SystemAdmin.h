@@ -22,6 +22,18 @@ public:
 		return(mSystems);
 	}
 
+	template<typename T>
+	static uint32_t SystemGroup()
+	{
+		return(System<typename std::remove_const<T>::type>::GetGroup());
+	}
+
+	template<typename T>
+	static uint32_t ComponentGroup()
+	{
+		return(Component<typename std::remove_const<T>::type>::GetGroup());
+	}
+
 private:
 	std::vector<std::shared_ptr<System>> mSystems;
 

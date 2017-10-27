@@ -5,13 +5,16 @@
 #include "Engine/Base/Types/Component.h"
 #include "Engine/Base/Types/Entity.h"
 
-class System {
+static uint32_t systemGroup = 0;
+
+class System : public NonCopyable {
 public:
 	virtual void RegisterEntity(const Entity& e) = 0 ;
 	virtual void Update(const float delta) = 0;
-
-private:
-	// Disable copying
-	System& operator=(const System&) = delete;
-	System(const System&) = delete;
+	
+	static inline const uint32_t GetGroup()
+	{
+		static const int group = systemGroup++;
+		return(group);
+	}
 };

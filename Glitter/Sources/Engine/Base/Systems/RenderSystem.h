@@ -12,5 +12,4 @@ class RenderSystem : public System {
 public:
 	virtual void RegisterEntity(const Entity& e) override;
 	virtual void Update(const float delta) override;
-private:
 };
