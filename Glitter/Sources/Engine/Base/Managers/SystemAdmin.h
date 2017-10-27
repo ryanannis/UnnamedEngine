@@ -2,6 +2,7 @@
 #include "Engine/Base/Common/Common.h"
 
 #include "Engine/Base/Types/System.h"
+#include "Engine/Base/Types/Component.h"
 
 class SystemAdmin : public NonCopyable
 {
@@ -23,13 +24,13 @@ public:
 	}
 
 	template<typename T>
-	static uint32_t SystemGroup()
+	static SystemFlag SystemGroup()
 	{
 		return(System<typename std::remove_const<T>::type>::GetGroup());
 	}
 
 	template<typename T>
-	static uint32_t ComponentGroup()
+	static ComponentFlag ComponentGroup()
 	{
 		return(Component<typename std::remove_const<T>::type>::GetGroup());
 	}

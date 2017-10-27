@@ -3,7 +3,8 @@
 
 #include "Engine/Base/Types/Component.h"
 
-static uint32_t componentGroup = 0;
+typedef uint64_t ComponentFlag;
+static ComponentFlag sComponentGroup = 0;
 
 class Component{
 public:
@@ -11,9 +12,9 @@ public:
 	virtual ~Component() = 0;
 	virtual uint64_t GetComponentID() = 0;
 
-	static inline const uint32_t GetGroup()
+	static inline const ComponentFlag GetGroup()
 	{
-		static const int group = componentGroup++;
+		static const int group = sComponentGroup++;
 		return(group);
 	}
 };
