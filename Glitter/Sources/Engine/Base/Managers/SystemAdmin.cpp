@@ -1,9 +1,14 @@
 #include "SystemAdmin.h"
 
-SystemAdmin::SystemAdmin()
+SystemAdmin::SystemAdmin(EntityAdmin* entityAdmin) :
+	mEntityAdmin{ mEntityAdmin }
 {
 }
 
-SystemAdmin::~SystemAdmin()
+void SystemAdmin::Update(float dt)
 {
+	for(auto& system : mSystems)
+	{
+		system->Update(dt, mEntityAdmin);
+	}
 }

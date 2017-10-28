@@ -4,18 +4,23 @@
 
 #include "Engine/Base/Types/Component.h"
 #include "Engine/Base/Types/Entity.h"
+#include "Engine/Base/Types/SystemBase.h"
+
+class SystemAdmin;
 
 typedef uint64_t SystemFlag;
 static SystemFlag sSystemGroup = 0;
 
-class System : public NonCopyable {
+template <typename Derived>
+class System : public SystemBase {
 public:
-	virtual void RegisterEntity(const Entity& e) = 0 ;
-	virtual void Update(const float delta) = 0;
-	
-	static inline const SystemFlag GetGroup()
+
+private:
+	static SystemFlag SystemGroup()
 	{
 		static const int group = sSystemGroup++;
 		return(group);
 	}
+
+	friend SystemAdmin;
 };

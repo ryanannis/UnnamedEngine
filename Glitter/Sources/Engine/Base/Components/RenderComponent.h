@@ -3,5 +3,6 @@
 
 #include "Engine/Base/Types/Component.h"
 
-class RenderComponent : Component {
+class RenderComponent : Component<RenderComponent> {
+
 };

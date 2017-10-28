@@ -13,12 +13,15 @@
 // Disable copying
 class NonCopyable
 {
+public:
+	NonCopyable(){}
+	virtual ~NonCopyable() = 0;
 private:
 	NonCopyable& operator=(const NonCopyable&) = delete;
 	NonCopyable(const NonCopyable&) = delete;
 };
 
-// STD Containers
+// Common STD Containers
 #include <array>
 #include <vector>
 #include <memory>

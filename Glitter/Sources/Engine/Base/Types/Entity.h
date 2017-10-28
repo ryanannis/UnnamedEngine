@@ -3,16 +3,18 @@
 
 #include "Engine/Base/Types/Component.h"
 
+class EntityAdmin;
+
+
 class Entity
 {
 public:
-	Entity();
-	~Entity();
-	inline uint32_t GetEntityId() const { return entityID; }
-
-	std::vector<Component*> GetComponents();
+	Entity(EntityAdmin* admin, uint32_t id);
 
 private:
-	uint32_t entityID;
-	std::vector<Component*> mComponents;
+	inline uint32_t GetEntityId() const { return(mEntityID); }
+
+	EntityAdmin* mAdmin;
+	uint32_t mEntityID;
+	friend EntityAdmin;
 };

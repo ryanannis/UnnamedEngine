@@ -3,7 +3,7 @@
 
 #include "Engine/Base/Types/Component.h"
 
-class CameraComponent : public Component
+class CameraComponent : public Component<CameraComponent>
 {
 public:
 	glm::fvec4 pEntityCameraTranslation;

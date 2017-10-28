@@ -5,11 +5,7 @@
 #include "Engine/Base/Components/TransformComponent.h"
 #include "Engine/Base/Components/CameraComponent.h"
 
-
-// let's try to keep this lightweight to compile time murder
-
-class RenderSystem : public System {
+class RenderSystem : public System<RenderSystem> {
 public:
-	virtual void RegisterEntity(const Entity& e) override;
-	virtual void Update(const float delta) override;
+	virtual void Update(float dt, EntityAdmin* entityAdmin);
 };

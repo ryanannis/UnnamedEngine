@@ -3,12 +3,14 @@
 
 #include "Engine/Base/Types/System.h"
 #include "Engine/Base/Types/Component.h"
+#include "Engine/Base/Managers/EntityAdmin.h"
 
 class SystemAdmin : public NonCopyable
 {
 public:
-	SystemAdmin();
-	~SystemAdmin();
+	explicit SystemAdmin(EntityAdmin* entityAdmin);
+
+	void Update(float dt);
 
 	template <typename T, typename ... Args>
 	std::shared_ptr<T> AddSystem(Args&& ... args)
@@ -18,24 +20,13 @@ public:
 		return(system);
 	}
 
-	inline const std::vector<std::shared_ptr<System>>& GetSystems() const
+	inline const std::vector<std::shared_ptr<SystemBase>>& GetSystems() const
 	{
 		return(mSystems);
 	}
 
-	template<typename T>
-	static SystemFlag SystemGroup()
-	{
-		return(System<typename std::remove_const<T>::type>::GetGroup());
-	}
-
-	template<typename T>
-	static ComponentFlag ComponentGroup()
-	{
-		return(Component<typename std::remove_const<T>::type>::GetGroup());
-	}
-
 private:
-	std::vector<std::shared_ptr<System>> mSystems;
+	EntityAdmin* mEntityAdmin;
+	std::vector<std::shared_ptr<SystemBase>> mSystems;
 
 };
