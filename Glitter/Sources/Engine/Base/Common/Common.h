@@ -26,3 +26,6 @@ private:
 #include <vector>
 #include <memory>
 #include <utility>
+
+// Common Pointer Functions
+#include "Engine/Base/Common/Ptr.h"
