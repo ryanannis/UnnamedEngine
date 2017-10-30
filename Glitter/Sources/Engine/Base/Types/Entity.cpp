@@ -1,8 +1,5 @@
 #include "Entity.h"
 
-Entity::Entity(EntityAdmin* admin, uint32_t id) :
-	mAdmin(admin),
+Entity::Entity(uint32_t id) :
 	mEntityID(id)
-{
-	assert(admin != nullptr);
-}
+{}

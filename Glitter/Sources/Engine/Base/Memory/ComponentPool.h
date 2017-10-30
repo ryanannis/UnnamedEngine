@@ -10,6 +10,6 @@ template <typename T>
 class ComponentPool : public ComponentPoolBase
 {
 public:
-	ComponentPool() : ComponentPoolBase(sizeof(t)) {}
+	ComponentPool() : ComponentPoolBase(sizeof(T)) {}
 	~ComponentPool() {} 
 };

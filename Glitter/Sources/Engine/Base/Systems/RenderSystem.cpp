@@ -8,6 +8,8 @@ void RenderSystem::Update(float dt, EntityAdmin* entityAdmin)
 	for(const Entity& e : entityAdmin->GetEntities())
 	{
 		RenderComponent* renderComponent = entityAdmin->GetComponent<RenderComponent>(e);
+		TransformComponent* transformComponent = entityAdmin->GetComponent<TransformComponent>(e);
+
 
 	}
 }

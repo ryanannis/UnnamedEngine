@@ -24,5 +24,5 @@ void EntityAdmin::RegisterEntity(const Entity* entity)
 template<T>
 Ptr<T> Entity::GetComponent(EntityAdmin* admin) const
 {
-	return(admin->GetComponent(this));
+	return(admin->GetComponent(his));
 }
