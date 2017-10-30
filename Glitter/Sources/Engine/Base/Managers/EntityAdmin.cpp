@@ -20,3 +20,9 @@ void EntityAdmin::RegisterEntity(const Entity* entity)
 	const uint32_t entityId = entity->GetEntityId();
 	mEntityMap.emplace(entityId, entity);
 }
+
+template<T>
+Ptr<T> Entity::GetComponent(EntityAdmin* admin) const
+{
+	return(admin->GetComponent(this));
+}
