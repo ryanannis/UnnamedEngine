@@ -15,7 +15,7 @@ class NonCopyable
 {
 public:
 	NonCopyable(){}
-	virtual ~NonCopyable() = 0;
+	virtual ~NonCopyable() {};
 private:
 	NonCopyable& operator=(const NonCopyable&) = delete;
 	NonCopyable(const NonCopyable&) = delete;

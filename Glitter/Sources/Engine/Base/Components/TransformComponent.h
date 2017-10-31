@@ -9,3 +9,5 @@ public:
 	glm::fvec4 pEntityWorldTranslation;
 	glm::fquat pEntityWorldRotation;
 };
+
+template<> std::string Component<TransformComponent>::sName = "TransformComponent";

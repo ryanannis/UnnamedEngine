@@ -22,6 +22,12 @@ public:
 		return(GetComponent<T>(e.GetEntityId()));
 	}
 
+	template <typename T>
+	T* GetComponent(const Entity* const e)
+	{
+		return(GetComponent<T>(e->GetEntityId()));
+	}
+
 	inline const std::vector<Entity>& GetEntities() { return(mEntities); }
 
 private:
@@ -40,15 +46,9 @@ private:
 		return(component);
 	}
 
-	void RegisterEntity(const Entity* entity);
+	void RegisterEntity(Entity* entity);
 
 	std::vector<ComponentPoolBase*> mComponentPools;
 	std::vector<Entity> mEntities;
 	std::map<uint32_t, Entity*> mEntityMap;
 };
-
-template<T>
-Ptr<T> Entity::GetComponent(EntityAdmin* admin) const
-{
-	return(admin->GetComponent(his));
-}

@@ -5,13 +5,12 @@
 
 class EntityAdmin;
 
-
 class Entity
 {
 public:
 	Entity(uint32_t id);
 
-	template<T>
+	template <typename T>
 	Ptr<T> GetComponent(EntityAdmin* admin) const;
 
 private:

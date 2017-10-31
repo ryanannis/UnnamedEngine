@@ -9,13 +9,20 @@ static ComponentFlag sComponentGroup = 0;
 template <typename Derived>
 class Component : public ComponentBase {
 public:
-	Component() {};
-	virtual ~Component() = 0;
-	virtual uint64_t GetComponentID() = 0;
+	Component() {}
 
 	static ComponentFlag GetGroup()
 	{
 		static const int group = sComponentGroup++;
 		return(group);
 	}
+
+	std::string GetName()
+	{
+		return(sName);
+	}
+
+protected:
+	static std::string sName;
 };
+

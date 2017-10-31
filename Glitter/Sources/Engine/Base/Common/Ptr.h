@@ -1,6 +1,6 @@
 #pragma once
 
-template <typedef T>
+template <typename T>
 class Ptr
 {
 public:

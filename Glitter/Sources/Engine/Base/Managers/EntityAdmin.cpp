@@ -12,17 +12,13 @@ EntityAdmin::~EntityAdmin()
 
 uint32_t EntityAdmin::CreateEntity()
 {
-	mEntities.emplace_back(this, entityCounter++);
+	const uint32_t nextId = entityCounter++;
+	mEntities.emplace_back(nextId);
+	return(nextId);
 }
 
-void EntityAdmin::RegisterEntity(const Entity* entity)
+void EntityAdmin::RegisterEntity(Entity* entity)
 {
 	const uint32_t entityId = entity->GetEntityId();
-	mEntityMap.emplace(entityId, entity);
-}
-
-template<T>
-Ptr<T> Entity::GetComponent(EntityAdmin* admin) const
-{
-	return(admin->GetComponent(his));
+	mEntityMap.insert(std::pair<uint32_t, Entity*>(entityId, entity));
 }

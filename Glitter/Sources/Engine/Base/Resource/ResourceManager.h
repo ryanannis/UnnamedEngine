@@ -12,11 +12,11 @@ enum class LoadStyle
 	DEFERRED
 };
 
-class ResourceLoader
+class ResourceManager
 {
 public:
 	Resource* LoadResource(const std::string dataLocation, LoadStyle style);
 
 private:
-	std::unordered_map<std::string, Resource> mLoadedResources;
+	//std::unordered_map<std::string, Resource> mLoadedResources;
 };

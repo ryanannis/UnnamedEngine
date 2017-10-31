@@ -9,7 +9,5 @@ void RenderSystem::Update(float dt, EntityAdmin* entityAdmin)
 	{
 		RenderComponent* renderComponent = entityAdmin->GetComponent<RenderComponent>(e);
 		TransformComponent* transformComponent = entityAdmin->GetComponent<TransformComponent>(e);
-
-
 	}
 }
