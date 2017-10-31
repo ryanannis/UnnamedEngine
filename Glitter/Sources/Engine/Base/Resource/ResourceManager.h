@@ -5,17 +5,11 @@
 #include <string>
 #include <unordered_map>
 
-
-enum class LoadStyle
-{
-	SPOT_LOAD,
-	DEFERRED
-};
-
 class ResourceManager
 {
 public:
-	Resource* LoadResource(const std::string dataLocation, LoadStyle style);
+	Resource* SpotLoadResource(const std::string dataLocation);
+	Resource* LoadResourceAsync(const std::string dataLocation);
 
 private:
 	//std::unordered_map<std::string, Resource> mLoadedResources;

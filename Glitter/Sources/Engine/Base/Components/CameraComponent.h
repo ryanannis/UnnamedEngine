@@ -9,4 +9,5 @@ public:
 	glm::fquat pEntityCameraRotation;
 };
 
-template<> std::string Component<CameraComponent>::sName = "Component";
+template<> std::string Component<CameraComponent>::sName = "CameraComponent";
+

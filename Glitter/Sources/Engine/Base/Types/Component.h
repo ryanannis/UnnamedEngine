@@ -1,7 +1,8 @@
 #pragma once
 #include "Engine/Base/Common/Common.h"
-
 #include "Engine/Base/Types/ComponentBase.h"
+
+class Serializer;
 
 typedef uint64_t ComponentFlag;
 static ComponentFlag sComponentGroup = 0;
@@ -22,7 +23,10 @@ public:
 		return(sName);
 	}
 
+	virtual Serializer& Serialize(Serializer& s) { return(s); }
+
 protected:
 	static std::string sName;
+	static bool sSerializable;
 };
 
