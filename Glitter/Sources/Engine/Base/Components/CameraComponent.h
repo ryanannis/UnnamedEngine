@@ -10,4 +10,3 @@ public:
 };
 
 template<> std::string Component<CameraComponent>::sName = "CameraComponent";
-

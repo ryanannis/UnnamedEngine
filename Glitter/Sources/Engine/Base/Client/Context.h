@@ -14,5 +14,4 @@ public:
 private:
 	Client* mClient;
 
-
 };
