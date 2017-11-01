@@ -6,6 +6,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "Engine/Base/Client/GameFramework.h"
 #include <iostream>
 
 Client::Client() :
@@ -64,7 +65,8 @@ void Client::Run()
 {
 	// Rendering Loop
 	while(!mShouldTerminate){
-		mRenderer.Render();
+		assert(mTarget);
+		mTarget->Update(0);
 	}
 
 	glfwDestroyWindow(GetWindow());
@@ -78,4 +80,9 @@ GLFWwindow* Client::GetWindow()
 Renderer* Client::GetRenderer()
 {
 	return(&mRenderer);
+}
+
+void Client::SetTarget(std::unique_ptr<GameFramework> target)
+{
+	mTarget = std::move(target);
 }

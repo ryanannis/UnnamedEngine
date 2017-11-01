@@ -3,8 +3,11 @@
 #include "Engine/Base/Client/Context.h"
 #include "Engine/Graphics/Renderer/Renderer.h"
 
+#include <memory>
+
 // Forward decl
 struct GLFWwindow;
+class GameFramework;
 
 class Client
 {
@@ -19,12 +22,17 @@ public:
 	GLFWwindow* GetWindow();
 	Renderer* GetRenderer();
 
+	void SetTarget(std::unique_ptr<GameFramework> target); 
+	Context* GetContext() { return(mContext) };
+
 private:
 	bool mShouldTerminate;
 	Context mContext;
 
 	GLFWwindow* mWindow;
 	Renderer mRenderer;
+	
+	std::unique_ptr<GameFramework> mTarget;
 
 	// Initialization convenience functions
 	void InitializeWindow();
