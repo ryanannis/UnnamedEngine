@@ -6,11 +6,12 @@ enum class DSMState
 {
 	NULLSTATE,
 	START,
-	UNPAIRABLESYM,
-	PAIRABLESYM,
-	WHITESPACE,
-	ALPHANUM,
-	END
+	UNPAIRABLESYM, //T
+	PAIRABLESYM, //T
+	WHITESPACE, //T
+	ALPHANUM, //NT
+	RELATIVEPATH, //NT
+	END // T
 };
 
 void PropParser::Tokenize(std::string str, std::vector<PropParser::UDFToken>& tokens) const
@@ -26,7 +27,7 @@ void PropParser::Tokenize(std::string str, std::vector<PropParser::UDFToken>& to
 	for(int i = 0; i < str.length() + 1; i++)
 	{
 		DSMState newState = DSMState::NULLSTATE;
-		
+
 		char c;
 		if(i == str.length)
 		{
@@ -43,9 +44,20 @@ void PropParser::Tokenize(std::string str, std::vector<PropParser::UDFToken>& to
 			}
 		}
 
+		if(c == '/' || c == '\\' || c == '.')
+		{
+			newState = DSMState::RELATIVEPATH;
+		}
 		if((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_')
 		{
-			newState = DSMState::ALPHANUM;
+			if(state == DSMState::RELATIVEPATH)
+			{
+				newState = DSMState::RELATIVEPATH;
+			}
+			else
+			{
+				newState = DSMState::ALPHANUM;
+			}
 		}
 		else if(c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == '\x0b') {
 			newState = DSMState::WHITESPACE;
@@ -66,7 +78,7 @@ void PropParser::Tokenize(std::string str, std::vector<PropParser::UDFToken>& to
 		//TODO:  This is a bit harsh, isn't it?
 		assert(!state == DSMState::UNPAIRABLESYM && newState == DSMState::UNPAIRABLESYM);
 		
-		if(state == newState)
+		if(state == newState && !(state == DSMState::ALPHANUM && newState == DSMState::RELATIVEPATH))
 		{
 			tokenVal << c;
 		}
@@ -78,6 +90,10 @@ void PropParser::Tokenize(std::string str, std::vector<PropParser::UDFToken>& to
 			if(state == DSMState::ALPHANUM)
 			{
 				tokenType = ALPHANUM;
+			}
+			else if(state == DSMState::RELATIVEPATH)
+			{
+				tokenType = FILEPATH;
 			}
 			else if(state == DSMState::WHITESPACE)
 			{

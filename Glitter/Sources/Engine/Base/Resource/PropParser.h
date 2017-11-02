@@ -18,6 +18,7 @@ private:
 		RCURLY,
 		COLON,
 		ALPHANUM,
+		FILEPATH,
 		EQUALS,
 	};
 
