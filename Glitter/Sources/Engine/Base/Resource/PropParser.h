@@ -1,7 +1,7 @@
 #pragma once
 #include "Engine/Base/Common/Common.h"
 
-#include<string>
+#include <string>
 
 class PropParser
 {
@@ -11,20 +11,22 @@ public:
 private:
 	enum TokenType
 	{
+		NONE,
 		LBRACKET,
 		RBRACKET,
 		LCURLY,
 		RCURLY,
+		COLON,
 		ALPHANUM,
-		EQUALS
+		EQUALS,
 	};
 
-	struct Token
+	struct UDFToken
 	{
-		TokenType t;
+		UDFToken(TokenType type, std::string value) : type(type), value(value) {}
+		TokenType type;
 		std::string value;
 	};
 
-	std::vector<Token> PropParser::Tokenize(std::string str) const;
-
+	void Tokenize(std::string str, std::vector<PropParser::UDFToken>& tokens) const;
 };
