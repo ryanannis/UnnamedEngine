@@ -3,6 +3,7 @@
 
 class Client;
 class RegionAdmin;
+class ClientInputManager;
 
 class Context
 {
@@ -10,13 +11,15 @@ public:
 	Context();
 	~Context();
 
-	void SetClient(Client* client);
-	Client* GetClient();
+	void SetClient(Ptr<Client> client);
+	Ptr<Client> GetClient();
 
-	void SetRegionAdmin(Ptr<RegionAdmin> regionAdmin) { mRegionAdmin = regionAdmin };
+	void SetInputManager(Ptr<ClientInputManager> inputManager);
+	Ptr<ClientInputManager> GetInputManager();
 
 private:
-	Client* mClient;
+	Ptr<Client> mClient;
+	Ptr<ClientInputManager> mClientInputManager;
 	Ptr<RegionAdmin> mRegionAdmin;
 
 };

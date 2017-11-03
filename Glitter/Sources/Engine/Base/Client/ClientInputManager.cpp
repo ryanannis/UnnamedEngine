@@ -2,7 +2,6 @@
 
 ClientInputManager::ClientInputManager(const Context& context)
 {
-
 }
 
 ClientInputManager::~ClientInputManager()

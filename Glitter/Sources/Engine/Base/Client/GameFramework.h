@@ -8,9 +8,12 @@ class GameFramework
 {
 public:
 	explicit GameFramework(Ptr<Context> context);
+	virtual ~GameFramework();
 	void Update(float dt);
+	void Ready();
 
 private:
+
 	Ptr<Context> mContext;
-	Ptr<RegionAdmin> mRegionAdmin;
+	std::unique_ptr<RegionAdmin> mRegionAdmin;
 };

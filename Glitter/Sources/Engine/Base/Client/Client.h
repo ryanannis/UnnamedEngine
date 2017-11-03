@@ -1,6 +1,8 @@
 #pragma once
+#include "Engine/Base/Common/Common.h"
 
 #include "Engine/Base/Client/Context.h"
+#include "Engine/Base/Client/ClientInputManager.h"
 #include "Engine/Graphics/Renderer/Renderer.h"
 
 #include <memory>
@@ -23,7 +25,9 @@ public:
 	Renderer* GetRenderer();
 
 	void SetTarget(std::unique_ptr<GameFramework> target); 
-	Context* GetContext() { return(mContext) };
+	Ptr<GameFramework> GetTarget() { return(mTarget.get); }
+
+	Context* GetContext() { return(&mContext); }
 
 private:
 	bool mShouldTerminate;
@@ -31,6 +35,7 @@ private:
 
 	GLFWwindow* mWindow;
 	Renderer mRenderer;
+	ClientInputManager mInputManager;
 	
 	std::unique_ptr<GameFramework> mTarget;
 
@@ -38,6 +43,7 @@ private:
 	void InitializeWindow();
 	void InitializeRenderer();
 	void InitializeContext();
+	void InitializeInputManager();
 
 	// Disable copying
 	Client& operator=(const Client&) = delete;

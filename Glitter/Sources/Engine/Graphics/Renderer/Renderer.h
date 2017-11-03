@@ -1,4 +1,7 @@
 #pragma once
+#include "Engine/Base/Common/Common.h"
+
+typedef uint64_t GraphicsItemHandle;
 
 class Renderer
 {
@@ -7,6 +10,7 @@ public:
 	~Renderer();
 
 	void Render();
+	GraphicsItemHandle GenerateObject();
 
 private:
 	// Disable copying

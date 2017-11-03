@@ -11,7 +11,7 @@ public:
 	operator bool(){ return(mPtr != nullptr) };
 
 	// This is purposely obnoxious - you shouldn't need except for interfacing and doing weird stuff
-	inline T* Get() { return(mPtr); } 
+	inline T* GETPTR() { return(mPtr); } 
 private:
 	T* mPtr;
 };

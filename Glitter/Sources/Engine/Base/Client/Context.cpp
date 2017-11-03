@@ -10,12 +10,23 @@ Context::~Context()
 
 }
 
-void Context::SetClient(Client* client)
+void Context::SetClient(Ptr<Client> client)
 {
 	mClient = client;
 }
 
-Client* Context::GetClient()
+Ptr<Client> Context::GetClient()
 {
 	return(mClient);
 }
+
+void Context::SetInputManager(Ptr<ClientInputManager> inputManager)
+{
+	mClientInputManager = inputManager;
+}
+
+Ptr<ClientInputManager> Context::GetInputManager()
+{
+	return(mClientInputManager);
+}
+

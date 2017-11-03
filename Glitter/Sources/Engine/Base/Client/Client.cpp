@@ -23,6 +23,8 @@ void Client::Initialize()
 {
 	InitializeWindow();
 	InitializeRenderer();
+	InitializeContext();
+	InitializeInputManager();
 }
 
 void Client::InitializeRenderer()
@@ -54,6 +56,10 @@ void Client::InitializeWindow()
 void Client::InitializeContext()
 {
 	mContext.SetClient(this);
+}
+
+void Client::InitializeInputManager()
+{
 }
 
 void Client::Terminate()
