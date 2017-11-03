@@ -14,7 +14,6 @@ class GameFramework;
 class Client
 {
 public:
-	Client();
 	~Client();
 
 	void Initialize();
