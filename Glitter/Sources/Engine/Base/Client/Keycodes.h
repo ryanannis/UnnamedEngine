@@ -1,8 +1,9 @@
 #include <string>
 #include <GLFW/glfw3.h>
 #include <array>
+#include "Engine/Base/Common/Reflection.h"	
 
-#define KEYMAP(LETTER, KEYCODE) constexpr Key LETTER("LETTER", KEYCODE)
+#define KEYMAP(LETTER, KEYCODE) const Key LETTER("LETTER", KEYCODE)
 
 struct Key
 {
@@ -38,7 +39,8 @@ KEYMAP(KEY_X, GLFW_KEY_X);
 KEYMAP(KEY_Y, GLFW_KEY_Y);
 KEYMAP(KEY_Z, GLFW_KEY_Z);
 
-constexpr std::array<Key, 26> keyMappings{
+constexpr auto keyMappings = makeArray
+(
 	KEY_A,
 	KEY_B,
 	KEY_C,
@@ -65,4 +67,4 @@ constexpr std::array<Key, 26> keyMappings{
 	KEY_X,
 	KEY_Y,
 	KEY_Z
-};
+);

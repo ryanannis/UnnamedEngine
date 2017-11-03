@@ -126,19 +126,3 @@ struct EnumName {                                                      \
         return processed_names;                                        \
     }                                                                  \
 };
-
-#include <iostream>
-
-ENUM(ColorChannel, Red = 1, Green, Blue);
-
-int main()
-{
-	ColorChannel    channel = ColorChannel::Green;
-	std::cout << channel._to_string() << std::endl;
-
-	switch (channel) {
-	case ColorChannel::Red:   return 0;
-	case ColorChannel::Green: return 1;
-	case ColorChannel::Blue:  return 2;
-	}
-}
