@@ -14,7 +14,7 @@ enum class DSMState
 	END // T
 };
 
-void PropParser::Tokenize(std::string str, std::vector<PropParser::UDFToken>& tokens) const
+void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens) const
 {
 	/*
 	 * Parse the input string using a DSM
@@ -24,12 +24,12 @@ void PropParser::Tokenize(std::string str, std::vector<PropParser::UDFToken>& to
 
 	std::stringstream tokenVal;
 
-	for(int i = 0; i < str.length() + 1; i++)
+	for(size_t i = 0; i < (str.length() + 1); i++)
 	{
 		DSMState newState = DSMState::NULLSTATE;
 
 		char c;
-		if(i == str.length)
+		if(i == str.length())
 		{
 			c = '$';
 		}
@@ -40,7 +40,7 @@ void PropParser::Tokenize(std::string str, std::vector<PropParser::UDFToken>& to
 			// then replace it with an invalid character
 			if(c == '$')
 			{
-				c == '#';
+				c = '#';
 			}
 		}
 
@@ -108,7 +108,7 @@ void PropParser::Tokenize(std::string str, std::vector<PropParser::UDFToken>& to
 				tokenType = TokenType::NONE; 
 			}
 
-			tokens.push_back(UDFToken(TokenType::NONE, tokenVal.str));
+			tokens.push_back(UDFToken(TokenType::NONE, tokenVal.str()));
 			tokenVal.clear();
 		}
 	}

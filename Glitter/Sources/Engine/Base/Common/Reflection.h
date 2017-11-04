@@ -3,33 +3,27 @@
 #include <type_traits>
 #include <utility>
 
-template <typename... T>
-constexpr std::array<std::decay<typename std::common_type<T...>::type>, sizeof...(T)> 
-makeArray(T&&... values)
-{
-	return(
-		std::array<std::decay<typename std::common_type<T...>::type>, sizeof...(T)>
-		{std::forward<T>(values)...}
-	);
-}
-
-#define IGNORE_ASSIGN_SINGLE(expression) (ignore_assign)expression,
-#define IGNORE_ASSIGN(...) MAP(IGNORE_ASSIGN_SINGLE, __VA_ARGS__)
-#define STRINGIZE_SINGLE(expression) #expression,
-#define STRINGIZE(...) MAP(STRINGIZE_SINGLE, __VA_ARGS__)
-
-struct ignore_assign {
-	ignore_assign(int value) : _value(value) { }
-	operator int() const { return _value; }
-	const ignore_assign& operator =(int dummy) { return *this; }
-	int _value;
-};
-
-// from https://www.codeproject.com/Articles/1002895/Clean-Reflective-Enums-Cplusplus-Enum-to-String-wi
-
 #include <cstddef>
 #include <cstring>
 
+template <typename... T>
+constexpr
+std::array<
+	typename std::decay<typename std::common_type<T...>::type>::type,
+	sizeof...(T)
+>
+makeArray(T&&... values)
+{
+	return
+	(
+		std::array<
+			typename std::decay<typename std::common_type<T...>::type>::type,
+			sizeof...(T)
+		>
+		{std::forward<T>(values)...}
+	);
+}
+// from https://www.codeproject.com/Articles/1002895/Clean-Reflective-Enums-Cplusplus-Enum-to-String-wi
 
 #define MAP(macro, ...) \
     IDENTITY( \

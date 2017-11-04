@@ -15,8 +15,6 @@ public:
 	~ClientInputManager();
 	
 	void Initialize();
-	
-
 	void Update();
 
 private:

@@ -12,5 +12,5 @@ public:
 	Resource* LoadResourceAsync(const std::string dataLocation);
 
 private:
-	//std::unordered_map<std::string, Resource> mLoadedResources;
+	std::unordered_map<std::string, Resource*> mResourceFlywheel;
 };

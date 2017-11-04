@@ -10,7 +10,7 @@ class RegionAdmin : public NonCopyable
 {
 public:
 	explicit RegionAdmin(Ptr<Context> context);
-	EntityAdmin* GetEntityAdmin() const {};
+	Ptr<const EntityAdmin> GetEntityAdmin() const { return(&mEntityAdmin); };
 	void Update(float dt);
 
 private:

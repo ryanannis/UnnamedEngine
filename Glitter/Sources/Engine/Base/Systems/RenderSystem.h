@@ -4,7 +4,6 @@
 #include "Engine/Base/Components/RenderComponent.h"
 #include "Engine/Base/Components/TransformComponent.h"
 #include "Engine/Base/Components/CameraComponent.h"
-#include ""
 
 class RenderSystem : public System<RenderSystem> {
 public:

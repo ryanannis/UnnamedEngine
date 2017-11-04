@@ -3,31 +3,32 @@
 
 #include <string>
 
+enum TokenType
+{
+	NONE,
+	LBRACKET,
+	RBRACKET,
+	LCURLY,
+	RCURLY,
+	COLON,
+	ALPHANUM,
+	FILEPATH,
+	EQUALS,
+};
+
+struct UDFToken
+{
+	UDFToken(TokenType type, std::string value) : type(type), value(value) {}
+	TokenType type;
+	std::string value;
+};
+
 class PropParser
 {
 public:
 	PropParser();
 
 private:
-	enum TokenType
-	{
-		NONE,
-		LBRACKET,
-		RBRACKET,
-		LCURLY,
-		RCURLY,
-		COLON,
-		ALPHANUM,
-		FILEPATH,
-		EQUALS,
-	};
 
-	struct UDFToken
-	{
-		UDFToken(TokenType type, std::string value) : type(type), value(value) {}
-		TokenType type;
-		std::string value;
-	};
-
-	void Tokenize(std::string str, std::vector<PropParser::UDFToken>& tokens) const;
+	void Tokenize(std::string str, std::vector<UDFToken>& tokens) const;
 };

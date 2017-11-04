@@ -3,12 +3,13 @@
 #include <assimp/importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <assimp/mesh.h>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
 MeshResource::MeshResource(std::string URI) : 
-	mReady(false),
-	Resource(URI)
+	Resource(URI),
+	mReady(false)
 {
 	// Load a Model from File
 	Assimp::Importer loader;
@@ -35,8 +36,7 @@ MeshResource::MeshResource(std::string URI) :
 				mesh,
 				mIndices,
 				mVertices,
-				mNormals,
-				mTextures
+				mNormals
 			);
 		}
 	}
@@ -54,16 +54,14 @@ void MeshResource::Load()
 	// module - and have our own custom data format
 }
 
-void Parse(
+void MeshResource::Parse(
 	aiMesh const* mesh,
 	std::vector<uint32_t>& indices,
 	std::vector<glm::vec3> vertices,
-	std::vector<glm::vec3> normals,
-	std::map<GLuint, std::string> textures
-)
+	std::vector<glm::vec3> normals
+) const
 {
 	// Create Vertex Data from Mesh Node
-	std::vector<glm::vec3> vertices; 
 	for(size_t i = 0; i < mesh->mNumVertices; i++)
 	{
 		if(mesh->mTextureCoords[0])

@@ -1,4 +1,5 @@
 #include "GameFramework.h"
+#include <memory>
 
 GameFramework::GameFramework(Ptr<Context> context):
 	mContext(context)
@@ -16,6 +17,6 @@ void GameFramework::Update(float dt)
 
 void GameFramework::Ready()
 {
-	mRegionAdmin = std::make_unique<RegionAdmin>(new RegionAdmin(mContext));
+	mRegionAdmin = std::make_unique<RegionAdmin>(mContext);
 }
 

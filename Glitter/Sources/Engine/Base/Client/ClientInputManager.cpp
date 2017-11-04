@@ -5,7 +5,7 @@
 #include <array>
 #include <functional>
 
-#include "Engine/Base/Client/Client.cpp"
+#include "Engine/Base/Client/Client.h"
 #include "Engine/Base/Client/Keycodes.h"
 
 //////////////////////////////////////////////////////////
@@ -52,13 +52,11 @@ void ClientInputManager::QueueInput(InputEvent e)
 void ClientInputManager::Initialize()
 {
 	sActiveInstance = this;
-	for(Key k : KEYMAPPINGS)
-	{
-		glfwSetKeyCallback(
-			mContext->GetClient()->GetGLFWContext(),
-			&RecieveGLFWInput
-		);
-	}
+
+	glfwSetKeyCallback(
+		mContext->GetClient()->GetGLFWContext(),
+		&RecieveGLFWInput
+	);
 }
 
 void ClientInputManager::Update()

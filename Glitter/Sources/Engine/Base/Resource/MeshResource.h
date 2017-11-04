@@ -6,6 +6,8 @@
 
 #include "Engine/Base/Resource/Resource.h"
 
+struct aiMesh;
+
 
 class MeshResource : Resource
 {
@@ -19,14 +21,12 @@ private:
 		aiMesh const* scene,
 		std::vector<uint32_t>& indices,
 		std::vector<glm::vec3> vertices,
-		std::vector<glm::vec3> normals,
-		std::map<GLuint, std::string> textures
+		std::vector<glm::vec3> normals
 	) const;
 
 	std::vector<uint32_t> mIndices;
 	std::vector<glm::vec3> mVertices;
 	std::vector<glm::vec3> mNormals;
-	std::map<GLuint, std::string> mTextures;
 
 	bool mReady;
 };
