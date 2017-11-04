@@ -39,7 +39,7 @@ KEYMAP(KEY_X, GLFW_KEY_X);
 KEYMAP(KEY_Y, GLFW_KEY_Y);
 KEYMAP(KEY_Z, GLFW_KEY_Z);
 
-constexpr auto keyMappings = makeArray
+constexpr auto KEYMAPPINGS = makeArray
 (
 	KEY_A,
 	KEY_B,

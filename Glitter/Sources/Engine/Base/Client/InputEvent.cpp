@@ -1,6 +1,8 @@
 #include "InputEvent.h"
 
-InputEvent::InputEvent()
+InputEvent::InputEvent(Keycode keycode, InputState state) :
+	mKeycode(keycode),
+	mState(state)
 {
 
 }

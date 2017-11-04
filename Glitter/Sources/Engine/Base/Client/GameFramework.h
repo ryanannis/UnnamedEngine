@@ -8,7 +8,6 @@ class GameFramework
 {
 public:
 	explicit GameFramework(Ptr<Context> context);
-	virtual ~GameFramework();
 	void Update(float dt);
 	void Ready();
 

@@ -9,9 +9,11 @@
 #include "Engine/Base/Client/GameFramework.h"
 #include <iostream>
 
-Client::Client() :
+Client::Client(std::unique_ptr<GameFramework>&& target) :
 	mShouldTerminate(false),
-	mContext()
+	mContext(),
+	mInputManager(&mContext),
+	mTarget(std::move(target))
 {
 }
 
@@ -21,9 +23,11 @@ Client::~Client()
 
 void Client::Initialize()
 {
+	// This order is important - the context must be populated with 
+	// the GLFW window for Renderer and InputManager to initialize correctly
+	InitializeContext();
 	InitializeWindow();
 	InitializeRenderer();
-	InitializeContext();
 	InitializeInputManager();
 }
 
@@ -60,6 +64,7 @@ void Client::InitializeContext()
 
 void Client::InitializeInputManager()
 {
+	mInputManager.Initialize();
 }
 
 void Client::Terminate()
@@ -88,7 +93,3 @@ Renderer* Client::GetRenderer()
 	return(&mRenderer);
 }
 
-void Client::SetTarget(std::unique_ptr<GameFramework> target)
-{
-	mTarget = std::move(target);
-}

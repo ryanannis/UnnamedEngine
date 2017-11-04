@@ -7,13 +7,18 @@
 
 #include <memory>
 
-// Forward decl
+// Forward decls
 struct GLFWwindow;
 class GameFramework;
 
+/*
+ * This class 'owns' everything system-resource related.
+ * If it dies then it is all over.
+ */
 class Client
 {
 public:
+	Client(std::unique_ptr<GameFramework>&& target);
 	~Client();
 
 	void Initialize();
@@ -23,10 +28,9 @@ public:
 	GLFWwindow* GetWindow();
 	Renderer* GetRenderer();
 
-	void SetTarget(std::unique_ptr<GameFramework> target); 
-	Ptr<GameFramework> GetTarget() { return(mTarget.get); }
-
-	Context* GetContext() { return(&mContext); }
+	Ptr<GameFramework> GetTarget() { return(mTarget.get()); }
+	Ptr<Context> GetContext() { return(&mContext); }
+	GLFWwindow* GetGLFWContext() { return(mWindow); }
 
 private:
 	bool mShouldTerminate;
@@ -39,9 +43,9 @@ private:
 	std::unique_ptr<GameFramework> mTarget;
 
 	// Initialization convenience functions
+	void InitializeContext();
 	void InitializeWindow();
 	void InitializeRenderer();
-	void InitializeContext();
 	void InitializeInputManager();
 
 	// Disable copying

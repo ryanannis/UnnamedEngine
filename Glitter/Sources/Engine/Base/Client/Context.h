@@ -5,7 +5,7 @@ class Client;
 class RegionAdmin;
 class ClientInputManager;
 
-class Context
+class Context : public NonCopyable
 {
 public:
 	Context();
