@@ -12,8 +12,10 @@ class ClientInputManager
 {
 public:
 	explicit ClientInputManager(Ptr<Context> context);
-	void Initialize();
 	~ClientInputManager();
+	
+	void Initialize();
+	
 
 	void Update();
 

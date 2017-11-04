@@ -3,7 +3,7 @@
 #include <array>
 #include "Engine/Base/Common/Reflection.h"	
 
-#define KEYMAP(LETTER, KEYCODE) const Key LETTER("LETTER", KEYCODE)
+#define KEYMAP(LETTER, KEYCODE) const Key LETTER(#LETTER, KEYCODE)
 
 struct Key
 {

@@ -6,8 +6,7 @@
 
 int main(int argc, char* argv[])
 {
-	Client c;
+	Client c(std::make_unique<GameFramework>());
 	c.Initialize();
-	c.SetTarget(std::make_unique<GameFramework>());
 	c.Run();
 }
