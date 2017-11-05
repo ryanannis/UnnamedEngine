@@ -20,5 +20,5 @@ void Renderer::Render()
 GraphicsItemHandle GenerateObject()
 {
 	GraphicsItemHandle newItem = ++sGraphicsItemCounter;
-
+	return(newItem);
 }

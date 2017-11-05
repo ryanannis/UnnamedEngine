@@ -25,18 +25,18 @@ public:
 	void Terminate();
 	void Run();
 
-	GLFWwindow* GetWindow();
-	Renderer* GetRenderer();
+	Ptr<GLFWwindow> GetWindow();
+	Ptr<Renderer> GetRenderer();
 
 	Ptr<GameFramework> GetTarget() { return(mTarget.get()); }
 	Ptr<Context> GetContext() { return(&mContext); }
-	GLFWwindow* GetGLFWContext() { return(mWindow); }
+	Ptr<GLFWwindow> GetGLFWContext() { return(mWindow); }
 
 private:
 	bool mShouldTerminate;
 	Context mContext;
 
-	GLFWwindow* mWindow;
+	Ptr<GLFWwindow> mWindow;
 	Renderer mRenderer;
 	ClientInputManager mInputManager;
 	

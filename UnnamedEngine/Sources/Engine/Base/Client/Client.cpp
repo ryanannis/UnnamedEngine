@@ -27,6 +27,7 @@ void Client::Initialize()
 	// the GLFW window for Renderer and InputManager to initialize correctly
 	InitializeContext();
 	InitializeWindow();
+	assert(mWindow);
 	InitializeRenderer();
 	InitializeInputManager();
 }
@@ -45,13 +46,13 @@ void Client::InitializeWindow()
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	GLFWwindow* window = glfwCreateWindow(1280, 720, "OpenGL", nullptr, nullptr);
+	mWindow = glfwCreateWindow(1280, 720, "OpenGL", nullptr, nullptr);
 
-	if(window == nullptr){
+	if(mWindow == nullptr){
 		std::cerr << "Failed to initialize OpenGL context." << std::endl;
 	}
 
-	glfwMakeContextCurrent(window);
+	glfwMakeContextCurrent(mWindow);
 	gladLoadGL();
 
 	std::cerr << "Successfully initialized OpenGL context." << std::endl;
@@ -83,12 +84,12 @@ void Client::Run()
 	glfwDestroyWindow(GetWindow());
 }
 
-GLFWwindow* Client::GetWindow()
+Ptr<GLFWwindow> Client::GetWindow()
 {
 	return(mWindow);
 }
 
-Renderer* Client::GetRenderer()
+Ptr<Renderer> Client::GetRenderer()
 {
 	return(&mRenderer);
 }

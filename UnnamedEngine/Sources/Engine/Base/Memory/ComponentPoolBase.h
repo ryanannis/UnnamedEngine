@@ -22,7 +22,7 @@ public:
 	{
 		assert(BLOCK_SIZE > 0);
 		auto ptrIterator = mREMOVEMEMAP.find(entityID);
-		assert(ptr != mREMOVEMEMAP.end()); // INVALID 
+		assert(ptrIterator != mREMOVEMEMAP.end()); // INVALID 
 		return(ptrIterator->second);
 	}
 
@@ -38,7 +38,7 @@ public:
 	{
 		assert(BLOCK_SIZE > 0);
 		auto ptrIterator = mREMOVEMEMAP.find(entityID);
-		assert(ptr != mREMOVEMEMAP.end()); // INVALID
+		assert(ptrIterator != mREMOVEMEMAP.end()); // INVALID
 		free(ptrIterator->second);
 	}
 

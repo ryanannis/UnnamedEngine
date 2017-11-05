@@ -76,7 +76,7 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens) const
 		}
 
 		//TODO:  This is a bit harsh, isn't it?
-		assert(!state == DSMState::UNPAIRABLESYM && newState == DSMState::UNPAIRABLESYM);
+		assert(!(state == DSMState::UNPAIRABLESYM) && newState == DSMState::UNPAIRABLESYM);
 		
 		if(state == newState && !(state == DSMState::ALPHANUM && newState == DSMState::RELATIVEPATH))
 		{
