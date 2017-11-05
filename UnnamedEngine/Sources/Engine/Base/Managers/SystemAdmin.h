@@ -8,9 +8,9 @@
 class SystemAdmin : public NonCopyable
 {
 public:
-	explicit SystemAdmin(EntityAdmin* entityAdmin);
+	explicit SystemAdmin();
 
-	void Update(float dt);
+	void Update(float dt, Ptr<EntityAdmin> entityAdmin);
 
 	template <typename T, typename ... Args>
 	std::shared_ptr<T> AddSystem(Args&& ... args)
@@ -26,7 +26,6 @@ public:
 	}
 
 private:
-	EntityAdmin* mEntityAdmin;
 	std::vector<std::shared_ptr<SystemBase>> mSystems;
 
 };

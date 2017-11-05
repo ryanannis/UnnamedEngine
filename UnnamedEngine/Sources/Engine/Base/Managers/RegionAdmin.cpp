@@ -3,11 +3,11 @@
 RegionAdmin::RegionAdmin(Ptr<Context> context) :
 	mContext(context),
 	mEntityAdmin(),
-	mSystemAdmin(&mEntityAdmin)
+	mSystemAdmin()
 {
 }
 
 void RegionAdmin::Update(float dt)
 {
-	mSystemAdmin.Update(dt);
+	mSystemAdmin.Update(dt, &mEntityAdmin);
 }

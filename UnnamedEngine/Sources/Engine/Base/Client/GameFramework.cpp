@@ -4,19 +4,24 @@
 GameFramework::GameFramework(Ptr<Context> context):
 	mContext(context)
 {
-	Ready();
 }
 
 void GameFramework::Update(float dt)
 {
 	if(mRegionAdmin)
 	{
-		
+
 	}
 }
 
-void GameFramework::Ready()
+void GameFramework::Initialize()
 {
 	mRegionAdmin = std::make_unique<RegionAdmin>(mContext);
+	InitSystems();
 }
 
+
+void GameFramework::InitSystems()
+{
+	
+}

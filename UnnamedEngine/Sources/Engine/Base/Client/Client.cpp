@@ -30,6 +30,7 @@ void Client::Initialize()
 	assert(mWindow);
 	InitializeRenderer();
 	InitializeInputManager();
+	GetTarget()->Initialize();
 }
 
 void Client::InitializeRenderer()

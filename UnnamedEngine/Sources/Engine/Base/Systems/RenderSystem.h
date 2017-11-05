@@ -7,5 +7,5 @@
 
 class RenderSystem : public System<RenderSystem> {
 public:
-	virtual void Update(float dt, EntityAdmin* entityAdmin);
+	virtual void Update(float dt, Ptr<EntityAdmin> entityAdmin);
 };
