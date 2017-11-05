@@ -1,6 +1,7 @@
 #include "PropParser.h"
 
 #include <sstream>
+#include <iostream>
 
 enum class DSMState
 {
@@ -27,6 +28,15 @@ PropParser::PropParser()
 {
 }
 
+struct UDFTokenInternal
+{
+	UDFTokenInternal(TokenType type, std::string value, int line) :
+		type(type), value(value), line(line) {}
+	TokenType type;
+	std::string value;
+	int line;
+};
+
 void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 {
 	/*
@@ -36,6 +46,11 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 	DSMState state = DSMState::START;
 
 	std::stringstream tokenVal;
+
+	std::vector<UDFTokenInternal> internalTokens;
+
+	bool failed = false;
+	int lnCount = 1;
 
 	for(size_t i = 0; i < (str.length() + 1); i++)
 	{
@@ -57,7 +72,6 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 				c = '#';
 			}
 		}
-
 
 		bool shouldTerminate = false;
 		// Relative Path Chars
@@ -94,6 +108,10 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 			}
 		}
 		else if(c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == '\x0b') {
+			if(c == '\n')
+			{
+				lnCount++;
+			}
 			continue;
 		}
 		else if(c == '(' || c == ')' || c == '{' || c == '}' || c == ':' || c == '=')
@@ -105,6 +123,12 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 		{
 			shouldTerminate = true;
 			nextState == DSMState::END;
+		}
+		else
+		{
+			ParserFailed(lnCount, std::to_string(c));
+			failed = true;
+			break;
 		}
 
 		if(shouldTerminate)
@@ -126,7 +150,7 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 				tokenType = TokenType::NONE; 
 			}
 
-			tokens.push_back(UDFToken(tokenType, tokenVal.str()));
+			internalTokens.push_back(UDFTokenInternal(tokenType, tokenVal.str(), lnCount));
 			
 			tokenVal.clear();
 			tokenVal.str(std::string());
@@ -136,7 +160,7 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 	}
 
 	// Replace SYMs with the proper tokens
-	for(UDFToken& t : tokens)
+	for(UDFTokenInternal& t : internalTokens)
 	{
 		if(t.type == TokenType::NONE)
 		{
@@ -167,13 +191,25 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 			else
 			{
 				//Why did something of TokenType::None even get past the regular parsing?
-				assert(false);
+				ParserFailed(t.line, t.value);
+				failed = true;
+				break;
 			}
 		}
 	}
+
+	if(!failed)
+	{
+		for(UDFTokenInternal& t : internalTokens)
+		{
+			tokens.emplace_back(t.type, t.value);
+		}
+	}
+
+	return;
 }
 
-void PropParser::ParserFailed()
+void PropParser::ParserFailed(int lineNumber, std::string around)
 {
-	assert(false);
+	std::cerr << "ERROR:  Parsing failed at line " << lineNumber << " around " << around << std::endl;
 }

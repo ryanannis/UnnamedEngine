@@ -28,5 +28,5 @@ class PropParser
 public:
 	PropParser();
 	static void Tokenize(std::string str, std::vector<UDFToken>& tokens);
-	static void ParserFailed();
+	static void PropParser::ParserFailed(int lineNumber, std::string around);
 };
