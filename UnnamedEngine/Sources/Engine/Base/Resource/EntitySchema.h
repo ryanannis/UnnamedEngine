@@ -1,6 +1,6 @@
 #pragma once
-#include "Engine/Base/Common/Common.h
-#include "SerializedComponentTree.h"
+#include "Engine/Base/Common/Common.h"
+#include "Engine/Base/Resource/PropTree.h"
 
 /*
  * The data system is driven by compositional inheritence.
@@ -11,7 +11,7 @@
 class EntitySchema
 {
 public:
-	virtual std::string GetSchemaName() const;
-	virtual Entity* Deserialize(SerializedComponentTree componentTree);
-	SerializedComponentTree Serialize(Entity * entity) const;
+	virtual std::string GetSchemaName() const = 0;
+	virtual Entity<Ptr> Deserialize(SerializedComponentTree componentTree) = 0 ;
+	virtual PropTree Serialize(Entity * entity) const = 0;
 };

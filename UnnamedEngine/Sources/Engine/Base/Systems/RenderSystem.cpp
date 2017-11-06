@@ -2,12 +2,20 @@
 
 #include "Engine/Base/Managers/EntityAdmin.h"
 #include "Engine/Base/Components/RenderComponent.h"
+#include "Engine/Base/Components/TransformComponent.h"
+#include "Engine/Base/Components/CameraComponent.h"
 
 void RenderSystem::Update(float dt, Ptr<EntityAdmin> entityAdmin)
 {
 	for(const Entity& e : entityAdmin->GetEntities())
 	{
-		RenderComponent* renderComponent = entityAdmin->GetComponent<RenderComponent>(e);
-		TransformComponent* transformComponent = entityAdmin->GetComponent<TransformComponent>(e);
+		Ptr<RenderComponent> renderComponent = GetComponent<RenderComponent>(entityAdmin, e);
+		Ptr<TransformComponent> transformComponent = GetComponent<TransformComponent>(entityAdmin, e);
 	}
+}
+
+void RenderSystem::StaticInitDependencies()
+{
+	AddReadDependency(ComponentGroup<RenderComponent>());
+	AddReadDependency(ComponentGroup<TransformComponent>());
 }

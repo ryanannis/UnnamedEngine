@@ -19,3 +19,9 @@ private:
 	uint32_t mEntityID;
 	friend EntityAdmin;
 };
+
+template <typename T>
+Ptr<T> Entity::GetComponent(EntityAdmin* admin) const
+{
+	return(admin->GetComponent<T>(this));
+}

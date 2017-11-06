@@ -34,6 +34,7 @@ private:
 	template <typename T>
 	T* AddComponent(uint32_t entityID)
 	{
+		const ComponentFlag flag = ComponentGroup<T>();
 		T* component(mComponentPools[entityID]->GetComponent(entityID));
 		return component;
 	}
@@ -41,7 +42,8 @@ private:
 	template <typename T>
 	T* GetComponent(uint32_t entityID)
 	{
-		void* componentPtr = mComponentPools[entityID]->GetComponent(entityID);
+		const ComponentFlag flag = ComponentGroup<T>();
+		void* componentPtr = mComponentPools[flag]->GetComponent(entityID);
 		T* component = static_cast<T*>(componentPtr);
 		return(component);
 	}

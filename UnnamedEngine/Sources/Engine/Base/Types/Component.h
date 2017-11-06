@@ -30,3 +30,8 @@ protected:
 	static bool sSerializable;
 };
 
+// Get the group from just the type
+template <typename T>
+static ComponentFlag ComponentGroup() {
+	return Component<typename std::remove_const<T>::type>::GetGroup();
+}

@@ -13,10 +13,10 @@ public:
 	Ptr<SystemAdmin> GetSystemAdmin() { return(&mSystemAdmin); }
 
 	void Initialize();
+	void InitSystems();
 
 private:
 
-	void InitSystems();
 	Ptr<Context> mContext;
 	std::unique_ptr<RegionAdmin> mRegionAdmin;
 	
