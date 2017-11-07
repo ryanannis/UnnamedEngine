@@ -11,10 +11,22 @@ MeshResource::MeshResource(std::string URI) :
 	Resource(URI),
 	mReady(false)
 {
+}
+
+bool MeshResource::IsReady() const
+{
+	return(mReady);
+}
+
+void MeshResource::Load()
+{
+	// We don't have a format yet so we're just using assimp
+	// In the future, that should be moved to an asset processing
+	// module - and have our own custom data format
 	// Load a Model from File
 	Assimp::Importer loader;
 	aiScene const *scene = loader.ReadFile(
-		"/Content/" + URI,
+		PROJECT_SOURCE_DIR + GetURI(),
 		aiProcessPreset_TargetRealtime_MaxQuality |
 		aiProcess_OptimizeGraph |
 		aiProcess_FlipUVs
@@ -38,19 +50,8 @@ MeshResource::MeshResource(std::string URI) :
 				mNormals
 			);
 		}
+		mReady = true;
 	}
-}
-
-bool MeshResource::IsReady() const
-{
-	return(mReady);
-}
-
-void MeshResource::Load()
-{
-	// We don't have a format yet so we're just using assimp
-	// In the future, that should be moved to an asset processing
-	// module - and have our own custom data format
 }
 
 void MeshResource::Parse(
