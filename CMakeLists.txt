@@ -59,7 +59,7 @@ source_group("Vendors" FILES ${VENDORS_SOURCES})
 
 add_definitions(-DGLFW_INCLUDE_NONE
                 "-DPROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\""
-				"-DCONTENT_DIR=\"${PROJECT_SOURCE_DIR}/Content\"")
+				"-DCONTENT_DIR=\"${PROJECT_SOURCE_DIR}/Content/\"")
 
 add_library(ProjectLib ${PROJECT_SOURCES} ${PROJECT_HEADERS}
 										  ${PROJECT_SHADERS} 

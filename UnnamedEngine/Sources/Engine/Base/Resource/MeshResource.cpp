@@ -26,7 +26,7 @@ void MeshResource::Load()
 	// Load a Model from File
 	Assimp::Importer loader;
 	aiScene const *scene = loader.ReadFile(
-		PROJECT_SOURCE_DIR + GetURI(),
+		CONTENT_DIR + GetURI(),
 		aiProcessPreset_TargetRealtime_MaxQuality |
 		aiProcess_OptimizeGraph |
 		aiProcess_FlipUVs
@@ -57,8 +57,9 @@ void MeshResource::Load()
 void MeshResource::Parse(
 	aiMesh const* mesh,
 	std::vector<uint32_t>& indices,
-	std::vector<glm::vec3> vertices,
-	std::vector<glm::vec3> normals
+	std::vector<glm::vec2>& uvs,
+	std::vector<glm::vec3>& vertices,
+	std::vector<glm::vec3>& normals
 ) const
 {
 	// Create Vertex Data from Mesh Node
@@ -66,9 +67,10 @@ void MeshResource::Parse(
 	{
 		if(mesh->mTextureCoords[0])
 		{
-			vertices.push_back(glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z));
-			normals.push_back(glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z));
+			
 		}
+		vertices.push_back(glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z));
+		normals.push_back(glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z));
 	}
 
 	for(size_t i = 0; i < mesh->mNumFaces; i++)
