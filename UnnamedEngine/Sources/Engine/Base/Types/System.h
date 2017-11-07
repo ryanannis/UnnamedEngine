@@ -38,6 +38,12 @@ public:
 	// This is used to specify an (optional) 
 	std::optional<SystemFlag> GetPrelink() { return(mPreLink); }
 
+	static SystemFlag SystemGroup()
+	{
+		static const int group = sSystemGroup++;
+		return(group);
+	}
+
 protected:
 	static void AddReadDependency(ComponentFlag f)
 	{
@@ -71,17 +77,10 @@ private:
 	static std::vector<ComponentFlag> mWriteDependencies;
 	static std::optional<SystemFlag> mPreLink;
 
-	static SystemFlag SystemGroup()
-	{
-		static const int group = sSystemGroup++;
-		return(group);
-	}
-
 	static bool mDependenciesInitialized;
-
-	friend SystemAdmin;
 };
 
+// Static defs
 template <typename Derived>
 std::vector<ComponentFlag> System<typename Derived>::mReadDependencies;
 
@@ -93,3 +92,9 @@ std::optional<SystemFlag> System<typename Derived>::mPreLink;
 
 template <typename Derived>
 bool System<typename Derived>::mDependenciesInitialized;
+
+// Get static group for system
+template <typename T>
+static SystemFlag SystemGroup() {
+	return System<typename std::remove_const<T>::type>::SystemGroup();
+}

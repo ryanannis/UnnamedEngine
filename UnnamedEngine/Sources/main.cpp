@@ -2,7 +2,7 @@
 #include <memory>
 #include "Engine/Base/Client/GameFramework.h"
 
-int main(int argc, char* argv[])
+int main(int, char* [])
 {
 	Client c(std::make_unique<GameFramework>(nullptr));
 	c.Initialize();

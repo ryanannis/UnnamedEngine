@@ -16,6 +16,10 @@ static int NumInstances = 0;
 // Interfacing with evil C-style void pointers
 static ClientInputManager* sActiveInstance;
 
+
+
+#pragma warning( push )
+#pragma warning( disable : 4100)
 void ClientInputManager::RecieveGLFWInput(GLFWwindow* self, int keycode, int scancode, int action, int mods)
 {
 	InputEvent event(
@@ -25,6 +29,7 @@ void ClientInputManager::RecieveGLFWInput(GLFWwindow* self, int keycode, int sca
 
 	sActiveInstance->QueueInput(event);
 }
+#pragma warning( pop ) 
 
 //////////////////////////////////////////////////////////
 

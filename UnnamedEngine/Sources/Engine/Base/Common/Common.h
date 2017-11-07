@@ -1,10 +1,13 @@
 #pragma once
 
+#pragma warning(push)
+#pragma warning(disable:4201)
 //GLM
 #include <glm/glm.hpp>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp> 
+#pragma warning(pop)
 
 // Branch prediction hints
 #define LIKELY(condition) __builtin_expect(static_cast<bool>(condition), 1)

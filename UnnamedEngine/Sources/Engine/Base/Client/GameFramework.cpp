@@ -10,7 +10,7 @@ GameFramework::GameFramework(Ptr<Context> context):
 {
 }
 
-void GameFramework::Update(float dt)
+void GameFramework::Update(float)
 {
 	if(mRegionAdmin)
 	{

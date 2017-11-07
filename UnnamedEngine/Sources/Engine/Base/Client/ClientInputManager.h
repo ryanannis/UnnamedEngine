@@ -6,7 +6,7 @@
 #include "Engine/Base/Client/Context.h"
 #include "Engine/Base/Client/InputEvent.h"
 
-class GLFWwindow;
+struct GLFWwindow;
 
 class ClientInputManager
 {

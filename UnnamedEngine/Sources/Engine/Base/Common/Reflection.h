@@ -56,7 +56,7 @@ struct ignore_assign {
 	ignore_assign(int value) : _value(value) { }
 	operator int() const { return _value; }
 
-	const ignore_assign& operator =(int dummy) { return *this; }
+	const ignore_assign& operator =(int) { return *this; }
 
 	int _value;
 };

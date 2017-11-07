@@ -21,7 +21,6 @@ MeshResource::MeshResource(std::string URI) :
 	);
 
 	// Walk the Tree of Scene Nodes
-	auto index = URI.find_last_of("/");
 	if(!scene)
 	{
 		fprintf(stderr, "%s\n", loader.GetErrorString());

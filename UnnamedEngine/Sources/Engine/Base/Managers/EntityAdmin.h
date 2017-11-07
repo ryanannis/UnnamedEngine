@@ -43,7 +43,7 @@ private:
 	T* GetComponent(uint32_t entityID)
 	{
 		const ComponentFlag flag = ComponentGroup<T>();
-		void* componentPtr = mComponentPools[flag]->GetComponent(entityID);
+		void* componentPtr = mComponentPools[static_cast<int>(flag)]->GetComponent(entityID);
 		T* component = static_cast<T*>(componentPtr);
 		return(component);
 	}

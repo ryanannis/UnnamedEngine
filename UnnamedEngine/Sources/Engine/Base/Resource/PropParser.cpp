@@ -228,7 +228,7 @@ std::optional<PropTree> PropParser::ParseTokens(std::vector<UDFToken>& tokens)
 	std::stack<PropTree *> propTreeStack;
 	propTreeStack.push(&root);
 
-	for(int i = 0; i < tokens.size(); i++)
+	for(size_t i = 0; i < tokens.size(); i++)
 	{
 		if(tokens[i].type == TokenType::ALPHANUM)
 		{

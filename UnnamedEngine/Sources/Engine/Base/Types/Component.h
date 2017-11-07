@@ -10,11 +10,11 @@ static ComponentFlag sComponentGroup = 0;
 template <typename Derived>
 class Component : public ComponentBase {
 public:
-	Component() {}
+	Component() {};
 
 	static ComponentFlag GetGroup()
 	{
-		static const int group = sComponentGroup++;
+		static const ComponentFlag group = sComponentGroup++;
 		return(group);
 	}
 

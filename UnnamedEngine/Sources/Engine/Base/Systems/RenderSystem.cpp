@@ -5,7 +5,7 @@
 #include "Engine/Base/Components/TransformComponent.h"
 #include "Engine/Base/Components/CameraComponent.h"
 
-void RenderSystem::Update(float dt, Ptr<EntityAdmin> entityAdmin)
+void RenderSystem::Update(float, Ptr<EntityAdmin> entityAdmin)
 {
 	for(const Entity& e : entityAdmin->GetEntities())
 	{
