@@ -5,8 +5,9 @@
 class HealthComponent : public Component<HealthComponent>
 {
 public:
-	int mMaxHealth = 250;
-	int mCurrentHealth = 250;
+	HealthComponent(int health) : mMaxHealth{ health }, mCurrentHealth{ health } {}
+	const int mMaxHealth;
+	int mCurrentHealth;
 
 	virtual Serializer& Serialize(Serializer& s) override;
 };

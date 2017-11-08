@@ -5,9 +5,8 @@
 class IdentityComponent : public Component<IdentityComponent>
 {
 public:
-	std::string entityName = "Unnamed";
-
-	virtual Serializer& Serialize(Serializer& s) override;
+	IdentityComponent(std::string name) : entityName{name} ()
+	const std::string entityName;
 };
 
 template<> std::string Component<IdentityComponent>::sName = "IdentityComponent";

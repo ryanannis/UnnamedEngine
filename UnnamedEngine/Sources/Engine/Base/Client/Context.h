@@ -3,6 +3,7 @@
 
 class Client;
 class RegionAdmin;
+class GameFramework;
 class ClientInputManager;
 
 class Context : public NonCopyable
@@ -11,10 +12,7 @@ public:
 	Context();
 	~Context();
 
-	void SetClient(Ptr<Client> client);
 	Ptr<Client> GetClient();
-
-	void SetInputManager(Ptr<ClientInputManager> inputManager);
 	Ptr<ClientInputManager> GetInputManager();
 
 private:
@@ -22,4 +20,9 @@ private:
 	Ptr<ClientInputManager> mClientInputManager;
 	Ptr<RegionAdmin> mRegionAdmin;
 
+	// An unfortunate friendship, but better than having setters
+	// all over the goddamn place or reconstructing every time we
+	// want to change.
+	friend Client;
+	friend GameFramework;
 };

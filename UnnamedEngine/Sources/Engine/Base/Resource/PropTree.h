@@ -1,18 +1,11 @@
 #pragma once
 #include "Engine/Base/Common/Common.h"
-
-struct PropTreeLeaf
-{
-public:
-	std::string key;
-	std::string value;
-};
+#include <unordered_map>
 
 struct PropTree
 {
 public:
-	PropTree(std::string name) : typeName{ name } {}
-	std::string typeName;
-	std::vector<PropTree> components;
-	std::vector<PropTreeLeaf> leaves;
+	PropTree() {}
+	std::unordered_map<std::string, PropTree> components;
+	std::unordered_map<std::string, std::string> leaves;
 };

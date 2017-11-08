@@ -26,11 +26,13 @@ void Client::Initialize()
 {
 	// This order is important - the context must be populated with 
 	// the GLFW window for Renderer and InputManager to initialize correctly
-	InitializeContext();
 	InitializeWindow();
 	assert(mWindow);
 	InitializeRenderer();
 	InitializeInputManager();
+
+	InitializeContext();
+
 	GetTarget()->Initialize();
 }
 
@@ -62,7 +64,8 @@ void Client::InitializeWindow()
 
 void Client::InitializeContext()
 {
-	mContext.SetClient(this);
+	mContext.mClient = this;
+	mContext.mClientInputManager = &mInputManager;
 }
 
 void Client::InitializeInputManager()
