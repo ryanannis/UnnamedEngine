@@ -5,12 +5,19 @@
 
 static const std::string DATA_FILE_EXTENSION = ".udf";
 
-Resource* ResourceManager::SpotLoadResource(const std::string dataLocation)
+std::weak_ptr<MeshResource> ResourceManager::LoadMeshResource(std::string& URI)
 {
-	return(nullptr);
-}
+	auto val = mMeshResources.find(URI);
+	if(val != mMeshResources.end())
+	{
+		std::weak_ptr<MeshResource> wkResouce = val->second;
+		return(wkResouce);
+	}
 
-Resource* ResourceManager::LoadResourceAsync(const std::string dataLocation)
-{
-	return(nullptr);
+	std::shared_ptr<MeshResource> res = std::make_shared<MeshResource>(URI);
+	std::weak_ptr<MeshResource> wkResouce = res;
+	res->Load();
+	mMeshResources.emplace(URI, std::move(res));
+
+	return(res);
 }

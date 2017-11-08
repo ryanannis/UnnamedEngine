@@ -46,6 +46,7 @@ void MeshResource::Load()
 			(
 				mesh,
 				mIndices,
+				mUVs,
 				mVertices,
 				mNormals
 			);

@@ -17,7 +17,7 @@ public:
 	uint32_t CreateEntity();
 
 	template <typename T>
-	T* GetComponent(const Entity& e)
+	T* GetComponent(const Entity e)
 	{
 		return(GetComponent<T>(e.GetEntityId()));
 	}
