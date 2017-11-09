@@ -10,7 +10,7 @@ struct AvatarSchemaMap
 
 std::string AvatarSchema::GetSchemaName() const
 {
-
+	return("AvatarSchema");
 }
 
 void AvatarSchema::ProcessEntity(const PropTree& propTree, Ptr<EntityAdmin> entityAdmin, Entity entity)

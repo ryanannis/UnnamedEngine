@@ -5,7 +5,7 @@
 class IdentityComponent : public Component<IdentityComponent>
 {
 public:
-	IdentityComponent(std::string name) : entityName{name} ()
+	IdentityComponent(std::string name) : entityName{name} {}
 	const std::string entityName;
 };
 

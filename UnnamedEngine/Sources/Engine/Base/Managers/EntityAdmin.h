@@ -14,7 +14,7 @@ public:
 	EntityAdmin();
 	~EntityAdmin();
 
-	uint32_t CreateEntity();
+	Entity CreateEntity();
 
 	template <typename T>
 	T* GetComponent(const Entity e)
@@ -34,7 +34,7 @@ public:
 		const ComponentFlag flag = ComponentGroup<T>();
 		const uint32_t eid = entity.mEntityID;
 		void* componentMem = mComponentPools[static_cast<int>(flag)]->AllocComponent(eid);
-		T* component = new (T) T(std::forward<Params> args...);
+		T* component = new (componentMem) T(std::forward<Params>(args)...);
 		return(component);
 	}
 

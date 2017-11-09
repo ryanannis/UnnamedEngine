@@ -10,11 +10,12 @@ EntityAdmin::~EntityAdmin()
 {
 }
 
-uint32_t EntityAdmin::CreateEntity()
+Entity EntityAdmin::CreateEntity()
 {
-	const uint32_t nextId = entityCounter++;
-	mEntities.emplace_back(nextId);
-	return(nextId);
+	const uint32_t eid = entityCounter++;
+	Entity entity{eid};
+	mEntities.push_back(entity);
+	return(entity);
 }
 
 void EntityAdmin::RegisterEntity(Entity* entity)

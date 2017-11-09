@@ -8,12 +8,13 @@ class EntityAdmin;
 class Entity
 {
 public:
-	Entity(uint32_t id);
+	Entity(const Entity& e);
 
 	template <typename T>
 	Ptr<T> GetComponent(EntityAdmin* admin) const;
 
 private:
+	Entity(uint32_t id);
 	inline uint32_t GetEntityId() const { return(mEntityID); }
 
 	uint32_t mEntityID;

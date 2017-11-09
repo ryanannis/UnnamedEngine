@@ -8,7 +8,7 @@
 
 struct aiMesh;
 
-class MeshResource : Resource
+class MeshResource : public Resource
 {
 public:
 	MeshResource(std::string URI);

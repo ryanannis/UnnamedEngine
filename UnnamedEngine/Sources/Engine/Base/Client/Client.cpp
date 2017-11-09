@@ -23,14 +23,17 @@ Client::~Client()
 }
 
 void Client::Initialize()
-{
+{	
+	// Initialize this first so other systems can access Client during
+	// their own initialization
+	mContext.mClient = this;
+
 	// This order is important - the context must be populated with 
 	// the GLFW window for Renderer and InputManager to initialize correctly
 	InitializeWindow();
 	assert(mWindow);
 	InitializeRenderer();
 	InitializeInputManager();
-
 	InitializeContext();
 
 	GetTarget()->Initialize();
@@ -64,8 +67,8 @@ void Client::InitializeWindow()
 
 void Client::InitializeContext()
 {
-	mContext.mClient = this;
-	mContext.mClientInputManager = &mInputManager;
+	
+	
 }
 
 void Client::InitializeInputManager()

@@ -25,10 +25,8 @@ bool GetTerminal(DSMState state)
 	);
 }
 
-PropParser::PropParser()
-{
-}
-
+// An internal version of UDFToken that contains auxillery information
+// such as a line number for printing parsing error reports.
 struct UDFTokenInternal
 {
 	UDFTokenInternal(TokenType type, std::string value, int line) :
@@ -37,6 +35,18 @@ struct UDFTokenInternal
 	std::string value;
 	int line;
 };
+
+PropParser::PropParser()
+{
+}
+
+std::optional<PropTree> PropParser::Parse(std::string str)
+{
+	std::vector<UDFToken> tokens;
+	Tokenize(str, tokens);
+	return(ParseTokens(tokens));
+}
+
 
 void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 {

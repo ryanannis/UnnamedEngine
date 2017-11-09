@@ -21,7 +21,7 @@ void GameFramework::Update(float)
 void GameFramework::Initialize()
 {
 	mRegionAdmin = std::make_unique<RegionAdmin>(mContext);
-	mResourceManager = std::make_unique<ResourceManager>(mResourceManager);
+	mResourceManager = std::make_unique<ResourceManager>(mContext);
 }
 
 void GameFramework::InitSystems()
