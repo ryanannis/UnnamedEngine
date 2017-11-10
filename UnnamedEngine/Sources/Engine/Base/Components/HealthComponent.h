@@ -2,15 +2,17 @@
 #include "Engine/Base/Common/Common.h"
 #include "Engine/Base/Types/Component.h"
 
+class PropTree;
+
 class HealthComponent : public Component<HealthComponent>
 {
 public:
-	HealthComponent(int health) : mMaxHealth{ health }, mCurrentHealth{ health } {}
-	const int mMaxHealth;
-	int mCurrentHealth;
-
+	HealthComponent() {};
+	int maxHealth;
+	int currentHealth;
+	
+	Serializer& Serialize(Serializer& s);
+	void Deserialize(PropTree& t);
 };
 
 template<> std::string Component<HealthComponent>::sName = "HealthComponent";
-
-Serializer Serialize(HealthComponent& c);

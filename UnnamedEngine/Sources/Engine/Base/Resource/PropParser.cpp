@@ -249,7 +249,7 @@ std::optional<PropTree> PropParser::ParseTokens(std::vector<UDFToken>& tokens)
 				// Parse as leaf until ';'
 				const std::string key = tokens[i].value;
 
-				std::stringstream ss;
+				std::vector<UDFToken> valueTokens;
 				// Start parsing leaf
 				for(i = i + 2; i < tokens.size(); i++)
 				{
@@ -260,13 +260,12 @@ std::optional<PropTree> PropParser::ParseTokens(std::vector<UDFToken>& tokens)
 					else
 					{
 						// todo: parse into the actual value once we figure out what exactly should be enumerated
-						ss << tokens[i].value;
+						valueTokens.push_back(tokens[i]);
 					}
 				}
 
-				const std::string value = ss.str();
 				auto& topLeaves = propTreeStack.top()->leaves;
-				topLeaves.emplace(key, value);
+				topLeaves.emplace(valueTokens);
 			}
 			else if(tokens[i+1].type == TokenType::LCURLY)
 			{

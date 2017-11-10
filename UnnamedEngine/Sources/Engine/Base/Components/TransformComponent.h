@@ -10,5 +10,3 @@ public:
 };
 
 template<> std::string Component<TransformComponent>::sName = "TransformComponent";
-
-Serializer Serialize(TransformComponent& c);

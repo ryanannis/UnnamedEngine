@@ -1,5 +1,8 @@
 #include "Serializer.h"
 
+#include "Engine/Base/Resource/Resource.h"
+#include "Engine/Base/Resource/PropParser.h"
+
 Serializer& Serializer::Serialize(ComponentBase& c)
 {
 	Serializer s;
@@ -10,14 +13,20 @@ Serializer& Serializer::Serialize(ComponentBase& c)
 
 Serializer& Serializer::Serialize(std::string tag, std::string in)
 {
-	mSerializedNode.key = tag;
-	mSerializedNode.value = in;
+	mSerializationTree.leaves.emplace( tag, CreateLeaf(in) );
+	return(*this);
+}
+
+Serializer& Serializer::Serialize(std::string tag, Resource& res)
+{
+	mSerializationTree.leaves.emplace(tag, CreateLeaf(Serialize(res)));
 	return(*this);
 }
 
 Serializer& Serializer::Serialize(std::string tag, int in)
 {
-	return(Serialize("tag", Serialize(in)));
+	mSerializationTree.leaves.emplace(tag, CreateLeaf(Serialize(in)));
+	return(*this);
 }
 
 std::string Serializer::Serialize(std::string in) const
@@ -29,7 +38,13 @@ std::string Serializer::Serialize(int in) const
 	return(std::to_string(in));
 }
 
-PropNode Serializer::GetNode() const
+std::string Serializer::Serialize(Resource& res) const
 {
-	return(mSerializedNode);
+	return(res.GetURI());
+}
+
+PropTreeLeaf Serializer::CreateLeaf(std::string val) const
+{
+	std::vector<UDFToken> kv{ UDFToken(TokenType::NONE, val) };
+	return(PropTreeLeaf(std::move(kv)));
 }

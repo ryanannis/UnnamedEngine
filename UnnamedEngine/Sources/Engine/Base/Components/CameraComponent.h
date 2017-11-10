@@ -5,10 +5,10 @@
 class CameraComponent : public Component<CameraComponent>
 {
 public:
-	glm::fvec4 pEntityCameraTranslation;
+	glm::fvec3 pEntityCameraTranslation;
 	glm::fquat pEntityCameraRotation;
 };
 
 template<> std::string Component<CameraComponent>::sName = "CameraComponent";
 
-Serializer Serialize(CameraComponent& c);
+Serializer& Serialize(Serializer& s, CameraComponent& c);
