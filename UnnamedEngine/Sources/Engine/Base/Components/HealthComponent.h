@@ -9,7 +9,8 @@ public:
 	const int mMaxHealth;
 	int mCurrentHealth;
 
-	virtual Serializer& Serialize(Serializer& s) override;
 };
 
 template<> std::string Component<HealthComponent>::sName = "HealthComponent";
+
+Serializer Serialize(HealthComponent& c);

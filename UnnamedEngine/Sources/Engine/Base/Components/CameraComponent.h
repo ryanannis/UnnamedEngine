@@ -10,3 +10,5 @@ public:
 };
 
 template<> std::string Component<CameraComponent>::sName = "CameraComponent";
+
+Serializer Serialize(CameraComponent& c);

@@ -1,6 +1,5 @@
 #pragma once
 #include "Engine/Base/Common/Common.h"
-
 #include "Engine/Base/Types/Component.h"
 
 class TransformComponent : public Component<TransformComponent>
@@ -11,3 +10,5 @@ public:
 };
 
 template<> std::string Component<TransformComponent>::sName = "TransformComponent";
+
+Serializer Serialize(TransformComponent& c);

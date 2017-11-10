@@ -23,8 +23,6 @@ public:
 		return(sName);
 	}
 
-	virtual Serializer& Serialize(Serializer& s) { return(s); }
-
 protected:
 	static std::string sName;
 	static bool sSerializable;

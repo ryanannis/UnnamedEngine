@@ -10,3 +10,5 @@ class RenderComponent : Component<RenderComponent> {
 };
 
 template<> std::string Component<RenderComponent>::sName = "RenderComponent";
+
+Serializer Serialize(RenderComponent& c);

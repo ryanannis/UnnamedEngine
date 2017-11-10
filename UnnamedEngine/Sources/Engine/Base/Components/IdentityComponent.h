@@ -10,3 +10,5 @@ public:
 };
 
 template<> std::string Component<IdentityComponent>::sName = "IdentityComponent";
+
+Serializer Serialize(IdentityComponent& c);
