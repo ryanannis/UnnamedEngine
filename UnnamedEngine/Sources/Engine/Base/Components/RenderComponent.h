@@ -8,9 +8,10 @@
 
 struct PropTree;
 
-class RenderComponent : Component<RenderComponent>
+class RenderComponent : public Component<RenderComponent>
 {
 public:
+	RenderComponent();
 	ResourceType<MeshResource> mesh;
 
 	Serializer& Serialize(Serializer& s);
@@ -18,5 +19,3 @@ public:
 };
 
 template<> std::string Component<RenderComponent>::sName = "RenderComponent";
-
-STATICREGISTER(RenderComponent, "RenderComponent");

@@ -2,6 +2,12 @@
 #include "Engine/Base/Resource/Serializer.h"
 #include "Engine/Base/Resource/PropTree.h"
 
+STATICREGISTER(RenderComponent, "RenderComponent");
+
+RenderComponent::RenderComponent() :
+	mesh{}
+{}
+
 Serializer& RenderComponent::Serialize(Serializer& s)
 {
 	s.Serialize("Name", mesh);

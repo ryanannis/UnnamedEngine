@@ -25,7 +25,7 @@ Ptr<ComponentBase> StaticReg::StaticCreateRegisterComponent(const std::string& n
 }
 
 // Static Registry Singleton
-static std::unordered_map<std::string, StaticReg::StaticRegistryEntry>& StaticReg::GetStaticRegistry()
+std::unordered_map<std::string, StaticReg::StaticRegistryEntry>& StaticReg::GetStaticRegistry()
 {
 	static std::unordered_map<std::string, StaticRegistryEntry> staticRegistry;
 	return(staticRegistry);

@@ -6,10 +6,10 @@
 class CameraComponent : public Component<CameraComponent>
 {
 public:
+	CameraComponent();
+
 	glm::fvec3 pEntityCameraTranslation;
 	glm::fquat pEntityCameraRotation;
 };
 
 template<> std::string Component<CameraComponent>::sName = "HealthComponent";
-
-STATICREGISTER(CameraComponent, "HealthComponent");

@@ -8,14 +8,13 @@ struct PropTree;
 class HealthComponent : public Component<HealthComponent>
 {
 public:
-	HealthComponent() {};
+	HealthComponent();
+
 	int maxHealth;
 	int currentHealth;
 	
-	virtual Serializer& Serialize(Serializer& s) = 0;
-	virtual void Deserialize(PropTree& t) = 0;
+	virtual Serializer& Serialize(Serializer& s) override;
+	virtual void Deserialize(PropTree& t) override;
 };
 
 template<> std::string Component<HealthComponent>::sName = "HealthComponent";
-
-STATICREGISTER(HealthComponent, "HealthComponent");

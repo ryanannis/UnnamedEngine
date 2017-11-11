@@ -2,6 +2,12 @@
 #include "Engine/Base/Resource/Serializer.h"
 #include "Engine/Base/Resource/PropTree.h"
 
+STATICREGISTER(IdentityComponent, "IdentityComponent");
+
+IdentityComponent::IdentityComponent() :
+	entityName{"NoName"}
+{}
+
 Serializer& IdentityComponent::Serialize(Serializer& s)
 {
 	s.Serialize("Name", entityName);

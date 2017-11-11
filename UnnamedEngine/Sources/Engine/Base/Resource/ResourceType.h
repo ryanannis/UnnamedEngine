@@ -12,6 +12,10 @@ template <typename T>
 class ResourceType
 {
 public:
+	ResourceType() :
+		mURI{}
+	{}
+
 	ResourceType(std::string uri) : 
 		mURI{mURI}
 	{}
