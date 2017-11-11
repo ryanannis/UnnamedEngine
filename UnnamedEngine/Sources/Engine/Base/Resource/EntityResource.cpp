@@ -7,6 +7,7 @@
 #include "Engine/Base/Resource/Serializer.h"
 #include "Engine/Base/Resource/ResourceManager.h"
 #include "Engine/Base/Resource/PropParser.h"
+#include "Engine/Base/Types/StaticComponent.h"
 
 EntityResource::EntityResource(std::string uri) :
 	Resource(uri),
@@ -33,10 +34,11 @@ void EntityResource::Load()
 	if(propTree.has_value())
 	{
 		const auto& componentList = propTree->components;
-		auto component = componentList.find(uri.component);
-		if(component != componentList.end())
+		auto serializedComponent = componentList.find(uri.component);
+		if(serializedComponent != componentList.end())
 		{
-			Serializer(component->second);
+			Serializer(serializedComponent->second);
+			auto component = StaticReg::StaticCreateComponent(serializedComponent->first);
 			
 			mReady = true;
 		}

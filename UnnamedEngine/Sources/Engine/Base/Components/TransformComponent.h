@@ -3,7 +3,6 @@
 #include "Engine/Base/Types/Component.h"
 #include "Engine/Base/Types/StaticComponent.h"
 
-
 class TransformComponent : public Component<TransformComponent>
 {
 public:
@@ -13,4 +12,4 @@ public:
 
 template<> std::string Component<TransformComponent>::sName = "TransformComponent";
 
-STATICREGISTER(TransformComponent, "TransformComponent");
+//STATICREGISTER(TransformComponent, "TransformComponent");
