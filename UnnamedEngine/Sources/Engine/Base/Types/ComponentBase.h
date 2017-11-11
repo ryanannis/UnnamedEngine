@@ -1,5 +1,7 @@
 #pragma once
 #include "Engine/Base/Common/Common.h"
 
-class ComponentBase {
+class ComponentBase{
+public:
+	virtual std::string GetName() = 0;
 };

@@ -4,6 +4,8 @@
 #include <iostream>
 #include <stack>
 
+#include "Engine/Base/Resource/PropTree.h"
+
 enum class DSMState
 {
 	NULLSTATE,
@@ -264,8 +266,9 @@ std::optional<PropTree> PropParser::ParseTokens(std::vector<UDFToken>& tokens)
 					}
 				}
 
-				auto& topLeaves = propTreeStack.top()->leaves;
-				topLeaves.emplace(valueTokens);
+				auto& topLeaves = propTreeStack.top();
+				PropTreeLeaf leaf(std::move(valueTokens));
+				topLeaves->leaves.insert(std::pair<std::string, PropTreeLeaf>(key, leaf));
 			}
 			else if(tokens[i+1].type == TokenType::LCURLY)
 			{

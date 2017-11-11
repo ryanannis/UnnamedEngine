@@ -2,26 +2,22 @@
 
 #include "Engine/Base/Resource/Resource.h"
 #include "Engine/Base/Resource/PropParser.h"
+#include "Engine/Base/Types/ComponentBase.h"
 
 Serializer& Serializer::Serialize(ComponentBase& c)
 {
 	Serializer s;
-	PropNode serializedChild = s.Serialize(c).GetNode();
-	mSerializedNode.props.push_back(serializedChild);
+	PropTree serializedChild = s.Serialize(c).mSerializationTree;
+	mSerializationTree.components.emplace(c.GetName(), std::move(serializedChild));
 	return(*this);
 }
 
 Serializer& Serializer::Serialize(std::string tag, std::string in)
 {
-	mSerializationTree.leaves.emplace( tag, CreateLeaf(in) );
+	mSerializationTree.leaves.emplace(tag, CreateLeaf(in) );
 	return(*this);
 }
 
-Serializer& Serializer::Serialize(std::string tag, Resource& res)
-{
-	mSerializationTree.leaves.emplace(tag, CreateLeaf(Serialize(res)));
-	return(*this);
-}
 
 Serializer& Serializer::Serialize(std::string tag, int in)
 {
@@ -36,11 +32,6 @@ std::string Serializer::Serialize(std::string in) const
 std::string Serializer::Serialize(int in) const
 {
 	return(std::to_string(in));
-}
-
-std::string Serializer::Serialize(Resource& res) const
-{
-	return(res.GetURI());
 }
 
 PropTreeLeaf Serializer::CreateLeaf(std::string val) const

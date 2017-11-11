@@ -2,6 +2,8 @@
 #include "Engine/Base/Common/Common.h"
 #include "Engine/Base/Types/Component.h"
 
+struct PropTree;
+
 class IdentityComponent : public Component<IdentityComponent>
 {
 public:
@@ -13,5 +15,4 @@ public:
 };
 
 template<> std::string Component<IdentityComponent>::sName = "IdentityComponent";
-
 

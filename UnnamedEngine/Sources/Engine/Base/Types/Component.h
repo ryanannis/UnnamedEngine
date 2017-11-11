@@ -7,6 +7,7 @@ class Serializer;
 typedef uint64_t ComponentFlag;
 static ComponentFlag sComponentGroup = 0;
 
+
 template <typename Derived>
 class Component : public ComponentBase {
 public:
@@ -18,14 +19,14 @@ public:
 		return(group);
 	}
 
-	std::string GetName()
+	virtual std::string GetName()
 	{
 		return(sName);
 	}
 
 protected:
-	static std::string sName;
 	static bool sSerializable;
+	static std::string sName;
 };
 
 // Get the group from just the type

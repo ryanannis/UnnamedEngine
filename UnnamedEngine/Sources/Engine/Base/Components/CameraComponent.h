@@ -9,6 +9,4 @@ public:
 	glm::fquat pEntityCameraRotation;
 };
 
-template<> std::string Component<CameraComponent>::sName = "CameraComponent";
-
-Serializer& Serialize(Serializer& s, CameraComponent& c);
+template<> std::string Component<CameraComponent>::sName = "HealthComponent";

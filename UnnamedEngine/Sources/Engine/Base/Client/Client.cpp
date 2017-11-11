@@ -3,7 +3,6 @@
 #include "Client.h"
 #include "Engine/Graphics/Renderer/Renderer.h"
 
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 

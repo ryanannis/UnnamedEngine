@@ -1,12 +1,32 @@
 #pragma once
 #include "Engine/Base/Common/Common.h"
 #include <unordered_map>
-
 #include <optional>
+
+// Parsing is leaking over the engine!  Ahhh sphaghetti!
+enum class TokenType
+{
+	NONE,
+	LBRACKET,
+	RBRACKET,
+	LCURLY,
+	RCURLY,
+	COLON,
+	ALPHANUM,
+	FILEPATH,
+	EQUALS,
+	SEMI,
+};
+
+struct UDFToken
+{
+	UDFToken(TokenType type, std::string value) : type(type), value(value) {}
+	const TokenType type;
+	const std::string value;
+};
 
 class PropParser;
 class Serializer;
-struct UDFToken;
 
 // A container for value tokens parsed by the PropParser
 // Our language is looser than something eg. JSON

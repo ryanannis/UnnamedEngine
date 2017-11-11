@@ -14,6 +14,6 @@ void RenderComponent::Deserialize(PropTree& t)
 
 	if(nameIt != t.leaves.end())
 	{
-		 mesh = MeshResource(nameIt->second.GetAsString());
+		 mesh = ResourceType<MeshResource>(nameIt->second.GetAsString());
 	}
 }

@@ -1,12 +1,13 @@
 #pragma once
+#include "Engine/Base/Common/Ptr.h"
 
 #include <deque>
 #include <queue>
 
-#include "Engine/Base/Client/Context.h"
 #include "Engine/Base/Client/InputEvent.h"
 
 struct GLFWwindow;
+class Context;
 
 class ClientInputManager
 {

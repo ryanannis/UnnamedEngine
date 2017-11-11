@@ -1,30 +1,11 @@
 #pragma once
 #include "Engine/Base/Common/Common.h"
-#include "Engine/Base/Resource/PropTree.h"
 
 #include <string>
 #include <optional>
 
-enum class TokenType
-{
-	NONE,
-	LBRACKET,
-	RBRACKET,
-	LCURLY,
-	RCURLY,
-	COLON,
-	ALPHANUM,
-	FILEPATH,
-	EQUALS,
-	SEMI,
-};
-
-struct UDFToken
-{
-	UDFToken(TokenType type, std::string value) : type(type), value(value) {}
-	const TokenType type;
-	const std::string value;
-};
+struct PropTree;
+struct UDFToken;
 
 class PropParser
 {
@@ -36,3 +17,4 @@ private:
 	static void PropParser::ParserFailed(int lineNumber, std::string around);
 	static std::optional<PropTree> ParseTokens(std::vector<UDFToken>& tokens);
 };
+

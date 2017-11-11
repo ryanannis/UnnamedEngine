@@ -11,21 +11,21 @@ Serializer& HealthComponent::Serialize(Serializer& s)
 
 void HealthComponent::Deserialize(PropTree& t)
 {
-	auto maxHealth = t.leaves.find("MaxHealth");
-	auto currentHealth = t.leaves.find("MaxHealth");
+	auto maxHealthIt = t.leaves.find("MaxHealth");
+	auto currentHealthIt = t.leaves.find("MaxHealth");
 	
-	if(maxHealth != t.leaves.end())
+	if(maxHealthIt != t.leaves.end())
 	{
-		if(auto maxHP = maxHealth->second.GetAsInt()) {
+		if(auto maxHP = maxHealthIt->second.GetAsInt()) {
 			maxHealth = *maxHP;
 		}
 	}
 	
-	if(currentHealth != t.leaves.end())
+	if(currentHealthIt != t.leaves.end())
 	{
-		if(auto curHP = maxHealth->second.GetAsInt())
+		if(auto curHP = currentHealthIt->second.GetAsInt())
 		{
-			maxHealth = *curHP;
+			currentHealth = *curHP;
 		}
 	}
 }

@@ -28,6 +28,7 @@ private:
 #include <array>
 #include <vector>
 #include <memory>
+#include <optional>
 #include <utility>
 
 // Common Pointer Functions

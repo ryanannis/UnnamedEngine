@@ -7,6 +7,7 @@
 
 #include "Engine/Base/Client/Client.h"
 #include "Engine/Base/Client/Keycodes.h"
+#include "Engine/Base/Client/Context.h"
 
 //////////////////////////////////////////////////////////
 // GLFW C-STYLE INTERFACE

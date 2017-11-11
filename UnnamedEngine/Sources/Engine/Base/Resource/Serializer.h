@@ -2,6 +2,7 @@
 #include "Engine/Base/Common/Common.h"
 
 #include "PropTree.h"
+#include "Engine/Base/Resource/ResourceType.h"
 
 #include <string>
 #include <vector>
@@ -15,12 +16,23 @@ public:
 	Serializer& Serialize(ComponentBase& c);
 	Serializer& Serialize(std::string tag, std::string s);
 	Serializer& Serialize(std::string tag, int i);
-	Serializer& Serialize(std::string tag, Resource& res);
+
+	template <typename T>
+	Serializer& Serialize(std::string tag, ResourceType<T>& res)
+	{
+		mSerializationTree.leaves.emplace(tag, CreateLeaf(Serialize(res)));
+		return(*this);
+	}
 
 private:
 	std::string Serialize(std::string s) const;
 	std::string Serialize(int i) const;
-	std::string Serialize(Resource& res) const;
+	
+	template <typename T>
+	std::string Serialize(ResourceType<T>& res) const
+	{
+		return(res.mURI);
+	}
 
 	PropTreeLeaf CreateLeaf(std::string s) const;
 	
