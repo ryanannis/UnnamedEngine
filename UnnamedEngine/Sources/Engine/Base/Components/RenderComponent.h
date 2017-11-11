@@ -3,6 +3,7 @@
 
 #include "Engine/Base/Types/Component.h"
 #include "Engine/Base/Resource/ResourceType.h"
+#include "Engine/Base/Types/StaticComponent.h"
 #include "Engine/Base/Resource/MeshResource.h"
 
 struct PropTree;
@@ -17,3 +18,5 @@ public:
 };
 
 template<> std::string Component<RenderComponent>::sName = "RenderComponent";
+
+STATICREGISTER(RenderComponent, "RenderComponent");

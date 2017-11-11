@@ -1,6 +1,8 @@
 #pragma once
 #include "Engine/Base/Common/Common.h"
 #include "Engine/Base/Types/Component.h"
+#include "Engine/Base/Types/StaticComponent.h"
+
 
 struct PropTree;
 
@@ -16,3 +18,4 @@ public:
 
 template<> std::string Component<IdentityComponent>::sName = "IdentityComponent";
 
+STATICREGISTER(IdentityComponent, "IdentityComponent");
