@@ -22,7 +22,6 @@ class ResourceManager
 {
 public:
 	ResourceManager(Ptr<Context> context);
-	
 	static URI ParseStringToURI(const std::string strURI);
 
 	template <typename T>
@@ -46,8 +45,6 @@ public:
 		mResources.emplace{mURI, res};
 		return(res);
 	}
-
-	
 	
 private:
 	std::unordered_map<std::string, std::shared_ptr<Resource>> mResources;

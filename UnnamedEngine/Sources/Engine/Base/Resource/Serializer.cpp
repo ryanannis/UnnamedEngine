@@ -4,6 +4,15 @@
 #include "Engine/Base/Resource/PropParser.h"
 #include "Engine/Base/Types/ComponentBase.h"
 
+Serializer::Serializer()
+{
+}
+
+Serializer::Serializer(PropTree tree) :
+	mSerializationTree(tree)
+{
+}
+
 Serializer& Serializer::Serialize(ComponentBase& c)
 {
 	Serializer s;

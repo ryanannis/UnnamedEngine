@@ -11,8 +11,8 @@ public:
 	int maxHealth;
 	int currentHealth;
 	
-	Serializer& Serialize(Serializer& s);
-	void Deserialize(PropTree& t);
+	virtual Serializer& Serialize(Serializer& s) = 0;
+	virtual void Deserialize(PropTree& t) = 0;
 };
 
 template<> std::string Component<HealthComponent>::sName = "HealthComponent";

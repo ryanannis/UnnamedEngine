@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "Engine/Base/Resource/Serializer.h"
 #include "Engine/Base/Resource/ResourceManager.h"
 #include "Engine/Base/Resource/PropParser.h"
 
@@ -35,7 +36,8 @@ void EntityResource::Load()
 		auto component = componentList.find(uri.component);
 		if(component != componentList.end())
 		{
-			// todo:  we need static registration for entity schemas for this to work
+			Serializer(component->second);
+			
 			mReady = true;
 		}
 		else

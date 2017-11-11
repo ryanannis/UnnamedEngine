@@ -9,10 +9,14 @@
 
 class Resource;
 class ComponentBase;
+class EntityResource;
 
 class Serializer
 {
 public:
+	// Serializes with an empty proptree
+	Serializer();
+
 	Serializer& Serialize(ComponentBase& c);
 	Serializer& Serialize(std::string tag, std::string s);
 	Serializer& Serialize(std::string tag, int i);
@@ -25,6 +29,8 @@ public:
 	}
 
 private:
+	Serializer(PropTree t);
+
 	std::string Serialize(std::string s) const;
 	std::string Serialize(int i) const;
 	
@@ -37,4 +43,6 @@ private:
 	PropTreeLeaf CreateLeaf(std::string s) const;
 	
 	PropTree mSerializationTree;
+
+	friend EntityResource;
 };
