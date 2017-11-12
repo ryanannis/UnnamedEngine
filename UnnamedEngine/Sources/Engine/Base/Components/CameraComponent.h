@@ -13,5 +13,3 @@ public:
 };
 
 template<> std::string Component<CameraComponent>::sName = "HealthComponent";
-
-STATICDECL(CameraComponent, "CameraComponent");

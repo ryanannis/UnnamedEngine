@@ -17,7 +17,4 @@ public:
 	virtual void Deserialize(const PropTree& t) override;
 };
 
-STATICDECL(HealthComponent, "HealthComponent");
-
-
 template<> std::string Component<HealthComponent>::sName = "HealthComponent";

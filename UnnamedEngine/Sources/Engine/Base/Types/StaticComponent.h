@@ -101,7 +101,7 @@ namespace StaticReg
 
 }
 
-#define STATICDECL(TYPE, NAME)                                        \
+#define STATICDEF(TYPE, NAME)                                         \
 namespace StaticReg													  \
 {																	  \
 template<class T>                                                     \
@@ -112,14 +112,8 @@ class StaticRegistration<TYPE>                                        \
 {                                                                     \
     static const RegistryEntry<TYPE>& reg;                            \
 };                                                                    \
-}																	  \
-
-
-#define STATICDEF(TYPE,NAME)                                          \
-namespace StaticReg													  \
-{																	  \
 const RegistryEntry<TYPE>& StaticRegistration<TYPE>::reg =            \
 	RegistryEntry<TYPE>::Instance(NAME);                              \
 }																	  \
-
+																	  \
 

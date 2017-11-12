@@ -18,6 +18,4 @@ public:
 	void Deserialize(const PropTree& t);
 };
 
-STATICDECL(RenderComponent, "RenderComponent");
-
 template<> std::string Component<RenderComponent>::sName = "RenderComponent";

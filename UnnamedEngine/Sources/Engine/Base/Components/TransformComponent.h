@@ -14,6 +14,4 @@ public:
 	glm::fquat pEntityWorldRotation;
 };
 
-STATICDECL(TransformComponent, "TransformComponent");
-
 template<> std::string Component<TransformComponent>::sName = "TransformComponent";
