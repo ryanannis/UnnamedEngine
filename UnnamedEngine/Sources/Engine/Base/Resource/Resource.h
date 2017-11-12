@@ -16,6 +16,9 @@ public:
 	virtual void Load() = 0;
 	std::string GetURI() const { return(mUri); }
 
+protected:
+	Ptr<ResourceManager> GetResourceManager() { return(mResourceManager); };
+
 private:
 	// This is set immediately upon entering the resource manager
 	// as Resource file also act as loaders and we of course want

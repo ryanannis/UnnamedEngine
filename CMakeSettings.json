@@ -8,7 +8,7 @@
             "inheritEnvironments": [ "msvc_x86" ],
             "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
             "cmakeCommandArgs": "",
-            "buildCommandArgs": "/verbosity:quiet",
+            "buildCommandArgs": "/verbosity:Normal",
             "ctestCommandArgs": ""
         },
         {

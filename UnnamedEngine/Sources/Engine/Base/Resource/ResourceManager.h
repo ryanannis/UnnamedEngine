@@ -31,14 +31,17 @@ class ResourceManager
 public:
 	ResourceManager(Ptr<Context> context);
 
+	//todo: static tables for each resource type - don't like the dynamic_cast
 	template <typename T>
 	std::weak_ptr<T> LoadResource(ResourceType<T> resourceType)
 	{
 		// Check for existence of resource on the flywheel
 		auto resIt = mResources.find(resourceType.mURI);
 		if(resIt != mResources.end())
-		{
-			return(resIt->second);
+		{	
+			std::weak_ptr<T> wres;
+			wres = std::dynamic_pointer_cast<T>(resIt->second);
+			return(wres);
 		}
 
 		// The emplace creates real knarly compiler errors otherwise
@@ -47,9 +50,12 @@ public:
 			std::is_base_of<Resource, T>::value,
 			"Attempted to load non-resource as resource!"
 		);
-		auto res = make_shared<T>{resourceType.mURI};
-		res.Load();
-		mResources.emplace{mURI, res};
+		std::shared_ptr<T> res = std::make_shared<T>(resourceType.mURI);
+		res->Load();
+		mResources.emplace(resourceType.mURI, res);
+
+		std::weak_ptr<T> wres;
+		wres = res;
 		return(res);
 	}
 	

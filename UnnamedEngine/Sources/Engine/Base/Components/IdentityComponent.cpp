@@ -14,8 +14,9 @@ Serializer& IdentityComponent::Serialize(Serializer& s)
 	return(s);
 }
 
-void IdentityComponent::Deserialize(const PropTree& t)
+void IdentityComponent::Deserialize(const DeserializationData& s)
 {
+	const PropTree& t = s.GetProps();
 	auto nameIt = t.leaves.find("Name");
 
 	if(nameIt != t.leaves.end())

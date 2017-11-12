@@ -16,8 +16,9 @@ Serializer& HealthComponent::Serialize(Serializer& s)
 	return(s);
 }
 
-void HealthComponent::Deserialize(const PropTree& t)
+void HealthComponent::Deserialize(const DeserializationData& s)
 {
+	PropTree t = s.GetProps();
 	auto maxHealthIt = t.leaves.find("MaxHealth");
 	auto currentHealthIt = t.leaves.find("MaxHealth");
 	

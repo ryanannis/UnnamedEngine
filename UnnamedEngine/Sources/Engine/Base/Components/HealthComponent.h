@@ -14,7 +14,7 @@ public:
 	int currentHealth;
 	
 	virtual Serializer& Serialize(Serializer& s) override;
-	virtual void Deserialize(const PropTree& t) override;
+	virtual void Deserialize(const DeserializationData& s) override;
 };
 
 template<> std::string Component<HealthComponent>::sName = "HealthComponent";

@@ -54,7 +54,11 @@ void EntityResource::Load()
 		const auto& componentTree = component.second;
 		const auto registryData = StaticReg::GetComponentRegistryInformation(componentName);
 		std::unique_ptr<ComponentBase> prototype = StaticReg::StaticCreateComponent(componentName);
-		prototype->Deserialize(componentTree);
+		
+		// todo:  Might want to handle recursive resource loading in here?
+		const DeserializationData d(componentTree, GetResourceManager());
+		prototype->Deserialize(d);
+
 		mConstructionInfo.push_back(std::make_pair(registryData, std::move(prototype)));
 	}
 	mReady = true;

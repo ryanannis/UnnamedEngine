@@ -259,6 +259,16 @@ std::optional<PropTree> PropParser::ParseTokens(std::vector<UDFToken>& tokens)
 					{
 						break;
 					}
+					else if
+					(
+						tokens[i].type == TokenType::COLON ||
+						tokens[i].type == TokenType::EQUALS ||
+						tokens[i].type == TokenType::LCURLY ||
+						tokens[i].type == TokenType::RCURLY
+					)
+					{
+						goto FAIL;
+					}
 					else
 					{
 						// todo: parse into the actual value once we figure out what exactly should be enumerated

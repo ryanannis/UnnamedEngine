@@ -35,7 +35,7 @@ public:
 		const ComponentFlag flag = ComponentGroup<T>();
 		const uint32_t eid = entity.mEntityID;
 
-		if(mComponentPools.size() < flag)
+		if(mComponentPools.size() < flag || !mComponentPools[static_cast<int>(flag)])
 		{
 			ExpandPoolList<T>();
 		}
@@ -50,7 +50,7 @@ public:
 	{
 		const uint32_t eid = entity.mEntityID;
 
-		if(mComponentPools.size() < flag + 1)
+		if(mComponentPools.size() < flag + 1 || !mComponentPools[static_cast<int>(flag)])
 		{
 			ExpandPoolList(flag, componentSize);
 		}
@@ -81,13 +81,16 @@ private:
 
 	void ExpandPoolList(ComponentFlag flag, size_t blockSize)
 	{
-		mComponentPools.resize(static_cast<size_t>(flag + 1));
+		if(mComponentPools.size() < static_cast<int>(flag) + 1)
+		{
+			mComponentPools.resize(static_cast<size_t>(flag + 1));
+		}
 		mComponentPools[static_cast<size_t>(flag)] = new ComponentPool(blockSize);
 	}
 
 	void RegisterEntity(Entity* entity);
 
-	std::vector<ComponentPoolBase*> mComponentPools;
+	std::vector<Ptr<ComponentPoolBase>> mComponentPools;
 	std::vector<Entity> mEntities;
 	std::map<uint32_t, Entity*> mEntityMap;
 };

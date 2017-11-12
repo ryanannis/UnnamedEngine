@@ -15,7 +15,7 @@ public:
 	ResourceType<MeshResource> mesh;
 
 	Serializer& Serialize(Serializer& s);
-	void Deserialize(const PropTree& t);
+	void Deserialize(const DeserializationData& t);
 };
 
 template<> std::string Component<RenderComponent>::sName = "RenderComponent";

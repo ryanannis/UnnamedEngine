@@ -10,6 +10,19 @@
 class Resource;
 class ComponentBase;
 class EntityResource;
+class ResourceManager;
+
+class DeserializationData
+{
+public:
+	DeserializationData(PropTree t, Ptr<ResourceManager> resourceManager);
+	const PropTree& GetProps() const;
+	Ptr<ResourceManager> GetResourceManager() const;
+
+private:
+	Ptr<ResourceManager> mResourceManager;
+	PropTree mSerializationTree;
+};
 
 class Serializer
 {

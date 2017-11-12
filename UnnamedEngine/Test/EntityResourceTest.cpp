@@ -5,6 +5,8 @@
 
 #include "Engine/Base/Components/HealthComponent.h"
 #include "Engine/Base/Components/IdentityComponent.h"
+#include "Engine/Base/Components/RenderComponent.h"
+
 
 
 TEST_CASE("Basic Entity Resource Loading Works", "[EntityResource]") {
@@ -24,6 +26,5 @@ TEST_CASE("It actually loads the entity correctly!", "[EntityResource]"){
 	Entity e = res.ConstructEntity(a);
 	auto hc = a.GetComponent<HealthComponent>(e);
 	auto ic = a.GetComponent<IdentityComponent>(e);
-
-
+	auto rc = a.GetComponent<RenderComponent>(e);
 }

@@ -11,7 +11,7 @@ public:
 	std::string entityName;
 
 	Serializer& Serialize(Serializer& s);
-	void Deserialize(const PropTree& t);
+	void Deserialize(const DeserializationData& s);
 };
 
 template<> std::string Component<IdentityComponent>::sName = "IdentityComponent";

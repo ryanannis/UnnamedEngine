@@ -1,0 +1,12 @@
+TestEntity {
+    RenderComponent {
+        Mesh = Test/bunny.obj;
+    }
+    HealthComponent {
+        MaxHealth = 500;
+        StartingHealth = 500;
+    }
+    IdentityComponent {
+        Name = TestName;
+    }
+}
