@@ -6,10 +6,9 @@
 
 #include "Engine/Base/Memory/ComponentPoolBase.h"
 
-template <typename T>
 class ComponentPool : public ComponentPoolBase
 {
 public:
-	ComponentPool() : ComponentPoolBase(sizeof(T)) {}
+	ComponentPool(size_t blockSize) : ComponentPoolBase(blockSize) {}
 	~ComponentPool() {} 
 };

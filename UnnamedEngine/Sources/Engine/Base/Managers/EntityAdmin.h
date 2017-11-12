@@ -7,6 +7,7 @@
 #include "Engine/Base/Types/Entity.h"
 #include "Engine/Base/Memory/ComponentPool.h"
 #include "Engine/Base/Managers/SystemAdmin.h"
+#include "Engine/Base/Memory/ComponentPool.h"
 
 class EntityAdmin : public NonCopyable
 {
@@ -33,15 +34,28 @@ public:
 	{
 		const ComponentFlag flag = ComponentGroup<T>();
 		const uint32_t eid = entity.mEntityID;
+
+		if(mComponentPools.size() < flag)
+		{
+			ExpandPoolList<T>();
+		}
+
 		void* componentMem = mComponentPools[static_cast<int>(flag)]->AllocComponent(eid);
 		T* component = new (componentMem) T();
 		return(component);
 	}
 
-	Ptr<ComponentBase> AddComponent(ComponentFlag f, Entity entity)
+	// Todo move more initialization stuff into here
+	Ptr<ComponentBase> AddComponent(ComponentFlag flag, size_t componentSize, Entity entity)
 	{
 		const uint32_t eid = entity.mEntityID;
-		void* componentMem = mComponentPools[static_cast<int>(f)]->AllocComponent(eid);
+
+		if(mComponentPools.size() < flag + 1)
+		{
+			ExpandPoolList(flag, componentSize);
+		}
+
+		void* componentMem = mComponentPools[static_cast<int>(flag)]->AllocComponent(eid);
 		return(static_cast<ComponentBase*>(componentMem));
 	}
 
@@ -55,6 +69,20 @@ private:
 		void* componentPtr = mComponentPools[static_cast<int>(flag)]->GetComponent(entityID);
 		T* component = static_cast<T*>(componentPtr);
 		return(component);
+	}
+
+	// We do lazy intialization on component pools
+	template <typename T>
+	void ExpandPoolList()
+	{
+		const ComponentFlag flag = ComponentGroup<T>();
+		ExpandPoolList(flag, sizeof(T));
+	}
+
+	void ExpandPoolList(ComponentFlag flag, size_t blockSize)
+	{
+		mComponentPools.resize(static_cast<size_t>(flag + 1));
+		mComponentPools[static_cast<size_t>(flag)] = new ComponentPool(blockSize);
 	}
 
 	void RegisterEntity(Entity* entity);

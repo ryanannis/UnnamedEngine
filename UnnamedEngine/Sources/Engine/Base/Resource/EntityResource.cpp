@@ -71,8 +71,12 @@ Entity EntityResource::ConstructEntity(EntityAdmin& admin)
 	{
 		const auto constructionInfo = registryInfo.first;
 		const auto& prototype = registryInfo.second;
-		Ptr<ComponentBase> component = admin.AddComponent(constructionInfo->flag, entity);
-		std::memcpy(component.GetPtr(), &prototype, constructionInfo->memSize);
+		Ptr<ComponentBase> component = admin.AddComponent(
+			constructionInfo->flag, 
+			constructionInfo->memSize,
+			entity
+		);
+		std::memcpy(component.GetPtr(), prototype.get(), constructionInfo->memSize);
 	}
 
 	return(entity);

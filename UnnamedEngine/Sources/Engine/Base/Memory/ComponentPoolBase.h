@@ -14,7 +14,7 @@ class ComponentPoolBase : public NonCopyable
 {
 public:
 	explicit ComponentPoolBase(size_t BLOCK_SIZE) : BLOCK_SIZE(BLOCK_SIZE) {};
-	~ComponentPoolBase() = 0;
+	~ComponentPoolBase() = 0 {};
 
 	const size_t BLOCK_SIZE = 0;
 
