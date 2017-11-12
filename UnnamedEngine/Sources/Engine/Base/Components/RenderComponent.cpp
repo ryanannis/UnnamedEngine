@@ -14,7 +14,7 @@ Serializer& RenderComponent::Serialize(Serializer& s)
 	return(s);
 }
 
-void RenderComponent::Deserialize(PropTree& t)
+void RenderComponent::Deserialize(const PropTree& t)
 {
 	auto nameIt = t.leaves.find("Name");
 

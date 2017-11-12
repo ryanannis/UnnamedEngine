@@ -28,14 +28,21 @@ public:
 		return(GetComponent<T>(e->GetEntityId()));
 	}
 
-	template <typename T, typename ...Params>
-	T* AddComponent(Entity entity, Params... args)
+	template <typename T>
+	T* AddComponent(Entity entity)
 	{
 		const ComponentFlag flag = ComponentGroup<T>();
 		const uint32_t eid = entity.mEntityID;
 		void* componentMem = mComponentPools[static_cast<int>(flag)]->AllocComponent(eid);
-		T* component = new (componentMem) T(std::forward<Params>(args)...);
+		T* component = new (componentMem) T();
 		return(component);
+	}
+
+	Ptr<ComponentBase> AddComponent(ComponentFlag f, Entity entity)
+	{
+		const uint32_t eid = entity.mEntityID;
+		void* componentMem = mComponentPools[static_cast<int>(f)]->AllocComponent(eid);
+		return(static_cast<ComponentBase*>(componentMem));
 	}
 
 	inline const std::vector<Entity>& GetEntities() { return(mEntities); }

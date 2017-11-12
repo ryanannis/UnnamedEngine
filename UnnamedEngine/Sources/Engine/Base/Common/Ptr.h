@@ -16,6 +16,8 @@ public:
 
 	// This is purposely obnoxious - you shouldn't need except for interfacing and doing weird stuff
 	operator T*() { return(mPtr); } 
+
+	T* GetPtr() { return(mPtr); }
 private:
 	T* mPtr;
 };

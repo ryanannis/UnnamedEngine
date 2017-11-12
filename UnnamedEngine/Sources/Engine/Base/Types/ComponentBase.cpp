@@ -6,6 +6,6 @@ Serializer& ComponentBase::Serialize(Serializer& s)
 	return(s);
 };
 
-void ComponentBase::Deserialize(PropTree& t)
+void ComponentBase::Deserialize(const PropTree& t)
 {
 }

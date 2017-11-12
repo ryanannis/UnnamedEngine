@@ -9,6 +9,7 @@
 
 class ComponentBase;
 
+
 // Include this header in every component that needs to be statically registerered
 // DO NOT include Component or ComponentBase as that will cause circular dependencies
 
@@ -18,41 +19,37 @@ class ComponentBase;
 
 namespace StaticReg
 {
-	// Creates a component on the heap
-	std::shared_ptr<ComponentBase> StaticCreateComponent(const std::string& name);
-
-	// Create a component and register it with entity on admin
-	Ptr<ComponentBase> StaticCreateRegisterComponent(const std::string& name, Entity& entity, EntityAdmin& admin);
-
-	// Contains all the information necessary to 
 	struct StaticRegistryEntry
 	{
 	public:
 		// Contains type information to forward to EntityAdmin
 		Ptr<ComponentBase>(*createAndRegisterFunction)(Entity, EntityAdmin&);
-		std::shared_ptr<ComponentBase>(*createFunction)();
+		std::unique_ptr<ComponentBase>(*createFunction)();
 		
 		// We create data-defined types from the copy constructor of a singleton-loaded component
 		// to prevent deserializing multiple times
 		void (*copyConstructor)(void*, void*);
+
+		// Not all places where this is needed necessarily has type information
+		ComponentFlag flag;
+		size_t memSize;
 	};
 
 	// Static Registry Singleton
 	std::unordered_map<std::string, StaticRegistryEntry>& GetStaticRegistry();
 
-	// Generic class which creates a component and adds it to the given
+	// Generic function which creates a component and adds it to the given admin
 	template <class T>
 	Ptr<ComponentBase> CreateAndRegisterComponent(Entity entity, EntityAdmin& admin)
 	{
 		return(admin.AddComponent<T>(entity));
 	}
 
-	// Generic class which creates a component and adds it to the given
+	// Generic function which creates a component on the heap
 	template <class T>
-	std::shared_ptr<ComponentBase> CreateComponent()
+	std::unique_ptr<ComponentBase> CreateComponent()
 	{
-		auto derivedPtr = std::make_shared<T>();
-		return(static_cast<std::shared_ptr<ComponentBase>>(derivedPtr));
+		return(std::unique_ptr<ComponentBase>(new T));
 	}
 
 	// A wrapper so we can statically refer to the copy operator of each
@@ -86,11 +83,23 @@ namespace StaticReg
 			entry.createAndRegisterFunction = &CreateAndRegisterComponent<T>;
 			entry.copyConstructor = &CopyComponent<T>;
 			entry.createFunction = &CreateComponent<T>;
+			entry.flag = ComponentGroup<T>();
+			entry.memSize = sizeof(T);
 
 			auto ret = staticRegistry.try_emplace(name, std::move(entry));
 			assert(ret.second);
 		}
 	};
+
+	// Save this to do fast initialization without a map lookup
+	Ptr<const StaticRegistryEntry> GetComponentRegistryInformation(const std::string& name);
+
+	// Creates a component on the heap
+	std::unique_ptr<ComponentBase> StaticCreateComponent(const std::string& name);
+
+	// Create a component and register it with entity on admin
+	Ptr<ComponentBase> StaticCreateRegisterComponent(const std::string& name, Entity& entity, EntityAdmin& admin);
+
 }
 
 #define STATICREGISTER(TYPE, NAME)                                    \

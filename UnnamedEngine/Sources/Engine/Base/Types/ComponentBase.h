@@ -7,7 +7,9 @@ struct PropTree;
 class ComponentBase {
 public:
 	virtual Serializer& Serialize(Serializer& s);
-	virtual void Deserialize(PropTree& t);
+
+	//todo: replace PropTree with interface that has less stuff in it
+	virtual void Deserialize(const PropTree& t);
 
 	virtual std::string GetName() = 0;
 };

@@ -1,7 +1,15 @@
 #include "StaticComponent.h"
 #include "Engine/Base/Types/Component.h"
 
-std::shared_ptr<ComponentBase> StaticReg::StaticCreateComponent(const std::string& name)
+Ptr<const StaticReg::StaticRegistryEntry> StaticReg::GetComponentRegistryInformation(const std::string& name)
+{
+	const auto& registry = GetStaticRegistry();
+	const auto& componentIt = registry.find(name);
+	assert(componentIt != registry.end()); // Tried to create invalid component;
+	return(&componentIt->second);
+}
+
+std::unique_ptr<ComponentBase> StaticReg::StaticCreateComponent(const std::string& name)
 {
 	const auto& registry = GetStaticRegistry();
 	const auto& componentIt = registry.find(name);
@@ -12,6 +20,7 @@ std::shared_ptr<ComponentBase> StaticReg::StaticCreateComponent(const std::strin
 	return(createFunc());
 }
 
+// todo:  may be able to be removed
 Ptr<ComponentBase> StaticReg::StaticCreateRegisterComponent(const std::string& name, Entity& entity, EntityAdmin& admin)
 {
 	const auto& registry = GetStaticRegistry();

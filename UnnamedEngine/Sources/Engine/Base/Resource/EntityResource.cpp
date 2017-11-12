@@ -7,7 +7,7 @@
 #include "Engine/Base/Resource/Serializer.h"
 #include "Engine/Base/Resource/ResourceManager.h"
 #include "Engine/Base/Resource/PropParser.h"
-#include "Engine/Base/Types/StaticComponent.h"
+#include "Engine/Base/Managers/EntityAdmin.h"
 
 EntityResource::EntityResource(std::string uri) :
 	Resource(uri),
@@ -31,24 +31,47 @@ void EntityResource::Load()
 	
 	std::optional<PropTree> propTree = PropParser::Parse(buffer.str());
 
-	if(propTree.has_value())
-	{
-		const auto& componentList = propTree->components;
-		auto serializedComponent = componentList.find(uri.component);
-		if(serializedComponent != componentList.end())
-		{
-			Serializer(serializedComponent->second);
-			auto component = StaticReg::StaticCreateComponent(serializedComponent->first);
-			
-			mReady = true;
-		}
-		else
-		{
-			assert(false); // failed to load
-		}
-	}
-	else
+	if(!propTree.has_value())
 	{
 		assert(false);
 	}
+
+	const auto& schemaList = propTree->components;
+	const auto& resSchema = schemaList.find(uri.component);
+	
+	if(resSchema == schemaList.end())
+	{
+		assert(false);
+	}
+
+	// List of components beloning to the entity we are trying to intializ
+	const auto& componentList = resSchema->second.components;
+	for(const auto& component : componentList)
+	{
+		const auto& componentName = component.first;
+		const auto& componentTree = component.second;
+		const auto registryData = StaticReg::GetComponentRegistryInformation(componentName);
+		std::unique_ptr<ComponentBase> prototype = StaticReg::StaticCreateComponent(componentName);
+		prototype->Deserialize(componentTree);
+		mConstructionInfo.push_back(std::make_pair(registryData, std::move(prototype)));
+	}
+	mReady = true;
+	
+}
+
+Entity EntityResource::ConstructEntity(EntityAdmin& admin)
+{
+	assert(mReady);
+
+	Entity entity = admin.CreateEntity();
+	
+	for(const auto& registryInfo : mConstructionInfo)
+	{
+		const auto constructionInfo = registryInfo.first;
+		const auto& prototype = registryInfo.second;
+		Ptr<ComponentBase> component = admin.AddComponent(constructionInfo->flag, entity);
+		std::memcpy(component.GetPtr(), &prototype, constructionInfo->memSize);
+	}
+
+	return(entity);
 }
