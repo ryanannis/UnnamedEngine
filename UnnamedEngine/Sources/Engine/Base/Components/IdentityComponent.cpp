@@ -2,7 +2,7 @@
 #include "Engine/Base/Resource/Serializer.h"
 #include "Engine/Base/Resource/PropTree.h"
 
-STATICREGISTER(IdentityComponent, "IdentityComponent");
+STATICDEF(IdentityComponent, "IdentityComponent");
 
 IdentityComponent::IdentityComponent() :
 	entityName{"NoName"}

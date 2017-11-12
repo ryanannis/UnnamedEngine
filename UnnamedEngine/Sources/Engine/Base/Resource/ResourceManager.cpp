@@ -9,11 +9,8 @@ ResourceManager::ResourceManager(Ptr<Context> context) :
 	mContext(context)
 {}
 
-URI ResourceManager::ParseStringToURI(const std::string strURI)
+URI::URI(const std::string strURI)
 {
-	// This is remarkably inefficient but it shouldn't matter
-	URI uri;
-
 	// Split string
 	std::vector<std::string> split;
 	std::stringstream ss(strURI);
@@ -34,15 +31,15 @@ URI ResourceManager::ParseStringToURI(const std::string strURI)
 		// No dot - must be a serialized resource
 		if(dotLocation == std::string::npos)
 		{
-			uri.component = lastToken;
-			uri.ext = DATA_FILE_EXTENSION;
-			uri.file = secondLastToken;
+			component = lastToken;
+			ext = DATA_FILE_EXTENSION;
+			file = secondLastToken;
 			pathIndex = split.size() - 2;
 		}
 		else
 		{
-			uri.ext = lastToken.substr(dotLocation + 1);
-			uri.file = lastToken.substr(0, dotLocation);
+			ext = lastToken.substr(dotLocation + 1);
+			file = lastToken.substr(0, dotLocation);
 			pathIndex = split.size() - 1;
 		}
 
@@ -51,8 +48,16 @@ URI ResourceManager::ParseStringToURI(const std::string strURI)
 		{
 			restOfPath << split[i] << '/';
 		}
-		uri.path = restOfPath.str();
+		path = restOfPath.str();
 	}
+}
 
-	return(uri);
+std::string URI::GetFilePath() const
+{
+	return(CONTENT_DIR + path + "/" + file + "." + ext);
+}
+
+std::string URI::GetComponent() const
+{
+	return(component);
 }

@@ -21,11 +21,13 @@ bool EntityResource::IsReady() const
 
 void EntityResource::Load()
 {
-	const URI uri = ResourceManager::ParseStringToURI(GetURI());
+	const URI uri = URI(GetURI());
 
 	/* todo: stick this somewhere else (probably res manager)
-	 * as multiple types of resource can be dependent on a single file*/
-	std::ifstream f(uri.file + uri.file + uri.ext);
+	 * as multiple types of resource are maybe dependent on a 
+	  * single file in the future */
+	std::string fullURL = uri.GetFilePath();
+	std::ifstream f(fullURL);
 	std::stringstream buffer;
 	buffer << f.rdbuf();
 	
@@ -37,7 +39,7 @@ void EntityResource::Load()
 	}
 
 	const auto& schemaList = propTree->components;
-	const auto& resSchema = schemaList.find(uri.component);
+	const auto& resSchema = schemaList.find(uri.GetComponent());
 	
 	if(resSchema == schemaList.end())
 	{

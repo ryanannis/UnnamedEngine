@@ -2,7 +2,7 @@
 #include "Engine/Base/Resource/Serializer.h"
 #include "Engine/Base/Resource/PropTree.h"
 
-STATICREGISTER(HealthComponent, "HealthComponent");
+STATICDEF(HealthComponent, "HealthComponent");
 
 HealthComponent::HealthComponent() :
 	maxHealth{100},

@@ -2,7 +2,7 @@
 #include "Engine/Base/Resource/Serializer.h"
 #include "Engine/Base/Resource/PropTree.h"
 
-STATICREGISTER(RenderComponent, "RenderComponent");
+STATICDEF(RenderComponent, "RenderComponent");
 
 RenderComponent::RenderComponent() :
 	mesh{}
@@ -23,3 +23,4 @@ void RenderComponent::Deserialize(const PropTree& t)
 		 mesh = ResourceType<MeshResource>(nameIt->second.GetAsString());
 	}
 }
+

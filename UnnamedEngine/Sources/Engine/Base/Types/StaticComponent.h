@@ -9,7 +9,6 @@
 
 class ComponentBase;
 
-
 // Include this header in every component that needs to be statically registerered
 // DO NOT include Component or ComponentBase as that will cause circular dependencies
 
@@ -102,7 +101,7 @@ namespace StaticReg
 
 }
 
-#define STATICREGISTER(TYPE, NAME)                                    \
+#define STATICDECL(TYPE, NAME)                                        \
 namespace StaticReg													  \
 {																	  \
 template<class T>                                                     \
@@ -113,8 +112,14 @@ class StaticRegistration<TYPE>                                        \
 {                                                                     \
     static const RegistryEntry<TYPE>& reg;                            \
 };                                                                    \
-                                                                      \
+}																	  \
+
+
+#define STATICDEF(TYPE,NAME)                                          \
+namespace StaticReg													  \
+{																	  \
 const RegistryEntry<TYPE>& StaticRegistration<TYPE>::reg =            \
 	RegistryEntry<TYPE>::Instance(NAME);                              \
 }																	  \
+
 

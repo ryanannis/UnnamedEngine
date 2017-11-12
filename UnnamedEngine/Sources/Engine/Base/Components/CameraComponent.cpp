@@ -1,6 +1,6 @@
 #include "CameraComponent.h"
 
-STATICREGISTER(CameraComponent, "CameraComponent");
+STATICDEF(CameraComponent, "CameraComponent")
 
 CameraComponent::CameraComponent() :
 	pEntityCameraTranslation{},

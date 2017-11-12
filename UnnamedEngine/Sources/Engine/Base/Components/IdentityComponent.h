@@ -14,4 +14,7 @@ public:
 	void Deserialize(const PropTree& t);
 };
 
+STATICDECL(IdentityComponent, "IdentityComponent");
+
+
 template<> std::string Component<IdentityComponent>::sName = "IdentityComponent";
