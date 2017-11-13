@@ -17,7 +17,7 @@ public:
 	{}
 
 	ResourceType(std::string uri) : 
-		mURI{mURI}
+		mURI{uri}
 	{}
 
 

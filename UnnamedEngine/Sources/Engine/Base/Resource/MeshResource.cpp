@@ -18,7 +18,7 @@ bool MeshResource::IsReady() const
 	return(mReady);
 }
 
-void MeshResource::Load()
+void MeshResource::Load(Ptr<ResourceManager> manager)
 {
 	// We don't have a format yet so we're just using assimp
 	// In the future, that should be moved to an asset processing

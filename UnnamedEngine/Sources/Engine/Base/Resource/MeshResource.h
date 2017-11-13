@@ -13,7 +13,7 @@ class MeshResource : public Resource
 public:
 	MeshResource(std::string URI);
 	virtual bool IsReady() const override;
-	virtual void Load() override;
+	virtual void Load(Ptr<ResourceManager> manager) override;
 
 	inline const std::vector<uint32_t>& GetIndices() const { return(mIndices); }
 	inline const std::vector<glm::vec2>& GetUVs() const { return(mUVs); }

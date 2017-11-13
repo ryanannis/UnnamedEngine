@@ -17,13 +17,16 @@ Serializer& RenderComponent::Serialize(Serializer& s)
 
 void RenderComponent::Deserialize(const DeserializationData& s)
 {
+	assert(s.GetResourceManager());
+
 	const PropTree& t = s.GetProps();	
-	auto nameIt = t.leaves.find("Name");
+	auto nameIt = t.leaves.find("Mesh");
 
 	if(nameIt != t.leaves.end())
 	{
-		 mesh = ResourceType<MeshResource>(nameIt->second.GetAsString());
-		 s.GetResourceManager()->LoadResource(mesh);
+		auto resName = nameIt->second.GetAsString();
+		mesh = ResourceType<MeshResource>(resName);
+		s.GetResourceManager()->LoadResource(mesh);
 	}
 }
 

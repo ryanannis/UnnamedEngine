@@ -12,7 +12,7 @@ class EntityResource : public Resource
 public:
 	EntityResource(std::string uri);
 	virtual bool IsReady() const override;
-	virtual void Load() override;
+	virtual void Load(Ptr<ResourceManager> manager) override;
 	Entity ConstructEntity(EntityAdmin& admin);
 
 private:

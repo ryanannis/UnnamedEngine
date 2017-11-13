@@ -19,7 +19,7 @@ bool EntityResource::IsReady() const
 	return(mReady);
 }
 
-void EntityResource::Load()
+void EntityResource::Load(Ptr<ResourceManager> resourceManager)
 {
 	const URI uri = URI(GetURI());
 
@@ -56,7 +56,7 @@ void EntityResource::Load()
 		std::unique_ptr<ComponentBase> prototype = StaticReg::StaticCreateComponent(componentName);
 		
 		// todo:  Might want to handle recursive resource loading in here?
-		const DeserializationData d(componentTree, GetResourceManager());
+		const DeserializationData d(componentTree, resourceManager);
 		prototype->Deserialize(d);
 
 		mConstructionInfo.push_back(std::make_pair(registryData, std::move(prototype)));

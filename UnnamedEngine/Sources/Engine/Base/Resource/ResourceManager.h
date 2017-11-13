@@ -51,7 +51,7 @@ public:
 			"Attempted to load non-resource as resource!"
 		);
 		std::shared_ptr<T> res = std::make_shared<T>(resourceType.mURI);
-		res->Load();
+		res->Load(this);
 		mResources.emplace(resourceType.mURI, res);
 
 		std::weak_ptr<T> wres;

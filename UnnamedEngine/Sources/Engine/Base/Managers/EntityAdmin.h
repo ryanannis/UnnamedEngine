@@ -81,7 +81,7 @@ private:
 
 	void ExpandPoolList(ComponentFlag flag, size_t blockSize)
 	{
-		if(mComponentPools.size() < static_cast<int>(flag) + 1)
+		if(mComponentPools.size() < static_cast<size_t>(flag) + 1)
 		{
 			mComponentPools.resize(static_cast<size_t>(flag + 1));
 		}

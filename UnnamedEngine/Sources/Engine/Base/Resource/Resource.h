@@ -13,17 +13,10 @@ class Resource
 public:
 	Resource(std::string uri) : mUri(uri) {};
 	virtual bool IsReady() const = 0;
-	virtual void Load() = 0;
+	virtual void Load(Ptr<ResourceManager> manager )= 0;
 	std::string GetURI() const { return(mUri); }
 
-protected:
-	Ptr<ResourceManager> GetResourceManager() { return(mResourceManager); };
-
 private:
-	// This is set immediately upon entering the resource manager
-	// as Resource file also act as loaders and we of course want
-	// to abstract factrthis away from the user.
-	Ptr<ResourceManager> mResourceManager;
 	std::string mUri;
 
 	friend ResourceManager;
