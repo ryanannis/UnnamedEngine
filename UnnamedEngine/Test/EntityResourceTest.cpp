@@ -3,6 +3,8 @@
 #include "Engine/Base/Resource/ResourceManager.h"
 #include "Engine/Base/Resource/EntityResource.h"
 
+#include "Engine/Base/Client/Context.h"
+
 #include "Engine/Base/Components/HealthComponent.h"
 #include "Engine/Base/Components/IdentityComponent.h"
 #include "Engine/Base/Components/RenderComponent.h"
@@ -10,16 +12,21 @@
 
 
 TEST_CASE("Basic Entity Resource Loading Works", "[EntityResource]") {
+	Context c;
+	ResourceManager r(&c);
 	std::string t = "";
 	EntityResource res("Test/BasicEntity/TestEntity");
-	res.Load();
+	res.Load(&r);
 	REQUIRE(res.IsReady());
 }
 
-TEST_CASE("It actually loads the entity correctly!", "[EntityResource]"){
+TEST_CASE("It actually loads the entity correctly!", "[EntityResource]")
+{
+	Context c;
+	ResourceManager r(&c);
 	std::string t = "";
 	EntityResource res("Test/BasicEntity/TestEntity");
-	res.Load();
+	res.Load(&r);
 	REQUIRE(res.IsReady());
 
 	EntityAdmin a;
