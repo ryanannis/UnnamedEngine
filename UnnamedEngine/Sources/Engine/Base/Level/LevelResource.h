@@ -6,6 +6,7 @@
 #include "Engine/Base/Types/StaticComponent.h"
 
 class EntityAdmin;
+class LevelObject;
 
 class LevelResource : public Resource
 {
@@ -15,5 +16,6 @@ public:
 	virtual void Load(Ptr<ResourceManager> manager) override;
 
 private:
+	std::vector<LevelObject> mLevelObjects;
 	bool mReady;
 };

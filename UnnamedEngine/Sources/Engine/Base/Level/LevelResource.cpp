@@ -8,6 +8,7 @@
 #include "Engine/Base/Resource/ResourceManager.h"
 #include "Engine/Base/Resource/PropParser.h"
 #include "Engine/Base/Managers/EntityAdmin.h"
+#include "Engine/Base/Level/LevelObject.h"
 
 LevelResource::LevelResource(std::string uri) :
 	Resource(uri),
@@ -33,7 +34,16 @@ void LevelResource::Load(Ptr<ResourceManager> resourceManager)
 
 	std::optional<PropTree> propTree = PropParser::Parse(buffer.str());
 	
-	mReady = true;
+	// Load all of the objects in the level
+	for(const auto& subTreePair: propTree->components)
+	{
+		const auto& subtree = subTreePair.second;
+		mLevelObjects.push_back(LevelObject(subtree));
+	}
 
-
+	// Load the resources associated with objects
+	for(auto& levelObject : mLevelObjects)
+	{
+		resourceManager->LoadResource(levelObject.GetResource());
+	}
 }

@@ -1,7 +1,7 @@
 #include "LevelObject.h"
 #include "Engine/Base/Resource/ResourceManager.h"
 
-LevelObject::LevelObject(PropTree& tree)
+LevelObject::LevelObject(const PropTree& tree)
 {
 	// Initialize
 	auto file = tree.leaves.find("Resource");
