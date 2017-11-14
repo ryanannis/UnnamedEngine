@@ -1,12 +1,38 @@
-#pragma once
+#include "LevelObject.h"
+#include "Engine/Base/Resource/ResourceManager.h"
 
-#include "Engine/Base/Resource/EntityResource.h"
-#include "Engine/Base/Resource/ResourceType.h"
-#include "Engine/Base/Resource/PropTree.h"
-
-// An object that is statically placed in the level with a map editor.
-class LevelObject
+LevelObject::LevelObject(PropTree& tree)
 {
-	LevelObject(PropTree& tree);
-	ResourceType<EntityResource> GetResource
-};
+	// Initialize
+	auto file = tree.leaves.find("Resource");
+	auto position = tree.leaves.find("Position");
+	auto rotation = tree.leaves.find("Resource");
+
+	assert(file != tree.leaves.end());
+	assert(position != tree.leaves.end());
+	assert(rotation != tree.leaves.end());
+
+	auto parsedFile = file->second.GetAsURI();
+	auto parsedPosition = position->second.GetAsVector();
+	auto parsedRotation = rotation->second.GetAsVector();
+
+	//todo : Have ResourceType return a URI
+	mResource = ResourceType<EntityResource>(parsedFile->GetFilePath());
+	mPosition = *parsedPosition;
+	parsedRotation = *parsedRotation;
+}
+
+ResourceType<EntityResource> LevelObject::GetResource()
+{
+	return(mResource);
+}
+
+Vector3f LevelObject::GetPosition()
+{
+	return(mPosition);
+}
+
+Vector3f LevelObject::GetEulerRotation()
+{
+	return(mRotation);
+}

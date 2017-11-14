@@ -3,15 +3,20 @@
 #include <unordered_map>
 #include <optional>
 
+struct URI;
+
 // Parsing is leaking over the engine!  Ahhh sphaghetti!
 enum class TokenType
 {
 	NONE,
 	LBRACKET,
 	RBRACKET,
+	LSQUARE,
+	RSQUARE,
 	LCURLY,
 	RCURLY,
 	COLON,
+	COMMA,
 	ALPHANUM,
 	FILEPATH,
 	EQUALS,
@@ -38,8 +43,8 @@ public:
 	std::string GetAsString() const;
 	std::optional<float> GetAsFloat() const;
 	std::optional<uint32_t> GetAsInt() const;
-	std::optional<uint32_t> GetAsFilePath() const;
-
+	std::optional<URI> GetAsURI() const;
+	std::optional<Vector3f> GetAsVector() const;
 
 private:
 	const std::vector<UDFToken> mTokens;

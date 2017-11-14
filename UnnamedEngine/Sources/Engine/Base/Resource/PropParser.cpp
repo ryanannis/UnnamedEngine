@@ -185,6 +185,14 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 			{
 				t.type = TokenType::RBRACKET;
 			}
+			else if(t.value == "[")
+			{
+				t.type = TokenType::LSQUARE;
+			}
+			else if (t.value == "]")
+			{
+				t.type = TokenType::RSQUARE;
+			}
 			else if(t.value == "{")
 			{
 				t.type = TokenType::LCURLY;
@@ -196,6 +204,10 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 			else if(t.value == ":")
 			{
 				t.type = TokenType::COLON;
+			}
+			else if (t.value == ",")
+			{
+				t.type = TokenType::COMMA;
 			}
 			else if(t.value == "=")
 			{

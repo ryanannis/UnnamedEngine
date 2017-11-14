@@ -12,11 +12,10 @@ public:
 	LevelObject(PropTree& tree);
 	ResourceType<EntityResource> GetResource();
 	Vector3f GetPosition();
-	Quat GetRotation();
+	Vector3f GetEulerRotation();
 
 private:
-	ResourceType<EntityResource> mRes;
+	ResourceType<EntityResource> mResource;
 	Vector3f mPosition;
-	Quat mRotiation;
-
+	Vector3f mRotation;
 };
