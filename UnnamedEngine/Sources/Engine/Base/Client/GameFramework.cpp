@@ -18,6 +18,11 @@ void GameFramework::Update(float)
 	}
 }
 
+Ptr<ResourceManager> GameFramework::GetResourceManager()
+{
+	return(mResourceManager.get());
+}
+
 void GameFramework::Initialize()
 {
 	mRegionAdmin = std::make_unique<RegionAdmin>(mContext);

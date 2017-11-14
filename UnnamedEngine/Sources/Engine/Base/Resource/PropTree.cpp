@@ -42,14 +42,12 @@ std::optional<uint32_t> PropTreeLeaf::GetAsInt() const
 std::optional<URI> PropTreeLeaf::GetAsURI() const
 {
 	std::stringstream ss(GetAsString());
-	float i;
-	ss >> i;
-	return(i); // todo error handling
+	return(URI(ss.str())); // todo error handling
 }
 
 std::optional<Vector3f> PropTreeLeaf::GetAsVector() const
 {
-	assert(mTokens.size == 7);
+	assert(mTokens.size() == 7);
 	assert(mTokens[0].type == TokenType::LSQUARE);
 	// the parser recognizes a float as filepath (eg. folder/12321.23232 is valid)
 	// as we aren't a context free grammar and have no string delimeters...  yeaaahhhh

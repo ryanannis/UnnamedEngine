@@ -14,6 +14,7 @@ public:
 
 	void Initialize();
 	void InitSystems();
+	Ptr<ResourceManager> GetResourceManager();
 
 private:
 

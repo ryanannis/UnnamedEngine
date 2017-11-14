@@ -10,9 +10,9 @@ class LevelObject
 {
 public:
 	LevelObject(const PropTree& tree);
-	ResourceType<EntityResource> GetResource();
-	Vector3f GetPosition();
-	Vector3f GetEulerRotation();
+	const ResourceType<EntityResource>& GetResource() const;
+	Vector3f GetPosition() const;
+	Vector3f GetEulerRotation() const;
 
 private:
 	ResourceType<EntityResource> mResource;

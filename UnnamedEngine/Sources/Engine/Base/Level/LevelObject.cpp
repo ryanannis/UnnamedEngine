@@ -22,17 +22,17 @@ LevelObject::LevelObject(const PropTree& tree)
 	parsedRotation = *parsedRotation;
 }
 
-ResourceType<EntityResource> LevelObject::GetResource()
+const ResourceType<EntityResource>& LevelObject::GetResource() const
 {
 	return(mResource);
 }
 
-Vector3f LevelObject::GetPosition()
+Vector3f LevelObject::GetPosition() const
 {
 	return(mPosition);
 }
 
-Vector3f LevelObject::GetEulerRotation()
+Vector3f LevelObject::GetEulerRotation() const
 {
 	return(mRotation);
 }

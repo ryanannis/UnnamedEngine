@@ -1,5 +1,8 @@
 #include "Context.h"
 
+#include "Engine/Base/Client/Client.h"
+#include "Engine/Base/Client/GameFramework.h"
+
 Context::Context()
 {
 
@@ -20,3 +23,7 @@ Ptr<ClientInputManager> Context::GetInputManager()
 	return(mClientInputManager);
 }
 
+Ptr<ResourceManager> Context::GetResourceManager()
+{
+	return(GetClient()->GetTarget()->GetResourceManager());
+}

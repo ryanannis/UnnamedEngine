@@ -8,7 +8,6 @@
 #include "Engine/Base/Resource/ResourceManager.h"
 #include "Engine/Base/Resource/PropParser.h"
 #include "Engine/Base/Managers/EntityAdmin.h"
-#include "Engine/Base/Level/LevelObject.h"
 
 LevelResource::LevelResource(std::string uri) :
 	Resource(uri),
@@ -44,6 +43,21 @@ void LevelResource::Load(Ptr<ResourceManager> resourceManager)
 	// Load the resources associated with objects
 	for(auto& levelObject : mLevelObjects)
 	{
-		resourceManager->LoadResource(levelObject.GetResource());
+		auto loadedResource = resourceManager->LoadResource(levelObject.GetResource());
+		mLevelObjectResources.push_back(loadedResource);
 	}
+
+	mReady = true;
+}
+
+const std::vector<LevelObject>& LevelResource::GetLevelObjects() const
+{
+	assert(mReady);
+	return(mLevelObjects);
+}
+
+const std::vector<std::weak_ptr<EntityResource>>& LevelResource::GetLevelObjectResources() const
+{
+	assert(mReady);
+	return(mLevelObjectResources);
 }

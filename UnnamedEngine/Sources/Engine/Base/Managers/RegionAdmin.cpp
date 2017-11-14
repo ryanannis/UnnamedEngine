@@ -1,4 +1,9 @@
 #include "RegionAdmin.h"
+#include "Engine/Base/Level/LevelResource.h"
+#include "Engine/Base/Client/Context.h"
+#include "Engine/Base/Client/Client.h"
+#include "Engine/Base/Resource/ResourceManager.h"
+#include "Engine/Base/Components/TransformComponent.h"
 
 RegionAdmin::RegionAdmin(Ptr<Context> context) :
 	mContext(context),
@@ -12,20 +17,50 @@ void RegionAdmin::Update(float dt)
 	mSystemAdmin.Update(dt, &mEntityAdmin);
 }
 
-// Loads the Entity and returns it.
-// The Entity will have all it's components loaded in at the end of the frame.
-Entity RegionAdmin::CreateEntity(std::string URI, bool defer)
+void RegionAdmin::LoadLevel(const LevelResource& level)
 {
-	// todo: start loading the resource if deferred before 
+	assert(level.IsReady());
+	for(const auto& staticObject : level.GetLevelObjects())
+	{
+		const auto& res = staticObject.GetResource();
+		
+	}
+}
+
+Entity RegionAdmin::CreateEntity(const ResourceType<EntityResource>& res, Vector3f position, Vector3f rotation, bool defer)
+{
 	if(defer)
 	{
 		Entity deferredEntity = mEntityAdmin.CreateEntity();
-		mDeferredEntities.emplace(URI, deferredEntity);
+		DeferredEntity deferred(res, deferredEntity, position, rotation);
+		mDeferredEntities.push(deferred);
+		return(deferredEntity);
 	}
-	Entity entity = mEntityAdmin.CreateEntity();
-	return(entity);
+	else
+	{
+		auto resourceManager = mContext->GetResourceManager();
+		
+		// Oh no!  Spot loading is bad!
+		std::shared_ptr<EntityResource> loadedRes = resourceManager->LoadResource(res).lock();
+		Entity e = loadedRes->ConstructEntity(mEntityAdmin);
+
+		// todo:  DON'T BLOCK TRANSFORM COMPONENT
+		auto transformComponent = mEntityAdmin.GetComponent<TransformComponent>(e);
+		if(transformComponent)
+		{
+			// todo:  figure out how to initialize this in a non-shitty way
+			transformComponent->pEntityWorldRotation = position;
+			transformComponent->pEntityWorldRotation = rotation;
+		}
+		return(e);
+	}
 }
 
 void RegionAdmin::CreateDeferredEntities()
 {
+	while(!mDeferredEntities.empty())
+	{
+		const auto deferredEntity = mDeferredEntities.front();
+		CreateEntity(deferredEntity.resource, deferredEntity.position, deferredEntity.rotation, false);
+	}
 }

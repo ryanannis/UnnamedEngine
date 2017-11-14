@@ -4,6 +4,7 @@
 class Client;
 class RegionAdmin;
 class GameFramework;
+class ResourceManager;
 class ClientInputManager;
 
 class Context : public NonCopyable
@@ -14,6 +15,7 @@ public:
 
 	Ptr<Client> GetClient();
 	Ptr<ClientInputManager> GetInputManager();
+	Ptr<ResourceManager> GetResourceManager();
 
 private:
 	Ptr<Client> mClient;
