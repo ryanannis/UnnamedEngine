@@ -32,6 +32,8 @@ void LevelResource::Load(Ptr<ResourceManager> resourceManager)
 	buffer << f.rdbuf();
 
 	std::optional<PropTree> propTree = PropParser::Parse(buffer.str());
-
+	
 	mReady = true;
+
+
 }
