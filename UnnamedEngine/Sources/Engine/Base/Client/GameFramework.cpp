@@ -5,8 +5,12 @@
 #include "Engine/Base/Systems/RenderSystem.h"
 #include "Engine/Base/Systems/PlayerInputSystem.h"
 
+//
+#include "Engine/Graphics/Renderer/Renderer.h"
+
 GameFramework::GameFramework(Ptr<Context> context):
-	mContext(context)
+	mContext(context),
+	mSystemAdmin(context)
 {
 }
 
@@ -22,6 +26,11 @@ void GameFramework::Update(float dt)
 Ptr<ResourceManager> GameFramework::GetResourceManager()
 {
 	return(mResourceManager.get());
+}
+
+Ptr<Renderer> GameFramework::GetRenderer()
+{
+	return(mRenderer.get());
 }
 
 void GameFramework::Initialize()

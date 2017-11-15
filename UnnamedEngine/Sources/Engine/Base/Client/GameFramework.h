@@ -8,6 +8,7 @@
 
 class Context;
 class RegionAdmin;
+class Renderer;
 
 class GameFramework
 {
@@ -20,11 +21,13 @@ public:
 	void LoadIntoLevel(ResourceType<LevelResource> levelResource);
 
 	Ptr<ResourceManager> GetResourceManager();
+	Ptr<Renderer> GetRenderer();
 
 private:
 
 	Ptr<Context> mContext;
 	std::unique_ptr<RegionAdmin> mRegionAdmin;
 	std::unique_ptr<ResourceManager> mResourceManager;
+	std::unique_ptr<Renderer> mRenderer;
 	SystemAdmin mSystemAdmin;
 };

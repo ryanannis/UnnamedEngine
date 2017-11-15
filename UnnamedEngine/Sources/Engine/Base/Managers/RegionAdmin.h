@@ -38,7 +38,6 @@ private:
 	void CreateDeferredEntities();
 
 	EntityAdmin mEntityAdmin;
-	SystemAdmin mSystemAdmin;
 	Ptr<Context> mContext;
 
 	std::queue<DeferredEntity> mDeferredEntities;

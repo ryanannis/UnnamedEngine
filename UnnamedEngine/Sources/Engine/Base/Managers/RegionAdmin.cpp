@@ -7,14 +7,12 @@
 
 RegionAdmin::RegionAdmin(Ptr<Context> context) :
 	mContext(context),
-	mEntityAdmin(),
-	mSystemAdmin()
+	mEntityAdmin()
 {
 }
 
 void RegionAdmin::Update(float dt)
 {
-	mSystemAdmin.Update(dt, &mEntityAdmin);
 }
 
 void RegionAdmin::LoadLevel(const std::shared_ptr<LevelResource>& level)

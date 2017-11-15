@@ -11,6 +11,7 @@ void RenderSystem::Update(float, Ptr<EntityAdmin> entityAdmin)
 	{
 		Ptr<RenderComponent> renderComponent = GetComponent<RenderComponent>(entityAdmin, e);
 		Ptr<TransformComponent> transformComponent = GetComponent<TransformComponent>(entityAdmin, e);
+		
 	}
 }
 

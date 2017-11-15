@@ -72,12 +72,26 @@ protected:
 		return(admin->GetComponent<T>(e));
 	}
 
+	void GetContext()
+	{
+		return(mContext);
+	}
+
 private:
 	static std::vector<ComponentFlag> mReadDependencies;
 	static std::vector<ComponentFlag> mWriteDependencies;
 	static std::optional<SystemFlag> mPreLink;
 
 	static bool mDependenciesInitialized;
+	
+	void SetContext(Ptr<Context> context)
+	{
+		mContext = context;
+	}
+
+	Ptr<Context> mContext;
+
+	friend SystemAdin;
 };
 
 // Static defs

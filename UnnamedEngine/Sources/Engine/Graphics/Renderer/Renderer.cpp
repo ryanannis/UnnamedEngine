@@ -1,6 +1,5 @@
 #include "Renderer.h"
 
-static GraphicsItemHandle sGraphicsItemCounter = 0;
 
 Renderer::Renderer()
 {

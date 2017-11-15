@@ -1,6 +1,9 @@
 #include "SystemAdmin.h"
 
-SystemAdmin::SystemAdmin()
+#include "Engine/Base/Client/Context.h"
+
+SystemAdmin::SystemAdmin(Ptr<Context> context) :
+	mContext(context)
 {
 }
 
