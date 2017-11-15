@@ -2,8 +2,7 @@
 
 #include "Engine/Base/Client/Context.h"
 
-SystemAdmin::SystemAdmin(Ptr<Context> context) :
-	mContext(context)
+SystemAdmin::SystemAdmin()
 {
 }
 

@@ -4,6 +4,13 @@
 #include "Engine/Base/Components/RenderComponent.h"
 #include "Engine/Base/Components/TransformComponent.h"
 #include "Engine/Base/Components/CameraComponent.h"
+#include "Engine/Base/Client/Context.h"
+
+RenderSystem::RenderSystem(Ptr<Context> context) :
+	mContext(context)
+{
+
+}
 
 void RenderSystem::Update(float, Ptr<EntityAdmin> entityAdmin)
 {

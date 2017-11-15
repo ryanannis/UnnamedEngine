@@ -83,15 +83,6 @@ private:
 	static std::optional<SystemFlag> mPreLink;
 
 	static bool mDependenciesInitialized;
-	
-	void SetContext(Ptr<Context> context)
-	{
-		mContext = context;
-	}
-
-	Ptr<Context> mContext;
-
-	friend SystemAdin;
 };
 
 // Static defs

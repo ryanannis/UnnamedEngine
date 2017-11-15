@@ -40,8 +40,8 @@ void GameFramework::Initialize()
 
 void GameFramework::InitSystems()
 {
-	mSystemAdmin.AddSystem<PlayerInputSystem>();
-	mSystemAdmin.AddSystem<RenderSystem>();
+	mSystemAdmin.AddSystem<PlayerInputSystem>(mContext);
+	mSystemAdmin.AddSystem<RenderSystem>(mContext);
 }
 
 void GameFramework::LoadIntoLevel(ResourceType<LevelResource> levelResource)

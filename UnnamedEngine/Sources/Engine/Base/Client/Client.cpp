@@ -67,9 +67,7 @@ void Client::InitializeWindow()
 }
 
 void Client::InitializeContext()
-{
-	
-	
+{	
 }
 
 void Client::InitializeInputManager()
