@@ -13,6 +13,8 @@ class RenderComponent : public Component<RenderComponent>
 public:
 	RenderComponent();
 	ResourceType<MeshResource> mesh;
+	GraphicsHandle handle;
+
 
 	Serializer& Serialize(Serializer& s);
 	void Deserialize(const DeserializationData& t);

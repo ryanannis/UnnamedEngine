@@ -33,6 +33,7 @@ private:
 
 // Common Pointer Functions
 #include "Engine/Base/Common/Ptr.h"
+#include "Engine/Graphics/Renderer/GraphicsHandle.h"
 
 typedef glm::vec3 Vector3f;
 typedef glm::quat Quat;
