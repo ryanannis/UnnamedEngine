@@ -1,12 +1,10 @@
 #pragma once
 #include "Engine/Base/Common/Common.h"
+
 #include <unordered_map>
 #include <optional>
 
-struct URI;
-
-// Parsing is leaking over the engine!  Ahhh sphaghetti!
-enum class TokenType
+enum class ParsedTokenType
 {
 	NONE,
 	LBRACKET,
@@ -20,16 +18,17 @@ enum class TokenType
 	ALPHANUM,
 	FILEPATH,
 	EQUALS,
-	SEMI,
+	SEMI
 };
 
 struct UDFToken
 {
-	UDFToken(TokenType type, std::string value) : type(type), value(value) {}
-	const TokenType type;
+	UDFToken(ParsedTokenType type, std::string value) : type(type), value(value) {}
+	const ParsedTokenType type;
 	const std::string value;
 };
 
+struct URI;
 class PropParser;
 class Serializer;
 

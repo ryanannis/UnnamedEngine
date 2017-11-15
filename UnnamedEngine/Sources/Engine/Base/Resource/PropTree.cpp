@@ -48,16 +48,16 @@ std::optional<URI> PropTreeLeaf::GetAsURI() const
 std::optional<Vector3f> PropTreeLeaf::GetAsVector() const
 {
 	assert(mTokens.size() == 7);
-	assert(mTokens[0].type == TokenType::LSQUARE);
+	assert(mTokens[0].type == ParsedTokenType::LSQUARE);
 	// the parser recognizes a float as filepath (eg. folder/12321.23232 is valid)
 	// as we aren't a context free grammar and have no string delimeters...  yeaaahhhh
-	assert(mTokens[1].type == TokenType::FILEPATH);
-	assert(mTokens[2].type == TokenType::COMMA);
-	assert(mTokens[3].type == TokenType::FILEPATH);
-	assert(mTokens[4].type == TokenType::COMMA);
-	assert(mTokens[5].type == TokenType::FILEPATH);
-	assert(mTokens[6].type == TokenType::COMMA);
-	assert(mTokens[7].type == TokenType::RSQUARE);
+	assert(mTokens[1].type == ParsedTokenType::FILEPATH);
+	assert(mTokens[2].type == ParsedTokenType::COMMA);
+	assert(mTokens[3].type == ParsedTokenType::FILEPATH);
+	assert(mTokens[4].type == ParsedTokenType::COMMA);
+	assert(mTokens[5].type == ParsedTokenType::FILEPATH);
+	assert(mTokens[6].type == ParsedTokenType::COMMA);
+	assert(mTokens[7].type == ParsedTokenType::RSQUARE);
 
 
 	return(

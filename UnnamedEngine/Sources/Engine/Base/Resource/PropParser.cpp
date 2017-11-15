@@ -31,9 +31,9 @@ bool GetTerminal(DSMState state)
 // such as a line number for printing parsing error reports.
 struct UDFTokenInternal
 {
-	UDFTokenInternal(TokenType type, std::string value, int line) :
+	UDFTokenInternal(ParsedTokenType type, std::string value, int line) :
 		type(type), value(value), line(line) {}
-	TokenType type;
+	ParsedTokenType type;
 	std::string value;
 	int line;
 };
@@ -147,23 +147,23 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 		if(shouldTerminate)
 		{
 			// Generate a new token everytime the DSM state switches
-			TokenType tokenType = TokenType::NONE;
+			ParsedTokenType ParsedTokenType = ParsedTokenType::NONE;
 
 			if(state == DSMState::ALPHANUM)
 			{
-				tokenType = TokenType::ALPHANUM;
+				ParsedTokenType = ParsedTokenType::ALPHANUM;
 			}
 			else if(state == DSMState::RELATIVEPATH)
 			{
-				tokenType = TokenType::FILEPATH;
+				ParsedTokenType = ParsedTokenType::FILEPATH;
 			}
 			else if(state == DSMState::Sym)
 			{
 				//handle this later
-				tokenType = TokenType::NONE; 
+				ParsedTokenType = ParsedTokenType::NONE; 
 			}
 
-			internalTokens.push_back(UDFTokenInternal(tokenType, tokenVal.str(), lnCount));
+			internalTokens.push_back(UDFTokenInternal(ParsedTokenType, tokenVal.str(), lnCount));
 			
 			tokenVal.clear();
 			tokenVal.str(std::string());
@@ -175,51 +175,51 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 	// Replace SYMs with the proper tokens
 	for(UDFTokenInternal& t : internalTokens)
 	{
-		if(t.type == TokenType::NONE)
+		if(t.type == ParsedTokenType::NONE)
 		{
 			if(t.value == "(")
 			{
-				t.type = TokenType::LBRACKET;
+				t.type = ParsedTokenType::LBRACKET;
 			}
 			else if(t.value == ")")
 			{
-				t.type = TokenType::RBRACKET;
+				t.type = ParsedTokenType::RBRACKET;
 			}
 			else if(t.value == "[")
 			{
-				t.type = TokenType::LSQUARE;
+				t.type = ParsedTokenType::LSQUARE;
 			}
 			else if (t.value == "]")
 			{
-				t.type = TokenType::RSQUARE;
+				t.type = ParsedTokenType::RSQUARE;
 			}
 			else if(t.value == "{")
 			{
-				t.type = TokenType::LCURLY;
+				t.type = ParsedTokenType::LCURLY;
 			}
 			else if(t.value == "}")
 			{
-				t.type = TokenType::RCURLY;
+				t.type = ParsedTokenType::RCURLY;
 			}
 			else if(t.value == ":")
 			{
-				t.type = TokenType::COLON;
+				t.type = ParsedTokenType::COLON;
 			}
 			else if (t.value == ",")
 			{
-				t.type = TokenType::COMMA;
+				t.type = ParsedTokenType::COMMA;
 			}
 			else if(t.value == "=")
 			{
-				t.type = TokenType::EQUALS;
+				t.type = ParsedTokenType::EQUALS;
 			}
 			else if(t.value == ";")
 			{
-				t.type = TokenType::SEMI;
+				t.type = ParsedTokenType::SEMI;
 			}
 			else
 			{
-				//Why did something of TokenType::None even get past the regular parsing?
+				//Why did something of ParsedTokenType::None even get past the regular parsing?
 				ParserFailed(t.line, t.value);
 				failed = true;
 				break;
@@ -256,9 +256,9 @@ std::optional<PropTree> PropParser::ParseTokens(std::vector<UDFToken>& tokens)
 
 	for(size_t i = 0; i < tokens.size(); i++)
 	{
-		if(tokens[i].type == TokenType::ALPHANUM)
+		if(tokens[i].type == ParsedTokenType::ALPHANUM)
 		{
-			if(tokens[i + 1].type == TokenType::EQUALS)
+			if(tokens[i + 1].type == ParsedTokenType::EQUALS)
 			{
 				// Parse as leaf until ';'
 				const std::string key = tokens[i].value;
@@ -267,16 +267,16 @@ std::optional<PropTree> PropParser::ParseTokens(std::vector<UDFToken>& tokens)
 				// Start parsing leaf
 				for(i = i + 2; i < tokens.size(); i++)
 				{
-					if(tokens[i].type == TokenType::SEMI)
+					if(tokens[i].type == ParsedTokenType::SEMI)
 					{
 						break;
 					}
 					else if
 					(
-						tokens[i].type == TokenType::COLON ||
-						tokens[i].type == TokenType::EQUALS ||
-						tokens[i].type == TokenType::LCURLY ||
-						tokens[i].type == TokenType::RCURLY
+						tokens[i].type == ParsedTokenType::COLON ||
+						tokens[i].type == ParsedTokenType::EQUALS ||
+						tokens[i].type == ParsedTokenType::LCURLY ||
+						tokens[i].type == ParsedTokenType::RCURLY
 					)
 					{
 						goto FAIL;
@@ -292,7 +292,7 @@ std::optional<PropTree> PropParser::ParseTokens(std::vector<UDFToken>& tokens)
 				PropTreeLeaf leaf(std::move(valueTokens));
 				topLeaves->leaves.insert(std::pair<std::string, PropTreeLeaf>(key, leaf));
 			}
-			else if(tokens[i+1].type == TokenType::LCURLY)
+			else if(tokens[i+1].type == ParsedTokenType::LCURLY)
 			{
 				// Create a new subtree, using the value parsed before 
 				// the { as a key.
@@ -309,7 +309,7 @@ std::optional<PropTree> PropParser::ParseTokens(std::vector<UDFToken>& tokens)
 				i++;
 			}
 		}
-		else if(tokens[i].type == TokenType::RCURLY)
+		else if(tokens[i].type == ParsedTokenType::RCURLY)
 		{
 			if(propTreeStack.empty())
 			{

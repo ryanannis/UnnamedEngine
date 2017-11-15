@@ -3,6 +3,7 @@
 
 #include "Engine/Base/Managers/EntityAdmin.h"
 #include "Engine/Base/Managers/SystemAdmin.h"
+#include "Engine/Base/Resource/ResourceType.h"
 #include "Engine/Base/Resource/EntityResource.h"
 #include <queue>
 
@@ -28,8 +29,8 @@ class RegionAdmin : public NonCopyable
 {
 public:
 	explicit RegionAdmin(Ptr<Context> context);
-	Ptr<const EntityAdmin> GetEntityAdmin() const { return(&mEntityAdmin); };
-	void LoadLevel(const LevelResource& level);
+	Ptr<EntityAdmin> GetEntityAdmin() { return(&mEntityAdmin); };
+	void LoadLevel(const std::shared_ptr<LevelResource>& level);
 	Entity CreateEntity(const ResourceType<EntityResource>&, Vector3f position, Vector3f Rotation, bool defer);
 	void Update(float dt);
 

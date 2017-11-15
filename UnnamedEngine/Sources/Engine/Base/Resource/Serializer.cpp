@@ -67,6 +67,6 @@ std::string Serializer::Serialize(int in) const
 
 PropTreeLeaf Serializer::CreateLeaf(std::string val) const
 {
-	std::vector<UDFToken> kv{ UDFToken(TokenType::NONE, val) };
+	std::vector<UDFToken> kv{ UDFToken(ParsedTokenType::NONE, val) };
 	return(PropTreeLeaf(std::move(kv)));
 }

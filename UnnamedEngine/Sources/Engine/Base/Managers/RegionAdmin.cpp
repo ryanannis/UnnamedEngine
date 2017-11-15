@@ -17,13 +17,15 @@ void RegionAdmin::Update(float dt)
 	mSystemAdmin.Update(dt, &mEntityAdmin);
 }
 
-void RegionAdmin::LoadLevel(const LevelResource& level)
+void RegionAdmin::LoadLevel(const std::shared_ptr<LevelResource>& level)
 {
-	assert(level.IsReady());
-	for(const auto& staticObject : level.GetLevelObjects())
+	assert(level->IsReady());
+	for(const auto& staticObject : level->GetLevelObjects())
 	{
 		const auto& res = staticObject.GetResource();
-		
+		const auto& pos = staticObject.GetPosition();
+		const auto& rot = staticObject.GetEulerRotation();
+		CreateEntity(res, pos, rot, false);
 	}
 }
 

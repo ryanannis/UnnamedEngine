@@ -34,5 +34,6 @@ private:
 // Common Pointer Functions
 #include "Engine/Base/Common/Ptr.h"
 
-using Vector3f = glm::vec3;
-using Quat = glm::quat;
+typedef glm::vec3 Vector3f;
+typedef glm::quat Quat;
+

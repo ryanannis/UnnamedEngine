@@ -8,6 +8,8 @@
 
 #include "Engine/Base/Client/GameFramework.h"
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 Client::Client(std::unique_ptr<GameFramework>&& target) :
 	mShouldTerminate(false),
@@ -82,10 +84,22 @@ void Client::Terminate()
 
 void Client::Run()
 {
+	auto lastTime = std::chrono::high_resolution_clock::now();
+
 	// Rendering Loop
 	while(!mShouldTerminate){
 		assert(mTarget);
-		mTarget->Update(0);
+		auto before = std::chrono::high_resolution_clock::now();
+
+		mTarget->Update(1.f/60);
+
+		auto after = std::chrono::high_resolution_clock::now();
+		auto elapsed = after - before;
+
+		auto int_ms = std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed);
+		std::cout << "Rendered frame in: " << int_ms.count() << "ns" << std::endl;
+
+		std::this_thread::sleep_for(std::chrono::nanoseconds(16666666) - int_ms);
 	}
 
 	glfwDestroyWindow(GetWindow());

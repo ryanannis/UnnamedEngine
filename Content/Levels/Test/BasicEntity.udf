@@ -1,7 +1,0 @@
-{
-    1 {
-        Position = [5,0,0];
-        Rotation = [0,0,0];
-        Resource = Test/BasicEntity/TestEntity;
-    }
-}
