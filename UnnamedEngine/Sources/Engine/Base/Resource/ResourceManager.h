@@ -3,28 +3,13 @@
 #include "Engine/Base/Resource/Resource.h"
 #include "Engine/Base/Resource/MeshResource.h"
 #include "Engine/Base/Resource/ResourceType.h"
+#include "Engine/Base/Resource/URI.h"
 
 #include <string>
 #include <unordered_map>
 #include <type_traits>
 
 class Context;
-
-// Handles both file references (eg. /Content/Test/Bunny.udf)
-// and data deferences (eg. /Content/Test/TestFile/TestEntity -> /Content/Test/TestFile : Entity)
-struct URI
-{
-public:
-	URI(const std::string strURI);
-	std::string GetFilePath() const;
-	std::string GetComponent() const;
-
-private:
-	std::string path;
-	std::string file;
-	std::string ext;
-	std::string component;
-};
 
 class ResourceManager
 {
