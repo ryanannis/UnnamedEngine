@@ -1,13 +1,17 @@
 #pragma once
+#include <glad/glad.h>
 #include <memory>
 
-class MeshResource;
+class ShaderResource;
 
-class GLMesh
+class GLShader
 {
 public:
-	GLMesh(std::shared_ptr<MeshResource> resource);
+	GLShader(std::weak_ptr<ShaderResource> resource);
+	GLuint GetShaderHandle() const;
 
 private:
-	std::shared_ptr<MeshResource> mResource;
+	GLuint mShaderHandle;
+	std::weak_ptr<ShaderResource> mResource;
+
 };
