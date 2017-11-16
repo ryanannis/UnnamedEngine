@@ -18,7 +18,9 @@ public:
 
 	void Initialize();
 	void InitSystems();
+	void InitializeRenderer();
 	void LoadIntoLevel(ResourceType<LevelResource> levelResource);
+
 
 	Ptr<ResourceManager> GetResourceManager();
 	Ptr<Renderer> GetRenderer();

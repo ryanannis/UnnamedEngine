@@ -27,3 +27,13 @@ Ptr<ResourceManager> Context::GetResourceManager()
 {
 	return(GetClient()->GetTarget()->GetResourceManager());
 }
+
+Ptr<GameFramework> Context::GetGameFramework()
+{
+	return(GetClient()->GetTarget());
+}
+
+Ptr<Renderer> Context::GetRenderer()
+{
+	return(GetGameFramework()->GetRenderer());
+}

@@ -7,7 +7,7 @@ STATICDEF(RenderComponent, "RenderComponent");
 
 RenderComponent::RenderComponent() :
 	mesh{},
-	handle{NULLGRAPHICSHANDLE}
+	handle{GraphicsHandle{0}}
 {}
 
 Serializer& RenderComponent::Serialize(Serializer& s)

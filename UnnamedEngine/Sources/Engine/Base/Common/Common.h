@@ -37,4 +37,3 @@ private:
 
 typedef glm::vec3 Vector3f;
 typedef glm::quat Quat;
-

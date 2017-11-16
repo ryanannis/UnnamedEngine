@@ -1,10 +1,10 @@
 #include "Renderer.h"
 
+static size_t sGraphicsHandleCt;
 
-Renderer::Renderer()
-{
-
-};
+Renderer::Renderer(RenderSettings&& settings) :
+	mRenderSettings(settings)
+{}
 
 Renderer::~Renderer()
 {
@@ -16,8 +16,10 @@ void Renderer::Render()
 
 }
 
-GraphicsItemHandle GenerateObject()
+GraphicsHandle Renderer::GenerateObject()
 {
-	GraphicsItemHandle newItem = ++sGraphicsItemCounter;
-	return(newItem);
+	// Register object
+	GraphicsHandle g(++sGraphicsHandleCt);
+
+	return(g);
 }

@@ -34,7 +34,7 @@ std::optional<float> PropTreeLeaf::GetAsFloat() const
 std::optional<uint32_t> PropTreeLeaf::GetAsInt() const
 {
 	std::stringstream ss(GetAsString());
-	float i;
+	int i;
 	ss >> i;
 	return(i); // todo error handling
 }
