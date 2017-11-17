@@ -25,21 +25,16 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /std:c++17")
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++17")
-    if(NOT WIN32)
-        set(GLAD_LIBRARIES dl)
-    endif()
 endif()
 
 include_directories(UnnamedEngine/Sources/
                     UnnamedEngine/Vendor/assimp/include/
 					UnnamedEngine/Vendor/catch/
                     UnnamedEngine/Vendor/bullet/src/
-                    UnnamedEngine/Vendor/glad/include/
                     UnnamedEngine/Vendor/glfw/include/
                     UnnamedEngine/Vendor/glm/
                     UnnamedEngine/Vendor/stb/)
 
-file(GLOB VENDORS_SOURCES UnnamedEngine/Vendor/glad/src/glad.c)
 file(GLOB_RECURSE PROJECT_HEADERS UnnamedEngine/Sources/*.h)
 file(GLOB_RECURSE PROJECT_SOURCES UnnamedEngine/Sources/Engine/*.cpp UnnamedEngine/Sources/Game/*.cpp)
 file(GLOB_RECURSE PROJECT_SHADERS UnnamedEngine/Shaders/*.comp
@@ -70,7 +65,7 @@ add_library(ProjectLib ${PROJECT_SOURCES} ${PROJECT_HEADERS}
 
 add_executable(${PROJECT_NAME} UnnamedEngine/Sources/main.cpp)
 target_link_libraries(${PROJECT_NAME} ProjectLib assimp glfw
-						${GLFW_LIBRARIES} ${GLAD_LIBRARIES}
+						${GLFW_LIBRARIES} 
 						BulletDynamics BulletCollision LinearMath)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -87,5 +82,4 @@ file(GLOB_RECURSE TESTING_HEADERS UnnamedEngine/Test/*.h)
 add_executable(runUnitTests ${TESTING_SOURCES} ${TESTING_HEADERS})
 
 target_link_libraries(runUnitTests ProjectLib assimp glfw
-						${GLFW_LIBRARIES} ${GLAD_LIBRARIES}
-						BulletDynamics BulletCollision LinearMath)
+						${GLFW_LIBRARIES} BulletDynamics BulletCollision LinearMath)
