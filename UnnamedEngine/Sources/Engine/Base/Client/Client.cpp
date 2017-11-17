@@ -4,6 +4,8 @@
 #include "Engine/Graphics/Renderer/Renderer.h"
 
 #include <glad/glad.h>
+
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include "Engine/Base/Client/GameFramework.h"
@@ -47,23 +49,9 @@ void Client::InitializeRenderer()
 void Client::InitializeWindow()
 {
 	glfwInit();
-	// The GL stuff should really be in the renderer... 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	mWindow = glfwCreateWindow(1280, 720, "OpenGL", nullptr, nullptr);
-
-	if(mWindow == nullptr){
-		std::cerr << "Failed to initialize OpenGL context." << std::endl;
-	}
-
-	glfwMakeContextCurrent(mWindow);
-	gladLoadGL();
-
-	std::cerr << "Successfully initialized OpenGL context." << std::endl;
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	mWindow = glfwCreateWindow(1280, 720, "UnnamedEngine", nullptr, nullptr);
 }
 
 void Client::InitializeContext()
