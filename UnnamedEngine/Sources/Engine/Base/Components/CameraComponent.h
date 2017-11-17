@@ -13,3 +13,4 @@ public:
 };
 
 template<> std::string Component<CameraComponent>::sName = "HealthComponent";
+template<> StorageStrategy Component<CameraComponent>::sStorageStrategy = StorageStrategy::HashMap;

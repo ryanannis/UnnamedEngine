@@ -15,3 +15,4 @@ public:
 };
 
 template<> std::string Component<VelocityComponent>::sName = "VelocityComponent";
+template<> StorageStrategy Component<VelocityComponent>::sStorageStrategy = StorageStrategy::Consecutive;

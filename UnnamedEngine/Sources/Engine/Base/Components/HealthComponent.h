@@ -18,3 +18,4 @@ public:
 };
 
 template<> std::string Component<HealthComponent>::sName = "HealthComponent";
+template<> StorageStrategy Component<HealthComponent>::sStorageStrategy = StorageStrategy::HashMap;

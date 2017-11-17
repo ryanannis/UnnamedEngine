@@ -12,14 +12,14 @@
             "ctestCommandArgs": ""
         },
         {
-        "name": "x86-Release",
-        "generator": "Ninja",
-        "configurationType" : "RelWithDebInfo",
-        "inheritEnvironments": [ "msvc_x86" ],
-        "buildRoot":  "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
-        "cmakeCommandArgs":  "",
-        "buildCommandArgs": "-v",
-        "ctestCommandArgs":  ""
+            "name": "x86-Release",
+            "generator": "Visual Studio 15 2017",
+            "configurationType": "Release",
+            "inheritEnvironments": [ "msvc_x86" ],
+            "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
+            "cmakeCommandArgs": "",
+            "buildCommandArgs": "/verbosity:Normal",
+            "ctestCommandArgs": ""
         },
         {
         "name": "x64-Debug",

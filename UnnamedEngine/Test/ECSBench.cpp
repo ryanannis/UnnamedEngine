@@ -43,12 +43,12 @@ void BasicBenchmark(const size_t ENTITIES, const size_t UPDATES)
 		{
 			Entity e = entityList[q];
 			auto t = a.GetComponent<TransformComponent>(e);
-			t->pEntityWorldRotation = t->pEntityWorldRotation * t->pEntityWorldRotation;
-			t->pEntityWorldTranslation *= 2;
+			//t->pEntityWorldRotation = t->pEntityWorldRotation * t->pEntityWorldRotation;
+			//t->pEntityWorldTranslation *= 2;
 
 			auto b = a.GetComponent<TransformComponent>(e);
-			b->pEntityWorldRotation *= 3;
-			b->pEntityWorldTranslation *= 6;
+			//b->pEntityWorldRotation *= 3;
+			//b->pEntityWorldTranslation *= 6;
 		}
 	}
 
@@ -57,10 +57,10 @@ void BasicBenchmark(const size_t ENTITIES, const size_t UPDATES)
 	auto mid = std::chrono::duration_cast<std::chrono::milliseconds>(init - before).count();
 
 	std::cout << ENTITIES << " entities" << UPDATES << " updates" << std::endl;
-	std::cout << "Init" << mid << "ms, Iteration: " << time << "ms" << std::endl;
+	std::cout << "Init" << mid << "ms, Iteration: " << iteration << "ms" << std::endl;
 }
 
 TEST_CASE("Benchmark ECS Lite - Pos & Velocity", "[Benchmark]")
 {
-	BasicBenchmark(10000, 1000);
+	BasicBenchmark(10000, 5000);
 }

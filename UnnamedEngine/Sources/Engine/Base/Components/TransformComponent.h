@@ -15,3 +15,4 @@ public:
 };
 
 template<> std::string Component<TransformComponent>::sName = "TransformComponent";
+template<> StorageStrategy Component<TransformComponent>::sStorageStrategy = StorageStrategy::Consecutive;

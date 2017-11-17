@@ -15,3 +15,5 @@ public:
 };
 
 template<> std::string Component<IdentityComponent>::sName = "IdentityComponent";
+template<> StorageStrategy Component<IdentityComponent>::sStorageStrategy = StorageStrategy::HashMap;
+;

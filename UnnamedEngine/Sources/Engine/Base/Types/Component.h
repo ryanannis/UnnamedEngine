@@ -21,9 +21,15 @@ public:
 		return(sName);
 	}
 
+	virtual StorageStrategy GetStorageStrategy()
+	{
+		return(sStorageStrategy);
+	}
+
 protected:
 	static bool sSerializable;
 	static std::string sName;
+	static StorageStrategy sStorageStrategy;
 };
 
 // Get the group from just the type

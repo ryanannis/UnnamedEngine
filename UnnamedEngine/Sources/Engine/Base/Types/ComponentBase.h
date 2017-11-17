@@ -4,6 +4,12 @@
 class Serializer;
 class DeserializationData;
 
+enum class StorageStrategy
+{
+	Consecutive,
+	HashMap
+};
+
 class ComponentBase {
 public:
 	virtual Serializer& Serialize(Serializer& s);

@@ -14,3 +14,4 @@ public:
 };
 
 template<> std::string Component<FatComponent>::sName = "FatComponent";
+template<> StorageStrategy Component<FatComponent>::sStorageStrategy = StorageStrategy::HashMap;
