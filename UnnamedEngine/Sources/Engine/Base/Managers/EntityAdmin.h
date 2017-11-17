@@ -35,7 +35,7 @@ public:
 		const ComponentFlag flag = ComponentGroup<T>();
 		const uint32_t eid = entity.mEntityID;
 
-		if(mComponentPools.size() < flag || !mComponentPools[static_cast<int>(flag)])
+		if(mComponentPools.size() <= flag || !mComponentPools[static_cast<int>(flag)])
 		{
 			ExpandPoolList<T>();
 		}
@@ -50,7 +50,7 @@ public:
 	{
 		const uint32_t eid = entity.mEntityID;
 
-		if(mComponentPools.size() < flag + 1 || !mComponentPools[static_cast<int>(flag)])
+		if(mComponentPools.size() <= flag || !mComponentPools[static_cast<int>(flag)])
 		{
 			ExpandPoolList(flag, componentSize);
 		}

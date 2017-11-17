@@ -4,7 +4,6 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <assimp/mesh.h>
-#include <glad/glad.h>
 #include <glm/glm.hpp>
 
 MeshResource::MeshResource(std::string URI) : 

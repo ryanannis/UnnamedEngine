@@ -27,7 +27,7 @@ void GameFramework::InitializeRenderer()
 	// hardcoded for now
 	s.screenHeight = 720;
 	s.screenWidth = 1280;
-	mRenderer = std::make_unique<Renderer>(s);
+	mRenderer = std::make_unique<Renderer>();
 }
 
 Ptr<ResourceManager> GameFramework::GetResourceManager()

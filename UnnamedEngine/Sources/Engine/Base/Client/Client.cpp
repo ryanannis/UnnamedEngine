@@ -3,9 +3,7 @@
 #include "Client.h"
 #include "Engine/Graphics/Renderer/Renderer.h"
 
-#include <glad/glad.h>
-
-#define GLFW_INCLUDE_VULKAN
+//#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include "Engine/Base/Client/GameFramework.h"
@@ -34,7 +32,7 @@ void Client::Initialize()
 	// This order is important - the context must be populated with 
 	// the GLFW window for Renderer and InputManager to initialize correctly
 	InitializeWindow();
-	assert(mWindow);
+	assert(mWindow); 
 	InitializeRenderer();
 	InitializeInputManager();
 	InitializeContext();

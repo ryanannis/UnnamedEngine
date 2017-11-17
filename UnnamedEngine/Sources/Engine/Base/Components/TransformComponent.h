@@ -10,7 +10,7 @@ class TransformComponent : public Component<TransformComponent>
 public:
 	TransformComponent();
 
-	glm::fvec4 pEntityWorldTranslation;
+	glm::fvec3 pEntityWorldTranslation;
 	glm::fquat pEntityWorldRotation;
 };
 

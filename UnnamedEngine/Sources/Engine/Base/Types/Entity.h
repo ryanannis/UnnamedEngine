@@ -8,6 +8,7 @@ class EntityAdmin;
 class Entity
 {
 public:
+	Entity() {};
 	Entity(const Entity& e);
 
 	template <typename T>

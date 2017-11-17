@@ -6,7 +6,7 @@
 class Renderer
 {
 public:
-	Renderer(RenderSettings&& settings);
+	Renderer();
 	~Renderer();
 
 	void Render();

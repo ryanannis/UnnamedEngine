@@ -2,8 +2,7 @@
 
 static size_t sGraphicsHandleCt;
 
-Renderer::Renderer(RenderSettings&& settings) :
-	mRenderSettings(settings)
+Renderer::Renderer()
 {}
 
 Renderer::~Renderer()
