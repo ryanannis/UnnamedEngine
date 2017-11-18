@@ -3,7 +3,7 @@
 #include "Engine/Base/Types/ComponentBase.h"
 
 typedef uint64_t ComponentFlag;
-static ComponentFlag sComponentGroup = 0;
+static ComponentFlag StaticGroupCounter = 0;
 
 template <typename Derived>
 class Component : public ComponentBase {
@@ -12,8 +12,13 @@ public:
 
 	static ComponentFlag GetGroup()
 	{
-		static const ComponentFlag group = sComponentGroup++;
-		return(group);
+		static bool initialized = false;
+		if(initialized)
+		{
+			initialized = true;
+			sComponentGroup = StaticGroupCounter++;
+		}
+		return(sComponentGroup);
 	}
 
 	virtual std::string GetName()
@@ -26,6 +31,8 @@ public:
 		return(sStorageStrategy);
 	}
 
+	static ComponentFlag sComponentGroup;
+
 protected:
 	static bool sSerializable;
 	static std::string sName;
@@ -37,3 +44,5 @@ template <typename T>
 static ComponentFlag ComponentGroup() {
 	return Component<typename std::remove_const<T>::type>::GetGroup();
 }
+
+template <typename T> ComponentFlag Component<T>::sComponentGroup = 0;

@@ -18,15 +18,14 @@ public:
 	Ptr<T> GetComponent(EntityAdmin* admin) const;
 
 	void IncrementGeneration();
-
 	void Increment();
 
-	inline uint32_t GetGeneration() const
+	__forceinline uint32_t GetGeneration() const
 	{
 		return(mEntityID >> 32);
 	}
 
-	inline uint32_t GetIndex() const
+	__forceinline uint32_t GetIndex() const
 	{
 		const uint64_t mask = 0x00000000ffffffff;
 		return(mask & mEntityID);
