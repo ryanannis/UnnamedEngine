@@ -21,7 +21,7 @@ public:
 		return(sName);
 	}
 
-	virtual StorageStrategy GetStorageStrategy()
+	static StorageStrategy GetStorageStrategy()
 	{
 		return(sStorageStrategy);
 	}

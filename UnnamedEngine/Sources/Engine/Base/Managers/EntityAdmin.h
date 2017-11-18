@@ -5,9 +5,9 @@
 
 #include "Engine/Base/Types/Component.h"
 #include "Engine/Base/Types/Entity.h"
-#include "Engine/Base/Memory/ComponentPool.h"
 #include "Engine/Base/Managers/SystemAdmin.h"
-#include "Engine/Base/Memory/ComponentPool.h"
+#include "Engine/Base/Memory/HashMapPool.h"
+#include "Engine/Base/Memory/ArrayPool.h"
 
 class EntityAdmin : public NonCopyable
 {
@@ -20,20 +20,14 @@ public:
 	template <typename T>
 	T* GetComponent(const Entity e)
 	{
-		return(GetComponent<T>(e.GetEntityId()));
-	}
-
-	template <typename T>
-	T* GetComponent(const Entity* const e)
-	{
-		return(GetComponent<T>(e->GetEntityId()));
+		return(GetComponent<T>(e.GetIndex()));
 	}
 
 	template <typename T>
 	T* AddComponent(Entity entity)
 	{
 		const ComponentFlag flag = ComponentGroup<T>();
-		const uint32_t eid = entity.mEntityID;
+		const uint32_t eid = entity.GetIndex();
 
 		if(mComponentPools.size() <= flag || !mComponentPools[static_cast<int>(flag)])
 		{
@@ -48,11 +42,11 @@ public:
 	// Todo move more initialization stuff into here
 	Ptr<ComponentBase> AddComponent(ComponentFlag flag, size_t componentSize, Entity entity)
 	{
-		const uint32_t eid = entity.mEntityID;
+		const uint32_t eid = entity.GetIndex();
 
 		if(mComponentPools.size() <= flag || !mComponentPools[static_cast<int>(flag)])
 		{
-			ExpandPoolList(flag, componentSize);
+			ExpandPoolList(flag, StorageStrategy::HashMap, componentSize);
 		}
 
 		void* componentMem = mComponentPools[static_cast<int>(flag)]->AllocComponent(eid);
@@ -76,16 +70,23 @@ private:
 	void ExpandPoolList()
 	{
 		const ComponentFlag flag = ComponentGroup<T>();
-		ExpandPoolList(flag, sizeof(T));
+		ExpandPoolList(flag, T::GetStorageStrategy(), sizeof(T));
 	}
 
-	void ExpandPoolList(ComponentFlag flag, size_t blockSize)
+	void ExpandPoolList(ComponentFlag flag, StorageStrategy s, size_t blockSize)
 	{
 		if(mComponentPools.size() < static_cast<size_t>(flag) + 1)
 		{
 			mComponentPools.resize(static_cast<size_t>(flag + 1));
 		}
-		mComponentPools[static_cast<size_t>(flag)] = new ComponentPool(blockSize);
+		if(s == StorageStrategy::HashMap)
+		{
+			mComponentPools[static_cast<size_t>(flag)] = new HashMapPool(blockSize);
+		}
+		else if(s == StorageStrategy::Consecutive)
+		{
+			mComponentPools[static_cast<size_t>(flag)] = new ArrayPool(blockSize);
+		}
 	}
 
 	void RegisterEntity(Entity* entity);

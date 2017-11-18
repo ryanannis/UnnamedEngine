@@ -14,7 +14,7 @@ public:
 	static std::optional<PropTree> Parse(std::string str);
 private:
 	static void Tokenize(std::string str, std::vector<UDFToken>& tokens);
-	static void PropParser::ParserFailed(int lineNumber, std::string around);
+	static void ParserFailed(int lineNumber, std::string around);
 	static std::optional<PropTree> ParseTokens(std::vector<UDFToken>& tokens);
 };
 

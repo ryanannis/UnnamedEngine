@@ -20,6 +20,6 @@ Entity EntityAdmin::CreateEntity()
 
 void EntityAdmin::RegisterEntity(Entity* entity)
 {
-	const uint32_t entityId = entity->GetEntityId();
+	const uint32_t entityId = entity->GetIndex();
 	mEntityMap.insert(std::pair<uint32_t, Entity*>(entityId, entity));
 }
