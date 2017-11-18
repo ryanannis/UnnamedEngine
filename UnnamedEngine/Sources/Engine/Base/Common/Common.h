@@ -37,3 +37,9 @@ private:
 
 typedef glm::vec3 Vector3f;
 typedef glm::quat Quat;
+
+#ifdef _MSC_VER
+	#define FORCEINLINE __forceinline
+#else
+	#define FORCEINLINE inline
+#endif

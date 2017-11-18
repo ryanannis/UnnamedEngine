@@ -10,23 +10,28 @@ class Component : public ComponentBase {
 public:
 	Component() {};
 
-	static ComponentFlag GetGroup()
+	static void RegisterGroup()
 	{
 		static bool initialized = false;
+		assert(!initialized);
 		if(initialized)
 		{
 			initialized = true;
 			sComponentGroup = StaticGroupCounter++;
 		}
+	}
+
+	FORCEINLINE static const ComponentFlag GetGroup()
+	{
 		return(sComponentGroup);
 	}
 
-	virtual std::string GetName()
+	virtual std::string GetName() const
 	{
 		return(sName);
 	}
 
-	static StorageStrategy GetStorageStrategy()
+	static const StorageStrategy GetStorageStrategy()
 	{
 		return(sStorageStrategy);
 	}

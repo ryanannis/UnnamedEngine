@@ -17,5 +17,5 @@ public:
 	//todo: replace PropTree with interface that has less stuff in it
 	virtual void Deserialize(const DeserializationData& t);
 
-	virtual std::string GetName() = 0;
+	virtual std::string GetName() const = 0;
 };

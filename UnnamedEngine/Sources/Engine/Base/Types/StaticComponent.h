@@ -82,6 +82,7 @@ namespace StaticReg
 			entry.createAndRegisterFunction = &CreateAndRegisterComponent<T>;
 			entry.copyConstructor = &CopyComponent<T>;
 			entry.createFunction = &CreateComponent<T>;
+			T::RegisterGroup();
 			entry.flag = ComponentGroup<T>();
 			entry.memSize = sizeof(T);
 

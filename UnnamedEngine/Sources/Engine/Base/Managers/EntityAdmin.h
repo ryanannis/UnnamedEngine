@@ -26,7 +26,7 @@ public:
 	template <typename T>
 	inline T* AddComponent(Entity entity)
 	{
-		const ComponentFlag flag = T::sComponentGroup;
+		const ComponentFlag flag = T::GetGroup();
 		const uint32_t eid = entity.GetIndex();
 
 		if(mComponentPools.size() <= flag || !mComponentPools[static_cast<int>(flag)])
@@ -59,7 +59,7 @@ private:
 	template <typename T>
 	inline T* GetComponent(uint32_t entityID)
 	{
-		const ComponentFlag flag = T::sComponentGroup;
+		const ComponentFlag flag = T::GetGroup();
 		void* componentPtr = mComponentPools[static_cast<int>(flag)]->GetComponent(entityID);
 		T* component = static_cast<T*>(componentPtr);
 		return(component);
@@ -69,7 +69,7 @@ private:
 	template <typename T>
 	void ExpandPoolList()
 	{
-		const ComponentFlag flag = T::sComponentGroup;
+		const ComponentFlag flag = T::GetGroup();
 		ExpandPoolList(flag, T::GetStorageStrategy(), sizeof(T));
 	}
 
