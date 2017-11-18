@@ -18,13 +18,13 @@ public:
 	Entity CreateEntity();
 
 	template <typename T>
-	T* GetComponent(const Entity e)
+	inline T* GetComponent(const Entity e)
 	{
 		return(GetComponent<T>(e.GetIndex()));
 	}
 
 	template <typename T>
-	T* AddComponent(Entity entity)
+	inline T* AddComponent(Entity entity)
 	{
 		const ComponentFlag flag = ComponentGroup<T>();
 		const uint32_t eid = entity.GetIndex();
@@ -57,7 +57,7 @@ public:
 
 private:
 	template <typename T>
-	T* GetComponent(uint32_t entityID)
+	inline T* GetComponent(uint32_t entityID)
 	{
 		const ComponentFlag flag = ComponentGroup<T>();
 		void* componentPtr = mComponentPools[static_cast<int>(flag)]->GetComponent(entityID);
