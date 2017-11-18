@@ -15,7 +15,7 @@ RenderSystem::RenderSystem(Ptr<Context> context) :
 void RenderSystem::Update(float, Ptr<EntityAdmin> entityAdmin)
 {
 	Ptr<Renderer> renderer = mContext->GetRenderer();
-	for(const Entity e : entityAdmin->GetEntities())
+	for(const Entity& e : entityAdmin->GetEntities())
 	{
 		Ptr<RenderComponent> renderComponent = GetComponent<RenderComponent>(entityAdmin, e);
 		Ptr<TransformComponent> transformComponent = GetComponent<TransformComponent>(entityAdmin, e);

@@ -20,14 +20,3 @@ void Entity::Increment()
 {
 	mEntityID = mEntityID + 1;
 }
-
-uint32_t Entity::GetGeneration() const
-{
-	return(mEntityID >> 32);
-}
-
-uint32_t Entity::GetIndex() const
-{
-	const uint64_t mask = 0x00000000ffffffff;
-	return(mask & mEntityID);
-}

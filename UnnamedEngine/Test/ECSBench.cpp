@@ -11,7 +11,7 @@
 #include "Engine/Base/Components/TransformComponent.h"
 #include "Engine/Base/Components/VelocityComponent.h"
 
-#pragma optimize("",off)
+//#pragma optimize("",off)
 void BasicBenchmark(const size_t ENTITIES, const size_t UPDATES)
 {
 	std::vector<Entity> entityList(ENTITIES);
@@ -41,14 +41,10 @@ void BasicBenchmark(const size_t ENTITIES, const size_t UPDATES)
 	{
 		for(size_t q = 0; q < ENTITIES; q++)
 		{
-			Entity e = entityList[q];
+			const Entity& e = entityList[q];
 			auto t = a.GetComponent<TransformComponent>(e);
-			//t->pEntityWorldRotation = t->pEntityWorldRotation * t->pEntityWorldRotation;
-			//t->pEntityWorldTranslation *= 2;
-
-			auto b = a.GetComponent<TransformComponent>(e);
-			//b->pEntityWorldRotation *= 3;
-			//b->pEntityWorldTranslation *= 6;
+			auto b = a.GetComponent<VelocityComponent>(e);
+			t->pEntityWorldTranslation += b->pVelocity;
 		}
 	}
 

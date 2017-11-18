@@ -63,7 +63,7 @@ protected:
 	// [To be disabled outside debug]
 	// Checks whether you actually checked out a component before taking it
 	template <typename T>
-	Ptr<T> GetComponent(Ptr<EntityAdmin> admin, const Entity e) const
+	Ptr<T> GetComponent(Ptr<EntityAdmin> admin, const Entity& e) const
 	{
 		const std::vector<ComponentFlag>& readDeps = GetReadDependencies();
 		const ComponentFlag accessingComponent = ComponentGroup<T>();

@@ -11,7 +11,7 @@ class EntityAdmin;
 class Entity
 {
 public:
-	Entity() {};
+	Entity() = default;
 	Entity(const Entity& e);
 
 	template <typename T>
@@ -21,9 +21,16 @@ public:
 
 	void Increment();
 
-	uint32_t GetGeneration() const;
+	inline uint32_t GetGeneration() const
+	{
+		return(mEntityID >> 32);
+	}
 
-	uint32_t GetIndex() const;
+	inline uint32_t GetIndex() const
+	{
+		const uint64_t mask = 0x00000000ffffffff;
+		return(mask & mEntityID);
+	}
 
 private:
 	// Inits an entity WITH A NEW GENERATION with the given ID

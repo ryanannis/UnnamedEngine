@@ -18,7 +18,7 @@ public:
 	Entity CreateEntity();
 
 	template <typename T>
-	inline T* GetComponent(const Entity e)
+	inline T* GetComponent(const Entity& e)
 	{
 		return(GetComponent<T>(e.GetIndex()));
 	}
