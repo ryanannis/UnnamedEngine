@@ -43,6 +43,7 @@ public:
 	// allocation on dependency loading...
 	Ptr<ComponentBase> AddComponent(ComponentFlag flag, StorageStrategy s, size_t componentSize, Entity entity)
 	{
+		assert(s != StorageStrategy::Singleton);
 		const uint32_t eid = entity.GetIndex();
 
 		if(mComponentPools.size() <= flag || !mComponentPools[static_cast<int>(flag)])
@@ -85,11 +86,6 @@ private:
 
 	void ExpandPoolList(ComponentFlag flag, StorageStrategy s, size_t blockSize)
 	{
-		if(s == StorageStrategy::Singleton)
-		{
-
-		}
-
 		if(mComponentPools.size() < static_cast<size_t>(flag) + 1)
 		{
 			mComponentPools.resize(static_cast<size_t>(flag + 1));
