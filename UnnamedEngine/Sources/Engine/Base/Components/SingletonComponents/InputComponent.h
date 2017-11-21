@@ -8,9 +8,9 @@ struct PropTree;
 class InputComponent : public Component<InputComponent>
 {
 public:
-	InputComponent();
+	InputComponent() = default;
 
-	std::vector<InputEvent> InputEvents;
+	std::vector<InputEvent> inputEvents;
 };
 
 template<> std::string Component<InputComponent>::sName = "InputComponent";

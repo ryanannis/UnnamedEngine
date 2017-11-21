@@ -63,7 +63,7 @@ protected:
 	// [To be disabled outside debug]
 	// Checks whether you actually checked out a component before taking it
 	template <typename T>
-	Ptr<T> GetComponent(Ptr<EntityAdmin> admin, const Entity& e) const
+	Ptr<const T> GetComponent(Ptr<EntityAdmin> admin, const Entity& e) const
 	{
 		const std::vector<ComponentFlag>& readDeps = GetReadDependencies();
 		const ComponentFlag accessingComponent = ComponentGroup<T>();
@@ -72,6 +72,47 @@ protected:
 		return(admin->GetComponent<T>(e));
 	}
 
+	template <typename T>
+	Ptr<T> GetWriteComponent(Ptr<EntityAdmin> admin, const Entity& e) const
+	{
+		const std::vector<ComponentFlag>& writeDeps = GetReadWriteDependencies();
+		const ComponentFlag accessingComponent = ComponentGroup<T>();
+		assert(
+			std::find(
+				GetReadWriteDependencies.begin(),
+				GetReadWriteDependencies.end(), 
+				accessingComponent
+			) != readDeps.end()
+		);
+
+		return(admin->GetComponent<T>(e));
+	}
+
+	template <typename T>
+	Ptr<const T> GetSingletonComponent(Ptr<EntityAdmin> admin) const
+	{
+		const std::vector<ComponentFlag>& readDeps = GetReadDependencies();
+		const ComponentFlag accessingComponent = ComponentGroup<T>();
+		assert(std::find(readDeps.begin(), readDeps.end(), accessingComponent) != readDeps.end());
+
+		return(admin->GetSingletonComponent<T>());
+	}
+
+	template <typename T>
+	Ptr<T> GetSingletonWriteComponent(Ptr<EntityAdmin> admin) const
+	{
+		const std::vector<ComponentFlag>& writeDeps = GetReadWriteDependencies();
+		const ComponentFlag accessingComponent = ComponentGroup<T>();
+		assert(
+			std::find(
+				GetReadWriteDependencies.begin(),
+				GetReadWriteDependencies.end(),
+				accessingComponent
+			) != readDeps.end()
+		);
+
+		return(admin->GetSingletonComponent<T>());
+	}
 	void GetContext()
 	{
 		return(mContext);

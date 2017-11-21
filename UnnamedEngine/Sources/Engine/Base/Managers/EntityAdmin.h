@@ -55,6 +55,15 @@ public:
 		return(static_cast<ComponentBase*>(componentMem));
 	}
 
+	template <typename T>
+	Ptr<T> GetSingletonComponent()
+	{
+		const ComponentFlag flag = T::GetGroup();
+		void* componentPtr = mSingletonComponents[static_cast<int>(flag)];
+		T* component = static_cast<T*>(componentPtr);
+		return(component);
+	}
+
 	inline const std::vector<Entity>& GetEntities() { return(mEntities); }
 
 private:
@@ -73,15 +82,6 @@ private:
 	{
 		const ComponentFlag flag = T::GetGroup();
 		ExpandPoolList(flag, T::GetStorageStrategy(), sizeof(T));
-	}
-
-	template <typename T>
-	void GetSingletonComponent()
-	{
-		const ComponentFlag flag = T::GetGroup();
-		void* componentPtr = mSingletonComponents[static_cast<int>(flag)];
-		T* component = static_cast<T*>(componentPtr);
-		return(component);
 	}
 
 	void ExpandPoolList(ComponentFlag flag, StorageStrategy s, size_t blockSize)

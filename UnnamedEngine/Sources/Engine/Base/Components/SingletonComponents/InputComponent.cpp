@@ -3,7 +3,3 @@
 
 STATICREGISTER(InputComponent, "InputComponent");
 
-InputComponent::InputComponent() :
-{
-
-}
