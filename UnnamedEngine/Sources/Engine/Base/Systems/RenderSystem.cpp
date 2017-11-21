@@ -19,7 +19,7 @@ void RenderSystem::Update(float, Ptr<EntityAdmin> entityAdmin)
 	{
 		Ptr<const RenderComponent> renderComponent = GetComponent<const RenderComponent>(entityAdmin, e);
 		Ptr<const TransformComponent> transformComponent = GetComponent<const TransformComponent>(entityAdmin, e);
-				
+		
 	}
 }
 

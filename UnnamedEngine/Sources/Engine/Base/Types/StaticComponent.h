@@ -87,7 +87,7 @@ namespace StaticReg
 			entry.flag = ComponentGroup<T>();
 			entry.memSize = sizeof(T);
 			// waste of (a trivial amount) of bytes
-			entry.storageStrategy = T::sStorageStrategy;
+			entry.storageStrategy = T::GetStorageStrategy();
 
 			auto ret = staticRegistry.try_emplace(name, std::move(entry));
 			assert(ret.second);

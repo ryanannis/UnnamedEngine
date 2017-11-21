@@ -1,8 +1,7 @@
 #include "EntityAdmin.h"
 
-static uint32_t entityCounter = 0;
-
-EntityAdmin::EntityAdmin()
+EntityAdmin::EntityAdmin() :
+	mEntityCounter(0)
 {
 }
 
@@ -12,14 +11,20 @@ EntityAdmin::~EntityAdmin()
 
 Entity EntityAdmin::CreateEntity()
 {
-	const uint32_t eid = entityCounter++;
+	// If we have a deleted entity - then recycle it
+	if(mDeletedEntities.size() > 0)
+	{
+		Entity e = mDeletedEntities.back();
+		mDeletedEntities.pop_back();
+		e.IncrementGeneration();
+		mGenerationTable[e.GetIndex()] = e.GetGeneration();
+		return(e);
+	}
+
+	// Otherwise create a fresh one
+	const uint32_t eid = mEntityCounter++;
 	Entity entity{eid};
-	mEntities.push_back(entity);
+	mGenerationTable.push_back(eid);
 	return(entity);
 }
 
-void EntityAdmin::RegisterEntity(Entity* entity)
-{
-	const uint32_t entityId = entity->GetIndex();
-	mEntityMap.insert(std::pair<uint32_t, Entity*>(entityId, entity));
-}

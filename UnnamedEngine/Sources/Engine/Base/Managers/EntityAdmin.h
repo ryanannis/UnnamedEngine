@@ -29,7 +29,7 @@ public:
 		const ComponentFlag flag = T::GetGroup();
 		const uint32_t eid = entity.GetIndex();
 
-		if(mComponentPools.size() <= flag || !mComponentPools[static_cast<int>(flag)])
+		if (mComponentPools.size() <= flag || !mComponentPools[static_cast<int>(flag)])
 		{
 			ExpandPoolList<T>();
 		}
@@ -46,7 +46,7 @@ public:
 		assert(s != StorageStrategy::Singleton);
 		const uint32_t eid = entity.GetIndex();
 
-		if(mComponentPools.size() <= flag || !mComponentPools[static_cast<int>(flag)])
+		if (mComponentPools.size() <= flag || !mComponentPools[static_cast<int>(flag)])
 		{
 			ExpandPoolList(flag, s, componentSize);
 		}
@@ -86,25 +86,26 @@ private:
 
 	void ExpandPoolList(ComponentFlag flag, StorageStrategy s, size_t blockSize)
 	{
-		if(mComponentPools.size() < static_cast<size_t>(flag) + 1)
+		if (mComponentPools.size() < static_cast<size_t>(flag) + 1)
 		{
 			mComponentPools.resize(static_cast<size_t>(flag + 1));
 		}
-		if(s == StorageStrategy::HashMap)
+		if (s == StorageStrategy::HashMap)
 		{
 			mComponentPools[static_cast<size_t>(flag)] = new HashMapPool(blockSize);
 		}
-		else if(s == StorageStrategy::Consecutive)
+		else if (s == StorageStrategy::Consecutive)
 		{
 			mComponentPools[static_cast<size_t>(flag)] = new ArrayPool(blockSize);
 		}
 	}
 
-	void RegisterEntity(Entity* entity);
-
 	std::vector<Ptr<ComponentPoolBase>> mComponentPools;
 	std::vector<void*> mSingletonComponents;
 
-	std::vector<Entity> mEntities;
-	std::map<uint32_t, Entity*> mEntityMap;
+	std::vector<Entity> mDeletedEntities;
+
+	std::vector<size_t> mGenerationTable;
+
+	size_t mEntityCounter;
 };
