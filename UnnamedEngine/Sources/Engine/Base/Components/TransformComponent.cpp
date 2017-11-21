@@ -1,6 +1,6 @@
 #include "TransformComponent.h"
 
-STATICDEF(TransformComponent, "TransformComponent");
+STATICREGISTER(TransformComponent, "TransformComponent");
 
 TransformComponent::TransformComponent() :
 	pEntityWorldTranslation{},

@@ -32,6 +32,7 @@ namespace StaticReg
 		// Not all places where this is needed necessarily has type information
 		ComponentFlag flag;
 		size_t memSize;
+		StorageStrategy storageStrategy;
 	};
 
 	// Static Registry Singleton
@@ -85,6 +86,8 @@ namespace StaticReg
 			T::RegisterGroup();
 			entry.flag = ComponentGroup<T>();
 			entry.memSize = sizeof(T);
+			// waste of (a trivial amount) of bytes
+			entry.storageStrategy = T::sStorageStrategy;
 
 			auto ret = staticRegistry.try_emplace(name, std::move(entry));
 			assert(ret.second);
@@ -102,7 +105,8 @@ namespace StaticReg
 
 }
 
-#define STATICDEF(TYPE, NAME)                                         \
+
+#define STATICREGISTER(TYPE, NAME)                                    \
 namespace StaticReg													  \
 {																	  \
 template<class T>                                                     \
@@ -113,8 +117,8 @@ class StaticRegistration<TYPE>                                        \
 {                                                                     \
     static const RegistryEntry<TYPE>& reg;                            \
 };                                                                    \
+                                                                      \
 const RegistryEntry<TYPE>& StaticRegistration<TYPE>::reg =            \
 	RegistryEntry<TYPE>::Instance(NAME);                              \
 }																	  \
-																	  \
 

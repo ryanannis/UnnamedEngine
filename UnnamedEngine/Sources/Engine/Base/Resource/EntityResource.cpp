@@ -77,6 +77,7 @@ Entity EntityResource::ConstructEntity(EntityAdmin& admin)
 		const auto& prototype = registryInfo.second;
 		Ptr<ComponentBase> component = admin.AddComponent(
 			constructionInfo->flag, 
+			constructionInfo->storageStrategy,
 			constructionInfo->memSize,
 			entity
 		);

@@ -17,6 +17,9 @@ public:
 	
 	void Initialize();
 	void Update();
+	bool HasInput() const;
+	InputEvent GetInputEvent();
+
 
 private:
 	void QueueInput(InputEvent e);

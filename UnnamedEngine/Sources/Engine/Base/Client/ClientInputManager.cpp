@@ -69,3 +69,16 @@ void ClientInputManager::Update()
 {
 	
 }
+
+bool ClientInputManager::HasInput() const
+{
+	return(!mInputQueue.empty());
+}
+
+InputEvent ClientInputManager::GetInputEvent()
+{
+	assert(!mInputQueue.empty());
+	InputEvent e = mInputQueue.front();
+	mInputQueue.pop();
+	return(e);
+}

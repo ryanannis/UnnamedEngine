@@ -21,6 +21,7 @@ int StaticRegister()
 	{ RenderComponent c; }
 	{ TransformComponent c; }
 	{ VelocityComponent c; }
+	{ IdentityComponent c; }
 	int DUMMY = 0;
 	return(DUMMY);
 };

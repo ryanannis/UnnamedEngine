@@ -1,6 +1,6 @@
 #include "VelocityComponent.h"
 
-STATICDEF(VelocityComponent, "VelocityComponent");
+STATICREGISTER(VelocityComponent, "VelocityComponent");
 
 VelocityComponent::VelocityComponent() :
 	pVelocity{},

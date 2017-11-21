@@ -39,14 +39,15 @@ public:
 		return(component);
 	}
 
-	// Todo move more initialization stuff into here
-	Ptr<ComponentBase> AddComponent(ComponentFlag flag, size_t componentSize, Entity entity)
+	// todo:  could avoid avoid passing StorageStrategy every time by doing pool
+	// allocation on dependency loading...
+	Ptr<ComponentBase> AddComponent(ComponentFlag flag, StorageStrategy s, size_t componentSize, Entity entity)
 	{
 		const uint32_t eid = entity.GetIndex();
 
 		if(mComponentPools.size() <= flag || !mComponentPools[static_cast<int>(flag)])
 		{
-			ExpandPoolList(flag, StorageStrategy::HashMap, componentSize);
+			ExpandPoolList(flag, s, componentSize);
 		}
 
 		void* componentMem = mComponentPools[static_cast<int>(flag)]->AllocComponent(eid);
@@ -73,8 +74,22 @@ private:
 		ExpandPoolList(flag, T::GetStorageStrategy(), sizeof(T));
 	}
 
+	template <typename T>
+	void GetSingletonComponent()
+	{
+		const ComponentFlag flag = T::GetGroup();
+		void* componentPtr = mSingletonComponents[static_cast<int>(flag)];
+		T* component = static_cast<T*>(componentPtr);
+		return(component);
+	}
+
 	void ExpandPoolList(ComponentFlag flag, StorageStrategy s, size_t blockSize)
 	{
+		if(s == StorageStrategy::Singleton)
+		{
+
+		}
+
 		if(mComponentPools.size() < static_cast<size_t>(flag) + 1)
 		{
 			mComponentPools.resize(static_cast<size_t>(flag + 1));
@@ -92,6 +107,8 @@ private:
 	void RegisterEntity(Entity* entity);
 
 	std::vector<Ptr<ComponentPoolBase>> mComponentPools;
+	std::vector<void*> mSingletonComponents;
+
 	std::vector<Entity> mEntities;
 	std::map<uint32_t, Entity*> mEntityMap;
 };

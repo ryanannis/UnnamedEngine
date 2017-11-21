@@ -7,6 +7,7 @@ class DeserializationData;
 enum class StorageStrategy
 {
 	Consecutive,
+	Singleton,
 	HashMap
 };
 

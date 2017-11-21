@@ -17,7 +17,12 @@ public:
 		if(initialized)
 		{
 			initialized = true;
-			sComponentGroup = StaticGroupCounter++;
+
+			// Singleton components are stored in a seperate array in the EntityAdmin
+			if(sStorageStrategy == StorageStrategy::Singleton)
+			{
+				sComponentGroup = StaticGroupCounter++;
+			}
 		}
 	}
 

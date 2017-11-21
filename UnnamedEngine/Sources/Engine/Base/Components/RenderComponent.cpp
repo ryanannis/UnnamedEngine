@@ -3,7 +3,7 @@
 #include "Engine/Base/Resource/PropTree.h"
 #include "Engine/Base/Resource/ResourceManager.h"
 
-STATICDEF(RenderComponent, "RenderComponent");
+STATICREGISTER(RenderComponent, "RenderComponent");
 
 RenderComponent::RenderComponent() :
 	mesh{},
