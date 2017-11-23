@@ -6,9 +6,7 @@
 
 #include "Engine/Graphics/Driver/GLCommon.h"
 
-
-GLShader::GLShader(std::weak_ptr<ShaderResource> resource) :
-	mResource(resource)
+GLShader::GLShader(const std::weak_ptr<ShaderResource>& resource)
 {
 	std::shared_ptr<ShaderResource> res = resource.lock();
 	auto shaderType = res->GetShaderType();
@@ -26,7 +24,7 @@ GLShader::GLShader(std::weak_ptr<ShaderResource> resource) :
 		mShaderHandle = glCreateShader(GL_COMPUTE_SHADER);
 	}
 
-	const char *shaderTextStr = res->GetShaderText.data.c_str();
+	const char *shaderTextStr = res->GetShaderText().data();
 
 	glShaderSource(mShaderHandle, 1, &shaderTextStr, NULL);
 

@@ -18,6 +18,7 @@ Entity EntityAdmin::CreateEntity()
 		mDeletedEntities.pop_back();
 		e.IncrementGeneration();
 		mGenerationTable[e.GetIndex()] = e.GetGeneration();
+		mEntities[e.GetIndex()] = e;
 		return(e);
 	}
 
@@ -25,6 +26,7 @@ Entity EntityAdmin::CreateEntity()
 	const uint32_t eid = mEntityCounter++;
 	Entity entity{eid};
 	mGenerationTable.push_back(eid);
+	mEntities.push_back(entity);
 	return(entity);
 }
 

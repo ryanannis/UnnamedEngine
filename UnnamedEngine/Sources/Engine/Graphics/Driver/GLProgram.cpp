@@ -16,19 +16,13 @@ GLuint GLProgram::GetProgramHandle() const
 	return(mProgramHandle);
 }
 
-void GLProgram::RegisterShader(std::weak_ptr<ShaderResource> resource)
+void GLProgram::RegisterShader(const GLShader& shader)
 {
-	mShaders.push_back(GLShader(resource));
+	glAttachShader(mProgramHandle, shader.GetShaderHandle());
 }
 
 void GLProgram::Link()
 {
-	for(auto shader : mShaders)
-	{
-		glAttachShader(mProgramHandle, shader.GetShaderHandle());
-		glAttachShader(mProgramHandle, shader.GetShaderHandle());
-	}
-
 	glLinkProgram(mProgramHandle);
 
 	int success;
@@ -48,4 +42,29 @@ void GLProgram::Bind()
 void GLProgram::Unbind()
 {
 	glUseProgram(0);
+
+}
+
+GLuint GLProgram::GetUniformLocation(const char* c)
+{
+	return(glGetUniformLocation(GetProgramHandle(), c));
+}
+
+void GLProgram::SetUniformVertex4f(const char* name, Vector4f val)
+{
+	Bind();
+	GLuint uniform = GetUniformLocation(name);
+	glUniform4f(uniform, val.x, val.y, val.z, val.w);
+}
+
+void GLProgram::SetUniformInt(const char* name, int i)
+{
+	GLuint uniform = GetUniformLocation(name);
+	glUniform1i(uniform, i);
+}
+
+void GLProgram::SetUniformFloat(const char* name, float f)
+{
+	GLuint uniform = GetUniformLocation(name);
+	glUniform1f(uniform, f);
 }

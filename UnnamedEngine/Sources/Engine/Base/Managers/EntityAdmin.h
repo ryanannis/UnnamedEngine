@@ -17,6 +17,13 @@ public:
 
 	Entity CreateEntity();
 
+	// todo:  replace with iterator
+	template <typename T>
+	inline std::vector<Entity> GetEntities()
+	{
+		return(mEntities);
+	}
+
 	template <typename T>
 	inline T* GetComponent(const Entity& e)
 	{
@@ -64,8 +71,6 @@ public:
 		return(component);
 	}
 
-	inline const std::vector<Entity>& GetEntities() { return(mEntities); }
-
 private:
 	template <typename T>
 	inline T* GetComponent(uint32_t entityID)
@@ -104,6 +109,7 @@ private:
 	std::vector<void*> mSingletonComponents;
 
 	std::vector<Entity> mDeletedEntities;
+	std::vector<Entity> mEntities;
 
 	std::vector<size_t> mGenerationTable;
 

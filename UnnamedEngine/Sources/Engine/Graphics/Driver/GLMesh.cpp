@@ -4,9 +4,19 @@
 
 #include "Engine/Base/Resource/MeshResource.h"
 
-GLMesh::GLMesh(std::weak_ptr<MeshResource> resource) :
-	mResource(resource)
-{}
+GLMesh::GLMesh(const std::weak_ptr<MeshResource>& resource)
+{
+	auto res = resource.lock();
+
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+	const auto& vertices = res->GetVertices();
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(), GL_STATIC_DRAW);
+
+
+}
 
 
 

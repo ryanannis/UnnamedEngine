@@ -7,6 +7,7 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp> 
+#include <glm/ext.hpp> 
 #pragma warning(pop)
 
 // Branch prediction hints
@@ -36,6 +37,8 @@ private:
 #include "Engine/Graphics/Renderer/GraphicsHandle.h"
 
 typedef glm::vec3 Vector3f;
+typedef glm::vec4 Vector4f;
+typedef glm::mat4 Matrix4;
 typedef glm::quat Quat;
 
 #ifdef _MSC_VER

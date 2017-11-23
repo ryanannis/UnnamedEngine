@@ -6,8 +6,5 @@ class MeshResource;
 class GLMesh
 {
 public:
-	GLMesh(std::weak_ptr<MeshResource> resource);
-
-private:
-	std::weak_ptr<MeshResource> mResource;
+	GLMesh(const std::weak_ptr<MeshResource>& resource);
 };
