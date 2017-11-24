@@ -12,7 +12,7 @@ public:
 		GLsizei stride
 	);
 
-	void GetHandle();
+	GLuint GetHandle();
 	void Bind();
 
 private:

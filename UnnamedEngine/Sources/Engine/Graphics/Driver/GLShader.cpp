@@ -1,4 +1,5 @@
 #include "GLShader.h"
+
 #include <memory>
 #include <glad/glad.h>
 
@@ -36,6 +37,11 @@ GLShader::GLShader(const std::weak_ptr<ShaderResource>& resource)
 		glGetShaderInfoLog(mShaderHandle, MAX_LOG_SIZE, NULL, infoLog);
 		assert(false);
 	}
+}
+
+GLShader::~GLShader()
+{
+	glDeleteShader(mShaderHandle);
 }
 
 GLuint GLShader::GetShaderHandle() const

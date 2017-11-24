@@ -68,3 +68,9 @@ void GLProgram::SetUniformFloat(const char* name, float f)
 	GLuint uniform = GetUniformLocation(name);
 	glUniform1f(uniform, f);
 }
+
+void GLProgram::SetUniformMatrix4(const char* name, const Matrix4& mat)
+{
+	GLuint uniform = GetUniformLocation(name);
+	glUniformMatrix4fv(uniform, 1, GL_FALSE, &mat[0][0]);
+}

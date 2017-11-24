@@ -16,6 +16,11 @@ void GLAttributes::AddAttribute(
 	glVertexAttribPointer(index, size, type, GL_FALSE, stride, (void*)0);
 }
 
+GLuint GLAttributes::GetHandle()
+{
+	return(mVAO);
+}
+
 void GLAttributes::Bind()
 {
 	glBindVertexArray(mVAO);

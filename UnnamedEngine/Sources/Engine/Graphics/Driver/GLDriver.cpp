@@ -5,30 +5,37 @@
 #include "Engine/Graphics/Driver/GLShader.h"
 #include "Engine/Graphics/Driver/GLAttributes.h"
 
-
-GLMesh GLDriver::CreateMesh(const std::weak_ptr<MeshResource>& meshResource)
+void GLDriver::ClearResources()
 {
-	return(GLMesh(meshResource));
+	mMeshes.clear();
+	mPrograms.clear();
+	mAttributes.clear();
 }
 
-GLProgram GLDriver::CreateProgram(
+Ptr<GLMesh> GLDriver::CreateMesh(const std::weak_ptr<MeshResource>& meshResource)
+{
+	mMeshes.emplace_back(meshResource);
+	return(&mMeshes.back());
+}
+
+Ptr<GLProgram> GLDriver::CreateProgram(
 	const std::weak_ptr<ShaderResource>& vertShader,
 	const std::weak_ptr<ShaderResource>& fragShader
 )
 {
 	// These can can be deleted after putting them into the program
-	GLShader vert = GLShader(vertShader);
-	GLShader frag = GLShader(fragShader);
 
 	GLProgram program;
-	program.RegisterShader(vert);
-	program.RegisterShader(frag);
+	program.RegisterShader(GLShader(vertShader));
+	program.RegisterShader(GLShader(fragShader));
 	program.Link();
+	mPrograms.emplace_back(program);
 
-	return(program);
+	return(&mPrograms.back());
 }
 
-GLAttributes GLDriver::CreateAttributes()
+Ptr<GLAttributes> GLDriver::CreateAttributes()
 {
-	return(GLAttributes());
+	mAttributes.emplace_back();
+	return(&mAttributes.back());
 }
