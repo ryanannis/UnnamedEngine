@@ -11,6 +11,13 @@ GLProgram::GLProgram()
 	mProgramHandle = glCreateProgram();
 }
 
+GLProgram::GLProgram(GLProgram&& other)
+{
+	mProgramHandle = other.mProgramHandle;
+	other.mProgramHandle = 0;
+	mShaders = std::move(other.mShaders);
+}
+
 GLuint GLProgram::GetProgramHandle() const
 {
 	return(mProgramHandle);

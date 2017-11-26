@@ -4,6 +4,7 @@
 #include "Engine/Graphics/Renderer/RenderSettings.h"
 #include "Engine/Base/Resource/MeshResource.h"
 #include "Engine/Base/Resource/ResourceType.h"
+#include "Engine/Graphics/Driver/GLDriver.h"
 
 class GLDriver;
 class Context;

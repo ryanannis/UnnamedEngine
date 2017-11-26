@@ -1,7 +1,6 @@
 #include "Renderer.h"
 #include "Engine/Base/Common/Common.h"
 
-#include "Engine/Graphics/Driver/GLDriver.h"
 #include "Engine/Graphics/Driver/GLMesh.h"
 #include "Engine/Graphics/Driver/GLProgram.h"
 #include "Engine/Graphics/Driver/GLShader.h"
@@ -52,7 +51,6 @@ void Renderer::Render()
 		basicProgramAttributes->Bind();
 		auto mesh = mDriver->CreateMesh(meshWkRes);
 		basicProgramAttributes->AddAttribute(0, 3, GL_FLOAT, 3 * sizeof(float));
-
 		glDrawElements(GL_TRIANGLES, mesh->GetSize(), GL_UNSIGNED_INT, 0);
 	}
 	mDriver->ClearResources();

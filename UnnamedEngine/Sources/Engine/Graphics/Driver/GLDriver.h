@@ -4,9 +4,10 @@
 #include "Engine/Base/Resource/MeshResource.h"
 #include "Engine/Base/Resource/ShaderResource.h"
 
-class GLProgram;
-class GLMesh;
-class GLAttributes;
+#include "Engine/Graphics/Driver/GLMesh.h"
+#include "Engine/Graphics/Driver/GLProgram.h"
+#include "Engine/Graphics/Driver/GLShader.h"
+#include "Engine/Graphics/Driver/GLAttributes.h"
 
 class GLDriver
 {

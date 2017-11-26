@@ -32,14 +32,14 @@
         "ctestCommandArgs":  ""
         },
         {
-        "name": "x64-Release",
-        "generator": "Ninja",
-        "configurationType" : "RelWithDebInfo",
-       "inheritEnvironments": [ "msvc_x64" ],
-        "buildRoot":  "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
-        "cmakeCommandArgs":  "",
-        "buildCommandArgs": "-v",
-        "ctestCommandArgs":  ""
+            "name": "x64-Release",
+            "generator": "Visual Studio 15 2017",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x64" ],
+            "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
+            "cmakeCommandArgs": "",
+            "buildCommandArgs": "/verbosity:Normal",
+            "ctestCommandArgs": ""
         }
     ]
 }

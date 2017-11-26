@@ -105,10 +105,10 @@ protected:
 		const ComponentFlag accessingComponent = ComponentGroup<T>();
 		assert(
 			std::find(
-				GetReadWriteDependencies.begin(),
-				GetReadWriteDependencies.end(),
+				GetReadWriteDependencies().begin(),
+				GetReadWriteDependencies().end(),
 				accessingComponent
-			) != readDeps.end()
+			) != writeDeps.end()
 		);
 
 		return(admin->GetSingletonComponent<T>());

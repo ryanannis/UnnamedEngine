@@ -9,6 +9,7 @@ class GLShader : public NonCopyable
 {
 public:
 	GLShader(const std::weak_ptr<ShaderResource>& resource);
+	GLShader(GLShader&& other);
 	~GLShader();
 	GLuint GetShaderHandle() const;
 

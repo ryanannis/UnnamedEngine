@@ -22,10 +22,26 @@ GLMesh::GLMesh(const std::weak_ptr<MeshResource>& resource)
 	mSize = indices.size();
 }
 
+GLMesh::GLMesh(GLMesh&& other)
+{
+	mSize = other.mSize;
+	mVertices = other.mVertices;
+	mIndices = other.mIndices;
+	other.mVertices = 0;
+	other.mIndices = 0;
+}
+
 GLMesh::~GLMesh()
 {
-	glDeleteShader(mIndices);
-	glDeleteShader(mVertices);
+	if(mIndices != 0)
+	{
+		glDeleteShader(mIndices);
+	}
+
+	if(mVertices != 0)
+	{
+		glDeleteShader(mVertices);
+	}
 }
 
 size_t GLMesh::GetSize() const

@@ -39,9 +39,18 @@ GLShader::GLShader(const std::weak_ptr<ShaderResource>& resource)
 	}
 }
 
+GLShader::GLShader(GLShader&& other)
+{
+	mShaderHandle = other.mShaderHandle;
+	other.mShaderHandle = 0;
+}
+
 GLShader::~GLShader()
 {
-	glDeleteShader(mShaderHandle);
+	if(mShaderHandle != 0)
+	{
+		glDeleteShader(mShaderHandle);
+	}
 }
 
 GLuint GLShader::GetShaderHandle() const

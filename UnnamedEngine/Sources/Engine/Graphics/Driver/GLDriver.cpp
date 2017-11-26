@@ -14,7 +14,8 @@ void GLDriver::ClearResources()
 
 Ptr<GLMesh> GLDriver::CreateMesh(const std::weak_ptr<MeshResource>& meshResource)
 {
-	mMeshes.emplace_back(meshResource);
+	GLMesh mesh(meshResource);
+	mMeshes.push_back(std::move(meshResource));
 	return(&mMeshes.back());
 }
 
@@ -23,19 +24,20 @@ Ptr<GLProgram> GLDriver::CreateProgram(
 	const std::weak_ptr<ShaderResource>& fragShader
 )
 {
-	// These can can be deleted after putting them into the program
-
+	// need to use emplace_back here since program is noncopyable
 	GLProgram program;
 	program.RegisterShader(GLShader(vertShader));
 	program.RegisterShader(GLShader(fragShader));
 	program.Link();
-	mPrograms.emplace_back(program);
+
+	mPrograms.emplace_back(std::move(program));
 
 	return(&mPrograms.back());
 }
 
 Ptr<GLAttributes> GLDriver::CreateAttributes()
 {
-	mAttributes.emplace_back();
+	GLAttributes attributes;
+	mAttributes.push_back(std::move(attributes));
 	return(&mAttributes.back());
 }

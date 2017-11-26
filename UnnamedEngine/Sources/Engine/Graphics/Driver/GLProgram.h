@@ -12,6 +12,7 @@ class GLProgram : public NonCopyable
 {
 public:
 	GLProgram();
+	GLProgram(GLProgram&& other);
 	void RegisterShader(const GLShader& shader);
 	void Link();
 	void Bind();
