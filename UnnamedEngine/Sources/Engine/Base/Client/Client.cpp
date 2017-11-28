@@ -7,14 +7,16 @@
 #include <GLFW/glfw3.h>
 
 #include "Engine/Base/Client/GameFramework.h"
+#include "Engine/Base/Client/Context.h"
+
 #include <iostream>
 #include <chrono>
 #include <thread>
 
-Client::Client(std::unique_ptr<GameFramework>&& target) :
+Client::Client(Ptr<Context> context, std::unique_ptr<GameFramework>&& target) :
 	mShouldTerminate(false),
-	mContext(),
-	mInputManager(&mContext),
+	mContext(context), // we create this in main to avoid a depedency betwen GameFramework and Client
+	mInputManager(context),
 	mTarget(std::move(target))
 {
 }
@@ -27,7 +29,7 @@ void Client::Initialize()
 {	
 	// Initialize this first so other systems can access Client during
 	// their own initialization
-	mContext.mClient = this;
+	mContext->mClient = this;
 
 	// This order is important - the context must be populated with 
 	// the GLFW window for Renderer and InputManager to initialize correctly
@@ -42,6 +44,12 @@ void Client::Initialize()
 
 void Client::InitializeRenderer()
 {
+	RenderSettings s;
+	// hardcoded for now
+	s.screenHeight = 720;
+	s.screenWidth = 1280;
+
+	mRenderer = std::make_unique<Renderer>(mContext);
 }
 
 void Client::InitializeWindow()
@@ -90,12 +98,13 @@ void Client::Run()
 		auto before = std::chrono::high_resolution_clock::now();
 
 		mTarget->Update(1.f/60);
+		mRenderer->Render();
 
 		auto after = std::chrono::high_resolution_clock::now();
 		auto elapsed = after - before;
 
 		auto int_ms = std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed);
-		std::cout << "Rendered frame in: " << int_ms.count() << "ns" << std::endl;
+		//std::cout << "Rendered frame in: " << int_ms.count() << "ns" << std::endl;
 
 		std::this_thread::sleep_for(std::chrono::nanoseconds(16666666) - int_ms);
 	}
@@ -110,6 +119,6 @@ Ptr<GLFWwindow> Client::GetWindow()
 
 Ptr<Renderer> Client::GetRenderer()
 {
-	return(&mRenderer);
+	return(mRenderer.get());
 }
 

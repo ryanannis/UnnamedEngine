@@ -4,7 +4,10 @@ void* HashMapPool::GetComponent(uint32_t entityID)
 {
 	assert(BLOCK_SIZE > 0);
 	auto ptrIterator = mHashMap.find(entityID);
-	assert(ptrIterator != mHashMap.end()); // INVALID 
+	if(ptrIterator == mHashMap.end())
+	{
+		return(nullptr);
+	}
 	return(ptrIterator->second);
 }
 

@@ -29,6 +29,7 @@ void* ArrayPool::AllocComponent(uint32_t entityID)
 
 void ArrayPool::DeleteComponent(uint32_t entityID)
 {
+	//todo:  arraypool should only be able to resize, not delete?  unless we want components with heap alloced stuff (ew)
 }
 
 void ArrayPool::DoublePoolSize()

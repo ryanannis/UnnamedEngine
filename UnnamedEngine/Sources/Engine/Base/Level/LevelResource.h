@@ -11,7 +11,7 @@ class EntityAdmin;
 class LevelResource : public Resource
 {
 public:
-	LevelResource(std::string uri);
+	LevelResource(URI uri);
 	virtual bool IsReady() const override;
 	virtual void Load(Ptr<ResourceManager> manager) override;
 	const std::vector<LevelObject>& GetLevelObjects() const;

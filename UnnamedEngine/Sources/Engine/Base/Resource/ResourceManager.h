@@ -21,7 +21,7 @@ public:
 	std::weak_ptr<T> LoadResource(ResourceType<T> resourceType)
 	{
 		// Check for existence of resource on the flywheel
-		auto resIt = mResources.find(resourceType.mURI);
+		auto resIt = mResources.find(resourceType.mURI.GetHash());
 		if(resIt != mResources.end())
 		{	
 			std::weak_ptr<T> wres;
@@ -37,7 +37,7 @@ public:
 		);
 		std::shared_ptr<T> res = std::make_shared<T>(resourceType.mURI);
 		res->Load(this);
-		mResources.emplace(resourceType.mURI, res);
+		mResources.emplace(resourceType.mURI.GetHash(), res);
 
 		std::weak_ptr<T> wres;
 		wres = res;

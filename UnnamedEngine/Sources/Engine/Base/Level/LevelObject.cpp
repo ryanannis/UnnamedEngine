@@ -6,7 +6,7 @@ LevelObject::LevelObject(const PropTree& tree)
 	// Initialize
 	auto file = tree.leaves.find("Resource");
 	auto position = tree.leaves.find("Position");
-	auto rotation = tree.leaves.find("Resource");
+	auto rotation = tree.leaves.find("Rotation");
 
 	assert(file != tree.leaves.end());
 	assert(position != tree.leaves.end());
@@ -17,7 +17,7 @@ LevelObject::LevelObject(const PropTree& tree)
 	auto parsedRotation = rotation->second.GetAsVector();
 
 	//todo : Have ResourceType return a URI
-	mResource = ResourceType<EntityResource>(parsedFile->GetFilePath());
+	mResource = ResourceType<EntityResource>(*parsedFile);
 	mPosition = *parsedPosition;
 	parsedRotation = *parsedRotation;
 }

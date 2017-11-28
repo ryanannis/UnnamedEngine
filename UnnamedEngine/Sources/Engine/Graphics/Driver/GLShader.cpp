@@ -28,6 +28,7 @@ GLShader::GLShader(const std::weak_ptr<ShaderResource>& resource)
 	const char *shaderTextStr = res->GetShaderText().data();
 
 	glShaderSource(mShaderHandle, 1, &shaderTextStr, NULL);
+	glCompileShader(mShaderHandle);
 
 	int success;
 	char infoLog[MAX_LOG_SIZE];
@@ -35,6 +36,7 @@ GLShader::GLShader(const std::weak_ptr<ShaderResource>& resource)
 	if(!success)
 	{
 		glGetShaderInfoLog(mShaderHandle, MAX_LOG_SIZE, NULL, infoLog);
+		fprintf(stderr, "Compilation error in shader: %s\n", infoLog);
 		assert(false);
 	}
 }

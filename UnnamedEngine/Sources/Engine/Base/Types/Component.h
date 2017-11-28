@@ -3,7 +3,13 @@
 #include "Engine/Base/Types/ComponentBase.h"
 
 typedef uint64_t ComponentFlag;
-static ComponentFlag StaticGroupCounter = 0;
+
+// Need a static but don't want it in a templated class...
+struct ComponentStatics
+{
+	static ComponentFlag SingletonGroupCounter;
+	static ComponentFlag StaticGroupCounter;
+};
 
 template <typename Derived>
 class Component : public ComponentBase {
@@ -14,15 +20,20 @@ public:
 	{
 		static bool initialized = false;
 		assert(!initialized);
-		if(initialized)
+		if(!initialized)
 		{
 			initialized = true;
 
 			// Singleton components are stored in a seperate array in the EntityAdmin
 			if(sStorageStrategy == StorageStrategy::Singleton)
 			{
-				sComponentGroup = StaticGroupCounter++;
+				sComponentGroup = ComponentStatics::SingletonGroupCounter++;
 			}
+			else
+			{
+				sComponentGroup = ComponentStatics::StaticGroupCounter++;
+			}
+				
 		}
 	}
 

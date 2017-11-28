@@ -21,7 +21,18 @@ public:
 	template <typename T>
 	inline std::vector<Entity> GetEntities()
 	{
-		return(mEntities);
+		// TODO:  TOP TIER PRIORITY REPLACE THIS THIS IS VERY BAD~~
+		// CONSTRUCT ENTIES FROM KEYS IN POOLS
+		std::vector<Entity> matchingEntities;
+		for(Entity& e : mEntities)
+		{
+			if(GetComponent<T>(e))
+			{
+				matchingEntities.push_back(e);
+			}
+		}
+
+		return(matchingEntities);
 	}
 
 	template <typename T>
@@ -53,13 +64,36 @@ public:
 		assert(s != StorageStrategy::Singleton);
 		const uint32_t eid = entity.GetIndex();
 
-		if (mComponentPools.size() <= flag || !mComponentPools[static_cast<int>(flag)])
+		if(mComponentPools.size() <= flag || !mComponentPools[static_cast<int>(flag)])
 		{
 			ExpandPoolList(flag, s, componentSize);
 		}
 
 		void* componentMem = mComponentPools[static_cast<int>(flag)]->AllocComponent(eid);
 		return(static_cast<ComponentBase*>(componentMem));
+	}
+
+	template <typename T>
+	Ptr<T> AddSingletonComponent()
+	{
+		const ComponentFlag flag = T::GetGroup();
+		
+		if(mSingletonComponents.size() <= flag || !mSingletonComponents[static_cast<int>(flag)])
+		{
+			if(mSingletonComponents.size() < static_cast<size_t>(flag) + 1)
+			{
+				mSingletonComponents.resize(static_cast<size_t>(flag + 1));
+			}
+
+			// Ptr<void> is default null
+			assert(!mSingletonComponents[flag]);
+
+			mSingletonComponents[flag] = new T;
+		}
+
+		void* componentPtr = mSingletonComponents[static_cast<int>(flag)];
+		T* component = static_cast<T*>(componentPtr);
+		return(component);
 	}
 
 	template <typename T>
@@ -76,6 +110,11 @@ private:
 	inline T* GetComponent(uint32_t entityID)
 	{
 		const ComponentFlag flag = T::GetGroup();
+		// todo:  ahhh the useless branch!
+		if(static_cast<int>(flag) >= mComponentPools.size() || !mComponentPools[static_cast<int>(flag)])
+		{
+			return(nullptr);
+		}
 		void* componentPtr = mComponentPools[static_cast<int>(flag)]->GetComponent(entityID);
 		T* component = static_cast<T*>(componentPtr);
 		return(component);
@@ -91,7 +130,7 @@ private:
 
 	void ExpandPoolList(ComponentFlag flag, StorageStrategy s, size_t blockSize)
 	{
-		if (mComponentPools.size() < static_cast<size_t>(flag) + 1)
+		if(mComponentPools.size() < static_cast<size_t>(flag) + 1)
 		{
 			mComponentPools.resize(static_cast<size_t>(flag + 1));
 		}
@@ -106,7 +145,7 @@ private:
 	}
 
 	std::vector<Ptr<ComponentPoolBase>> mComponentPools;
-	std::vector<void*> mSingletonComponents;
+	std::vector<Ptr<void>> mSingletonComponents;
 
 	std::vector<Entity> mDeletedEntities;
 	std::vector<Entity> mEntities;

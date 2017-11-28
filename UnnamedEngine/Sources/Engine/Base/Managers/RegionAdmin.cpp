@@ -4,6 +4,9 @@
 #include "Engine/Base/Client/Client.h"
 #include "Engine/Base/Resource/ResourceManager.h"
 #include "Engine/Base/Components/TransformComponent.h"
+#include "Engine/Base/Components/RenderComponent.h"
+
+#include "Engine/Graphics/Renderer/Renderer.h"
 
 RegionAdmin::RegionAdmin(Ptr<Context> context) :
 	mContext(context),
@@ -45,13 +48,23 @@ Entity RegionAdmin::CreateEntity(const ResourceType<EntityResource>& res, Vector
 		Entity e = loadedRes->ConstructEntity(mEntityAdmin);
 
 		// todo:  DON'T BLOCK TRANSFORM COMPONENT
-		auto transformComponent = mEntityAdmin.GetComponent<TransformComponent>(e);
+		auto transformComponent = mEntityAdmin.AddComponent<TransformComponent>(e);
 		if(transformComponent)
 		{
 			// todo:  figure out how to initialize this in a non-shitty way
 			transformComponent->pEntityWorldRotation = position;
 			transformComponent->pEntityWorldRotation = rotation;
 		}
+
+		//todo:  how useful would an entity event system be? this just adds the GD but could be 
+		auto renderComponent = mEntityAdmin.GetComponent<RenderComponent>(e);
+		auto handle = mContext->GetRenderer()->GenerateGraphicsData();
+		renderComponent->handle = handle;
+		auto& gd = mContext->GetRenderer()->GetGraphicsData(handle);
+		gd.mesh = renderComponent->mesh;
+		gd.rotation = rotation;
+		gd.translation = position;
+
 		return(e);
 	}
 }

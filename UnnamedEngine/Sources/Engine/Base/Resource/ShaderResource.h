@@ -13,7 +13,7 @@ enum class ShaderType
 class ShaderResource : public Resource
 {
 public:
-	ShaderResource(std::string URI);
+	ShaderResource(URI uri);
 	virtual bool IsReady() const override;
 	virtual void Load(Ptr<ResourceManager> manager) override;
 	const std::string& GetShaderText() const;

@@ -10,7 +10,7 @@ class EntityAdmin;
 class EntityResource : public Resource
 {
 public:
-	EntityResource(std::string uri);
+	EntityResource(URI uri);
 	virtual bool IsReady() const override;
 	virtual void Load(Ptr<ResourceManager> manager) override;
 	Entity ConstructEntity(EntityAdmin& admin);

@@ -67,7 +67,6 @@ void ClientInputManager::Initialize()
 
 void ClientInputManager::Update()
 {
-	
 }
 
 bool ClientInputManager::HasInput() const

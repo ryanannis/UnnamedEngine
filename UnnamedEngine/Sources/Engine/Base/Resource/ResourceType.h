@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "Engine/Base/Resource/URI.h"
 
 class Serializer;
 class ResourceManager;
@@ -16,13 +17,17 @@ public:
 		mURI{}
 	{}
 
-	ResourceType(std::string uri) : 
+	explicit ResourceType(URI uri) : 
 		mURI{uri}
+	{}
+
+	explicit ResourceType(std::string uri) :
+		mURI{URI(uri)}
 	{}
 
 
 private:
-	std::string mURI;
+	URI mURI;
 
 	friend Serializer;
 	friend ResourceManager;

@@ -11,7 +11,7 @@ struct aiMesh;
 class MeshResource : public Resource
 {
 public:
-	MeshResource(std::string URI);
+	MeshResource(URI URI);
 	virtual bool IsReady() const override;
 	virtual void Load(Ptr<ResourceManager> manager) override;
 

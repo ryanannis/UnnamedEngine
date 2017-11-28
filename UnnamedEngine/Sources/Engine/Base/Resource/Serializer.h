@@ -50,7 +50,7 @@ private:
 	template <typename T>
 	std::string Serialize(ResourceType<T>& res) const
 	{
-		return(res.mURI);
+		return(res.mURI.GetSerialized());
 	}
 
 	PropTreeLeaf CreateLeaf(std::string s) const;

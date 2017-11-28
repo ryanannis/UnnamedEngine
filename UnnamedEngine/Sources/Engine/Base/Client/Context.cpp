@@ -5,7 +5,6 @@
 
 Context::Context()
 {
-
 }
 
 Context::~Context()
@@ -20,7 +19,7 @@ Ptr<Client> Context::GetClient()
 
 Ptr<ClientInputManager> Context::GetInputManager()
 {
-	return(mClientInputManager);
+	return(GetClient()->GetInputManager());
 }
 
 Ptr<ResourceManager> Context::GetResourceManager()
@@ -35,5 +34,5 @@ Ptr<GameFramework> Context::GetGameFramework()
 
 Ptr<Renderer> Context::GetRenderer()
 {
-	return(GetGameFramework()->GetRenderer());
+	return(GetClient()->GetRenderer());
 }

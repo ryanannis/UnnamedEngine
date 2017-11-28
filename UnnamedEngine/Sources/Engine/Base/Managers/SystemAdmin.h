@@ -16,6 +16,7 @@ public:
 	std::shared_ptr<T> AddSystem(Args&& ... args)
 	{
 		auto system = std::shared_ptr<T>(new T(std::forward<Args>(args)...));
+		system->StaticInitDependencies();
 		mSystems.emplace_back(system);
 		return(system);
 	}

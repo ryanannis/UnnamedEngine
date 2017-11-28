@@ -18,7 +18,7 @@ class GameFramework;
 class Client
 {
 public:
-	Client(std::unique_ptr<GameFramework>&& target);
+	Client(Ptr<Context> context, std::unique_ptr<GameFramework>&& target);
 	~Client();
 
 	void Initialize();
@@ -29,15 +29,18 @@ public:
 	Ptr<Renderer> GetRenderer();
 
 	Ptr<GameFramework> GetTarget() { return(mTarget.get()); }
-	Ptr<Context> GetContext() { return(&mContext); }
+	Ptr<Context> GetContext() { return(mContext); }
 	Ptr<GLFWwindow> GetGLFWContext() { return(mWindow); }
+	Ptr<ClientInputManager> GetInputManager() { return(&mInputManager); }
 
 private:
 	bool mShouldTerminate;
-	Context mContext;
+	Ptr<Context> mContext;
 
 	Ptr<GLFWwindow> mWindow;
-	Renderer mRenderer;
+
+	// Renderer is stored in client since GameFramework also will handle simulation on headless servers
+	std::unique_ptr<Renderer> mRenderer;
 	ClientInputManager mInputManager;
 	
 	std::unique_ptr<GameFramework> mTarget;

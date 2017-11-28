@@ -9,7 +9,7 @@
 #include "Engine/Base/Resource/PropParser.h"
 #include "Engine/Base/Managers/EntityAdmin.h"
 
-EntityResource::EntityResource(std::string uri) :
+EntityResource::EntityResource(URI uri) :
 	Resource(uri),
 	mReady(false)
 {};
@@ -43,7 +43,7 @@ void EntityResource::Load(Ptr<ResourceManager> resourceManager)
 	
 	if(resSchema == schemaList.end())
 	{
-		assert(false);
+		assert(false); // didn't find entity!
 	}
 
 	// List of components beloning to the entity we are trying to intializ
@@ -81,6 +81,7 @@ Entity EntityResource::ConstructEntity(EntityAdmin& admin)
 			constructionInfo->memSize,
 			entity
 		);
+
 		std::memcpy(component.GetPtr(), prototype.get(), constructionInfo->memSize);
 	}
 

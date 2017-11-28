@@ -23,7 +23,6 @@ public:
 
 private:
 	Ptr<Client> mClient;
-	Ptr<ClientInputManager> mClientInputManager;
 	Ptr<RegionAdmin> mRegionAdmin;
 
 	// An unfortunate friendship, but better than having setters

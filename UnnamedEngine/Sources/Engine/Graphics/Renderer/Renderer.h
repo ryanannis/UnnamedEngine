@@ -27,18 +27,18 @@ struct GraphicsData
 {
 	ResourceType<MeshResource> mesh;
 	Vector3f translation;
-	Vector3f rotation;
+	Quat rotation;
 };
 
 class Renderer
 {
 public:
-	Renderer();
+	Renderer(Ptr<Context> c);
 	~Renderer() = default;
 
 	void Render();
 	GraphicsHandle GenerateGraphicsData();
-	GraphicsData& GetGraphicsData(GraphicsHandle& handle);
+	GraphicsData& GetGraphicsData(const GraphicsHandle& handle);
 
 	const CameraData& GetCameraData() const;
 	void SetCameraData(const CameraData& data);

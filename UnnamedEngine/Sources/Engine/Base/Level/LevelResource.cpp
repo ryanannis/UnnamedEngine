@@ -9,7 +9,7 @@
 #include "Engine/Base/Resource/PropParser.h"
 #include "Engine/Base/Managers/EntityAdmin.h"
 
-LevelResource::LevelResource(std::string uri) :
+LevelResource::LevelResource(URI uri) :
 	Resource(uri),
 	mReady(false)
 {};

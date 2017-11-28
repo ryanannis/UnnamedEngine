@@ -23,7 +23,7 @@ Entity EntityAdmin::CreateEntity()
 	}
 
 	// Otherwise create a fresh one
-	const uint32_t eid = mEntityCounter++;
+	const uint32_t eid = ++mEntityCounter;
 	Entity entity{eid};
 	mGenerationTable.push_back(eid);
 	mEntities.push_back(entity);

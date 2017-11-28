@@ -18,18 +18,16 @@ public:
 
 	void Initialize();
 	void InitSystems();
-	void InitializeRenderer();
+	void InitSingletons();
+
 	void LoadIntoLevel(ResourceType<LevelResource> levelResource);
 
-
 	Ptr<ResourceManager> GetResourceManager();
-	Ptr<Renderer> GetRenderer();
-
+	Ptr<RegionAdmin> GetRegionAdmin();
 private:
 
 	Ptr<Context> mContext;
 	std::unique_ptr<RegionAdmin> mRegionAdmin;
 	std::unique_ptr<ResourceManager> mResourceManager;
-	std::unique_ptr<Renderer> mRenderer;
 	SystemAdmin mSystemAdmin;
 };

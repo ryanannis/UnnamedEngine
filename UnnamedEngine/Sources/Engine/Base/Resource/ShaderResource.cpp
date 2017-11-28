@@ -6,8 +6,8 @@
 #include <fstream>
 #include <sstream>
 
-ShaderResource::ShaderResource(std::string URI) :
-	Resource(URI)
+ShaderResource::ShaderResource(URI uri) :
+	Resource(uri)
 {}
 
 bool ShaderResource::IsReady() const
@@ -17,7 +17,7 @@ bool ShaderResource::IsReady() const
 
 void ShaderResource::Load(Ptr<ResourceManager> manager)
 {
-	URI shaderURI(GetURI());
+	const auto& shaderURI = GetURI();
 	
 	const auto& extension = shaderURI.GetExtension();
 	if(extension == "vert")

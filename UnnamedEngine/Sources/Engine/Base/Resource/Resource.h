@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "Engine/Base/Resource/URI.h"
 
 class ResourceManager;
 
@@ -11,13 +12,13 @@ class ResourceManager;
 class Resource
 {
 public:
-	Resource(std::string uri) : mUri(uri) {};
+	Resource(URI uri) : mUri(uri) {};
 	virtual bool IsReady() const = 0;
 	virtual void Load(Ptr<ResourceManager> manager )= 0;
-	std::string GetURI() const { return(mUri); }
+	const URI& GetURI() const { return(mUri); }
 
 private:
-	std::string mUri;
+	URI mUri;
 
 	friend ResourceManager;
 };

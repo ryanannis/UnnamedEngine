@@ -11,21 +11,16 @@
 class SystemAdmin;
 
 typedef uint64_t SystemFlag;
-static SystemFlag sSystemGroup = 0;
+
+struct SystemStatic
+{
+	static SystemFlag sSystemGroup;
+};
 
 template <typename Derived>
 class System : public SystemBase {
 public:
-	System()
-	{
-		// Systems almost are never created, so this pattern is fine
-		// for readability at the derived component level
-		if(!mDependenciesInitialized)
-		{
-			mDependenciesInitialized = true;
-			StaticInitDependencies();
-		}
-	}
+	System() = default;
 	virtual void StaticInitDependencies() = 0 {};
 	virtual void Update(float dt, Ptr<EntityAdmin> entityAdmin) = 0;
 	
@@ -40,7 +35,7 @@ public:
 
 	static SystemFlag SystemGroup()
 	{
-		static const int group = sSystemGroup++;
+		static const int group = SystemStatic::sSystemGroup++;
 		return(group);
 	}
 

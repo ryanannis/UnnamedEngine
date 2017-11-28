@@ -6,10 +6,13 @@
 struct URI
 {
 public:
+	URI() = default;
 	URI(const std::string strURI);
 	std::string GetFilePath() const;
 	std::string GetComponent() const;
 	std::string GetExtension() const;
+	std::string GetHash() const;
+	std::string GetSerialized() const;
 
 private:
 	std::string path;

@@ -15,7 +15,8 @@
 
 static size_t sGraphicsHandleCt;
 
-Renderer::Renderer()
+Renderer::Renderer(Ptr<Context> c) :
+	mContext{c}
 {
 	mDriver = std::make_unique<GLDriver>();
 }
@@ -37,6 +38,8 @@ void Renderer::Render()
 	ResourceType<ShaderResource> basicFragType("Engine/Basic.frag");
 	auto basicVert = mContext->GetResourceManager()->LoadResource(basicVertType);
 	auto basicFrag = mContext->GetResourceManager()->LoadResource(basicFragType);
+
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
 	for(const GraphicsData& g : mGraphicsData)
 	{
@@ -70,7 +73,7 @@ GraphicsHandle Renderer::GenerateGraphicsData()
 	return(g);
 }
 
-GraphicsData& Renderer::GetGraphicsData(GraphicsHandle& handle)
+GraphicsData& Renderer::GetGraphicsData(const GraphicsHandle& handle)
 {
 	assert(handle.id != 0); // invalid handle
 	return(mGraphicsData[handle.id - 1]);

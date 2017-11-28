@@ -6,8 +6,8 @@
 #include <assimp/mesh.h>
 #include <glm/glm.hpp>
 
-MeshResource::MeshResource(std::string URI) : 
-	Resource(URI),
+MeshResource::MeshResource(URI uri) : 
+	Resource(uri),
 	mReady(false)
 {
 }
@@ -25,7 +25,7 @@ void MeshResource::Load(Ptr<ResourceManager> manager)
 	// Load a Model from File
 	Assimp::Importer loader;
 	aiScene const *scene = loader.ReadFile(
-		CONTENT_DIR + GetURI(),
+		GetURI().GetFilePath(),
 		aiProcessPreset_TargetRealtime_MaxQuality |
 		aiProcess_OptimizeGraph |
 		aiProcess_FlipUVs
@@ -35,6 +35,7 @@ void MeshResource::Load(Ptr<ResourceManager> manager)
 	if(!scene)
 	{
 		fprintf(stderr, "%s\n", loader.GetErrorString());
+		assert(false);
 	}
 	else
 	{

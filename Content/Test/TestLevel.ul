@@ -1,0 +1,10 @@
+1 {
+    Resource = Test/BasicEntity/TestEntity;
+    Position = [0,0,0];
+    Rotation = [0,0,0];
+}
+2 {
+    Resource = Test/BasicEntity/TestEntity;
+    Position = [2,2,2];
+    Rotation = [0,0,0];
+}

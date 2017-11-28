@@ -1,13 +1,24 @@
 #include "Engine/Base/Client/Client.h"
+#include "Engine/Base/Common/Common.h"
+
 #include <memory>
 #include "Engine/Base/Client/GameFramework.h"
+#include "Engine/Base/Components/CameraComponent.h"
 
 #include "Engine/Base/Types/StaticRegistry.h"
 static int dummy = StaticRegister();
 
 int main(int, char* [])
 {
-	Client c(std::make_unique<GameFramework>(nullptr));
+	Context context;
+	Client c(&context, std::make_unique<GameFramework>(&context));
 	c.Initialize();
+	// temp for testing
+	ResourceType<LevelResource> level("Test/TestLevel.ul");
+	ResourceType<EntityResource> player("Test/BasicPlayer/TestPlayer");
+	c.GetTarget()->LoadIntoLevel(level);
+	Entity& e = c.GetTarget()->GetRegionAdmin()->CreateEntity(player, Vector3f(2, 2, 2), Vector3f(0, 0, 0), false);
+	c.GetTarget()->GetRegionAdmin()->GetEntityAdmin()->AddComponent<CameraComponent>(e);
+
 	c.Run();
 }

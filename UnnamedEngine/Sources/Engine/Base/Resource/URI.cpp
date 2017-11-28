@@ -6,7 +6,6 @@
 
 static const std::string DATA_FILE_EXTENSION = "udf";
 
-
 URI::URI(const std::string strURI)
 {
 	// Split string
@@ -52,7 +51,7 @@ URI::URI(const std::string strURI)
 
 std::string URI::GetFilePath() const
 {
-	return(CONTENT_DIR + path + "/" + file + "." + ext);
+	return(CONTENT_DIR + path + file + "." + ext);
 }
 
 std::string URI::GetComponent() const
@@ -63,4 +62,15 @@ std::string URI::GetComponent() const
 std::string URI::GetExtension() const
 {
 	return(ext);
+}
+
+std::string URI::GetHash() const
+{
+	return(GetFilePath());
+}
+
+std::string URI::GetSerialized() const
+{
+	//todo
+	return(GetFilePath());
 }

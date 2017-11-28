@@ -104,7 +104,15 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 				shouldTerminate = true;
 			}
 		}
-		else if((c >= 'A' && c <= 'z') || (c >= '0' && c <= '9') || c == '_')
+		else if
+		(
+			(
+				(c >= 'A' && c <= 'Z') || 
+				(c >= 'a' && c <= 'z')
+			) || 
+			(c >= '0' && c <= '9') ||
+			c == '_'
+		)
 		{
 			if(state == DSMState::RELATIVEPATH)
 			{
@@ -127,7 +135,7 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 			}
 			continue;
 		}
-		else if(c == '(' || c == ')' || c == '{' || c == '}' || c == ':' || c == '=' || c == ';')
+		else if(c == '(' || c == ')' || c== '[' || c == ']' || c == '{' || c == '}' || c == ':' || c == '=' || c == ';' || c== ',')
 		{
 			shouldTerminate = true;
 			nextState = DSMState::Sym;
