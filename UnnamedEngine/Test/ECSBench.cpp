@@ -58,5 +58,5 @@ void BasicBenchmark(const size_t ENTITIES, const size_t UPDATES)
 
 TEST_CASE("Benchmark ECS Lite - Pos & Velocity", "[Benchmark]")
 {
-	BasicBenchmark(10000, 50000);
+	BasicBenchmark(1, 1);
 }
