@@ -18,7 +18,8 @@ int main(int, char* [])
 	ResourceType<EntityResource> player("Test/BasicPlayer/TestPlayer");
 	c.GetTarget()->LoadIntoLevel(level);
 	Entity& e = c.GetTarget()->GetRegionAdmin()->CreateEntity(player, Vector3f(2, 2, 2), Vector3f(0, 0, 0), false);
-	c.GetTarget()->GetRegionAdmin()->GetEntityAdmin()->AddComponent<CameraComponent>(e);
+	auto camera = c.GetTarget()->GetRegionAdmin()->GetEntityAdmin()->AddComponent<CameraComponent>(e);
+	camera->pEntityCameraTranslation = Vector3f(-1, -2, 0);
 
 	c.Run();
 }

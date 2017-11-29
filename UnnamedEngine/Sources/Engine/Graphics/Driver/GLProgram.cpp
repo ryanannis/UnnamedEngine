@@ -11,11 +11,9 @@ GLProgram::GLProgram()
 	mProgramHandle = glCreateProgram();
 }
 
-GLProgram::GLProgram(GLProgram&& other)
+void GLProgram::Free()
 {
-	mProgramHandle = other.mProgramHandle;
-	other.mProgramHandle = 0;
-	mShaders = std::move(other.mShaders);
+	glDeleteProgram(mProgramHandle);
 }
 
 GLuint GLProgram::GetProgramHandle() const

@@ -25,3 +25,8 @@ void GLAttributes::Bind()
 {
 	glBindVertexArray(mVAO);
 }
+
+void GLAttributes::Free()
+{
+	glDeleteVertexArrays(1, &mVAO);
+}

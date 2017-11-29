@@ -5,6 +5,7 @@ class GLAttributes
 {
 public:
 	GLAttributes();
+
 	void AddAttribute(
 		GLuint index,
 		GLint size,
@@ -14,6 +15,8 @@ public:
 
 	GLuint GetHandle();
 	void Bind();
+
+	void Free();
 
 private:
 	GLuint mVAO;

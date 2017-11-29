@@ -5,12 +5,11 @@
 
 class ShaderResource;
 
-class GLShader : public NonCopyable
+class GLShader
 {
 public:
 	GLShader(const std::weak_ptr<ShaderResource>& resource);
-	GLShader(GLShader&& other);
-	~GLShader();
+	void Free();
 	GLuint GetShaderHandle() const;
 
 private:

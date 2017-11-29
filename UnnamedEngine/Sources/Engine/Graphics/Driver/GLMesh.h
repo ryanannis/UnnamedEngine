@@ -6,13 +6,11 @@
 
 class MeshResource;
 
-class GLMesh : public NonCopyable
+class GLMesh
 {
 public:
 	GLMesh(const std::weak_ptr<MeshResource>& resource);
-	GLMesh(GLMesh&& other);
-	~GLMesh();
-
+	void Free();
 	size_t GetSize() const;
 
 private:

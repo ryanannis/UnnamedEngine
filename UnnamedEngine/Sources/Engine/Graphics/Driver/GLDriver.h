@@ -1,5 +1,4 @@
 #pragma once
-
 #include <memory>
 #include "Engine/Base/Resource/MeshResource.h"
 #include "Engine/Base/Resource/ShaderResource.h"
@@ -8,6 +7,8 @@
 #include "Engine/Graphics/Driver/GLProgram.h"
 #include "Engine/Graphics/Driver/GLShader.h"
 #include "Engine/Graphics/Driver/GLAttributes.h"
+
+struct GLFWwindow;
 
 class GLDriver
 {
@@ -22,6 +23,7 @@ public:
 		const std::weak_ptr<ShaderResource>& fragShader
 	);
 	Ptr<GLAttributes> CreateAttributes();
+	void SwapBuffers(GLFWwindow* window);
 
 private:
 	std::vector<GLMesh> mMeshes;

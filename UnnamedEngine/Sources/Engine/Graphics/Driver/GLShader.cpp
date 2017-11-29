@@ -41,13 +41,7 @@ GLShader::GLShader(const std::weak_ptr<ShaderResource>& resource)
 	}
 }
 
-GLShader::GLShader(GLShader&& other)
-{
-	mShaderHandle = other.mShaderHandle;
-	other.mShaderHandle = 0;
-}
-
-GLShader::~GLShader()
+void GLShader::Free()
 {
 	if(mShaderHandle != 0)
 	{

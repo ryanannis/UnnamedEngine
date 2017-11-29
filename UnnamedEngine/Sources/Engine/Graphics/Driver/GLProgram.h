@@ -8,11 +8,12 @@
 
 #include "Engine/Graphics/Driver/GLShader.h"
 
-class GLProgram : public NonCopyable
+class GLProgram
 {
 public:
 	GLProgram();
-	GLProgram(GLProgram&& other);
+	void Free();
+
 	void RegisterShader(const GLShader& shader);
 	void Link();
 	void Bind();

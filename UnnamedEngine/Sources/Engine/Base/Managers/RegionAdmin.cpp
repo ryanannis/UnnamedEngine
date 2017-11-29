@@ -52,7 +52,7 @@ Entity RegionAdmin::CreateEntity(const ResourceType<EntityResource>& res, Vector
 		if(transformComponent)
 		{
 			// todo:  figure out how to initialize this in a non-shitty way
-			transformComponent->pEntityWorldRotation = position;
+			transformComponent->pEntityWorldTranslation = position;
 			transformComponent->pEntityWorldRotation = rotation;
 		}
 
