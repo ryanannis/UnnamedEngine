@@ -4,6 +4,7 @@ ArrayPool::ArrayPool(size_t blockSize) :
 	mBlockSize(blockSize)
 {
 	mCapacity = 48;
+
 	mStart = malloc(mBlockSize * mCapacity);
 	mEnd = static_cast<char*>(mStart) + mBlockSize * mCapacity;
 }
@@ -11,7 +12,24 @@ ArrayPool::ArrayPool(size_t blockSize) :
 void* ArrayPool::GetComponent(uint32_t entityID)
 {
 	void* ptr = static_cast<char*>(mStart) + mBlockSize * entityID;
-	assert(ptr < mEnd);
+
+	if(entityID >= mCapacity)
+	{
+		size_t ctr = mCapacity;
+		// Then component is in uncollated memory
+		// todo:  do based on powers of 2
+		for(size_t i = 0; i < mUncollatedMemory.size(); i++)
+		{
+			if(entityID < ctr + mUncollatedMemory[i].second)
+			{
+				void* ptr = static_cast<char*>(mUncollatedMemory[i].first) + mBlockSize * (entityID - ctr);
+				return(ptr);
+			}
+			ctr += mUncollatedMemory[i].second;
+		}
+		assert(false); // invalid access!
+	}
+
 	return(ptr);
 }
 
@@ -19,9 +37,20 @@ void* ArrayPool::GetComponent(uint32_t entityID)
 void* ArrayPool::AllocComponent(uint32_t entityID)
 {
 	void* add = static_cast<char*>(mStart) + mBlockSize * entityID;
-	if(add >= mEnd)
+	if(entityID >= mCapacity)
 	{
-		DoublePoolSize();
+		size_t ctr = mCapacity;
+		for(size_t i = 0; i < mUncollatedMemory.size(); i++)
+		{
+			if(entityID < ctr + mUncollatedMemory[i].second)
+			{
+				void* ptr = static_cast<char*>(mUncollatedMemory[i].first) + mBlockSize * (entityID - ctr);
+				return(ptr);
+			}
+			ctr += mUncollatedMemory[i].second;
+		}
+		// we're out of space - time to create another uncollated block
+		mUncollatedMemory.push_back(std::pair<void*, int>(malloc(mBlockSize * ctr), ctr));
 		return(AllocComponent(entityID));
 	}
 	return(add);
@@ -32,14 +61,12 @@ void ArrayPool::DeleteComponent(uint32_t entityID)
 	//todo:  arraypool should only be able to resize, not delete?  unless we want components with heap alloced stuff (ew)
 }
 
-void ArrayPool::DoublePoolSize()
+void ArrayPool::OnBetweenFrames()
 {
-	size_t newCapacity = mCapacity * 2;
-	void *newStart = malloc(mBlockSize * mCapacity);
-	void *newEnd = static_cast<char*>(newStart) + mBlockSize * mCapacity;
-	std::memcpy(newStart, mStart, mCapacity);
-	free(mStart);
-	mStart = newStart;
-	mEnd = newEnd;
-	mCapacity = newCapacity;
+	CollateMemory();
+}
+
+void ArrayPool::CollateMemory()
+{
+	//todo
 }

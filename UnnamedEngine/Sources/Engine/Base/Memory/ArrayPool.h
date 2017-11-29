@@ -13,9 +13,12 @@ public:
 	virtual void* GetComponent(uint32_t entityID) override;
 	virtual void* AllocComponent(uint32_t entityID) override;
 	virtual void DeleteComponent(uint32_t entityID) override;
+	virtual void OnBetweenFrames() override;
 
 private:
-	void DoublePoolSize();
+	void CollateMemory();
+
+	std::vector<std::pair<void*, int>> mUncollatedMemory;
 	size_t mCapacity;
 	size_t mBlockSize;
 	void* mStart;

@@ -14,4 +14,7 @@ public:
 	virtual void* GetComponent(uint32_t entityID) = 0;
 	virtual void* AllocComponent(uint32_t entityID) = 0;
 	virtual void DeleteComponent(uint32_t entityID) = 0;
+	// Component ptrs are not guaranteed between frames so this gives time 
+	// to collate memory / garbage collect etc.
+	virtual void OnBetweenFrames() {};
 };
