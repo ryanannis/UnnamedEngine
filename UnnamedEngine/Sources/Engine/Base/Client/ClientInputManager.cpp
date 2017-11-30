@@ -67,6 +67,7 @@ void ClientInputManager::Initialize()
 
 void ClientInputManager::Update()
 {
+	glfwPollEvents();
 }
 
 bool ClientInputManager::HasInput() const

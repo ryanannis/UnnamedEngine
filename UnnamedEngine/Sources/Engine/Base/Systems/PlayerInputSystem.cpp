@@ -12,12 +12,15 @@ PlayerInputSystem::PlayerInputSystem(Ptr<Context> context) :
 void PlayerInputSystem::Update(float, Ptr<EntityAdmin> e)
 {
 	Ptr<InputComponent> inputComponent = GetSingletonWriteComponent<InputComponent>(e);
+	inputComponent->inputEvents.clear();
+
 	Ptr<ClientInputManager> manager = mContext->GetInputManager();
 	while(manager->HasInput())
 	{
 		InputEvent event = manager->GetInputEvent();
 		inputComponent->inputEvents.push_back(event);
 	}
+	
 }
 
 void PlayerInputSystem::StaticInitDependencies()

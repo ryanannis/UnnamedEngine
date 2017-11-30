@@ -18,15 +18,22 @@ void RenderSystem::Update(float, Ptr<EntityAdmin> entityAdmin)
 	const auto& cameraEntities = entityAdmin->GetEntities<CameraComponent>();
 	assert(cameraEntities.size() == 1);
 
-	const auto camera = GetComponent<const CameraComponent>(entityAdmin, cameraEntities[0]);
+	const auto cameraEntity = cameraEntities[0];
+	const auto camera = GetComponent<const CameraComponent>(entityAdmin, cameraEntity);
 	const auto& rotation = camera->pEntityCameraRotation;
 	const auto& translation = camera->pEntityCameraTranslation;
 
+	const auto transform = GetComponent<const TransformComponent>(entityAdmin, cameraEntity);
+
+	// todo:  temp
 	CameraData c;
 	c.fov = 60;
 	c.aspectRatio = 1.78;
 	c.rotation = rotation;
 	c.translation = translation;
+
+	assert(transform); // i sure hope the camera has a transform...
+	c.translation += transform->pEntityWorldTranslation;
 
 	mContext->GetRenderer()->SetCameraData(std::move(c));
 

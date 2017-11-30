@@ -98,6 +98,7 @@ void Client::Run()
 		assert(mTarget);
 		auto before = std::chrono::high_resolution_clock::now();
 
+		mInputManager.Update();
 		mTarget->Update(1.f/60);
 		mRenderer->Render();
 

@@ -19,6 +19,8 @@ int main(int, char* [])
 	c.GetTarget()->LoadIntoLevel(level);
 	Entity& e = c.GetTarget()->GetRegionAdmin()->CreateEntity(player, Vector3f(2, 2, 2), Vector3f(0, 0, 0), false);
 	auto camera = c.GetTarget()->GetRegionAdmin()->GetEntityAdmin()->AddComponent<CameraComponent>(e);
+	c.GetTarget()->GetGameClient()->SetLocalPlayerEntity(e);
+
 	camera->pEntityCameraTranslation = Vector3f(-1, -2, 0);
 
 	c.Run();

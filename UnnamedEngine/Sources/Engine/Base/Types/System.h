@@ -74,10 +74,10 @@ protected:
 		const ComponentFlag accessingComponent = ComponentGroup<T>();
 		assert(
 			std::find(
-				GetReadWriteDependencies.begin(),
-				GetReadWriteDependencies.end(), 
+				writeDeps.begin(),
+				writeDeps.end(),
 				accessingComponent
-			) != readDeps.end()
+			) != writeDeps.end()
 		);
 
 		return(admin->GetComponent<T>(e));

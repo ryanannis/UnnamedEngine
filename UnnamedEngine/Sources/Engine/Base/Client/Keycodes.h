@@ -3,6 +3,8 @@
 #include <array>
 #include "Engine/Base/Common/Reflection.h"	
 
+typedef int Keycode;
+
 #define KEYMAP(LETTER, KEYCODE) constexpr Key LETTER(#LETTER, KEYCODE)
 
 struct Key
@@ -68,3 +70,6 @@ constexpr auto KEYMAPPINGS = makeArray
 	KEY_Y,
 	KEY_Z
 );
+
+bool operator==(const Key k, const Keycode kc);
+bool operator==(const Keycode kc, const Key k);
