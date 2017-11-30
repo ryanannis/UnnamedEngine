@@ -14,6 +14,8 @@ struct CameraData
 	Vector3f translation;
 	Quat rotation;
 	float fov;
+	float aspectRatio;
+
 };
 
 struct ViewportData
@@ -36,6 +38,8 @@ public:
 	Renderer(Ptr<Context> c);
 	~Renderer() = default;
 
+	void Initialize();
+
 	void Render();
 	GraphicsHandle GenerateGraphicsData();
 	GraphicsData& GetGraphicsData(const GraphicsHandle& handle);
@@ -48,9 +52,18 @@ private:
 
 	std::unique_ptr<GLDriver> mDriver;
 
+	Matrix4 GetCameraVPMatrix();
+
+	void RenderMeshes();
+
 	CameraData mCameraData;
 	Ptr<Context> mContext;
-	std::vector<GraphicsData> mGraphicsData; //temp
+	std::vector<GraphicsData> mGraphicsData;
+
+	// Hardcoded Resources
+	std::weak_ptr<ShaderResource> mBasicVert;
+	std::weak_ptr<ShaderResource> mBasicFrag;
+
 	// Disable copying
 	Renderer& operator=(const Renderer&) = delete;
 	Renderer(const Renderer&) = delete;

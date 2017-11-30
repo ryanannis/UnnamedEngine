@@ -64,18 +64,21 @@ void GLProgram::SetUniformVertex4f(const char* name, Vector4f val)
 
 void GLProgram::SetUniformInt(const char* name, int i)
 {
+	Bind();
 	GLuint uniform = GetUniformLocation(name);
 	glUniform1i(uniform, i);
 }
 
 void GLProgram::SetUniformFloat(const char* name, float f)
 {
+	Bind();
 	GLuint uniform = GetUniformLocation(name);
 	glUniform1f(uniform, f);
 }
 
 void GLProgram::SetUniformMatrix4(const char* name, const Matrix4& mat)
 {
+	Bind();
 	GLuint uniform = GetUniformLocation(name);
 	glUniformMatrix4fv(uniform, 1, GL_FALSE, &mat[0][0]);
 }

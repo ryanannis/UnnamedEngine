@@ -40,6 +40,7 @@ void Client::Initialize()
 	InitializeContext();
 
 	GetTarget()->Initialize();
+	mRenderer->Initialize();
 }
 
 void Client::InitializeRenderer()

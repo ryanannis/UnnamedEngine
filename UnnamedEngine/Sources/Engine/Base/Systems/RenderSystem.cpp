@@ -23,7 +23,8 @@ void RenderSystem::Update(float, Ptr<EntityAdmin> entityAdmin)
 	const auto& translation = camera->pEntityCameraTranslation;
 
 	CameraData c;
-	c.fov = 180;
+	c.fov = 60;
+	c.aspectRatio = 1.78;
 	c.rotation = rotation;
 	c.translation = translation;
 

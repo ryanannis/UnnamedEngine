@@ -14,6 +14,8 @@ void GLAttributes::AddAttribute(
 {
 	Bind();
 	glVertexAttribPointer(index, size, type, GL_FALSE, stride, (void*)0);
+	glEnableVertexAttribArray(index);
+	mAttributeIndices.push_back(index);
 }
 
 GLuint GLAttributes::GetHandle()
@@ -29,4 +31,8 @@ void GLAttributes::Bind()
 void GLAttributes::Free()
 {
 	glDeleteVertexArrays(1, &mVAO);
+	for(auto indice : mAttributeIndices)
+	{
+		glEnableVertexAttribArray(indice);
+	}
 }

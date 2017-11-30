@@ -1,5 +1,6 @@
 #pragma once
 #include <glad/glad.h>
+#include <vector>
 
 class GLAttributes
 {
@@ -19,5 +20,7 @@ public:
 	void Free();
 
 private:
+	std::vector<GLuint> mAttributeIndices;
 	GLuint mVAO;
 };
+

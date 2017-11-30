@@ -16,16 +16,20 @@ public:
 	GLDriver() = default;
 	
 	void ClearResources();
+	void ClearFramebuffer(uint8_t r, uint8_t b, uint8_t g);
 
 	Ptr<GLMesh> CreateMesh(const std::weak_ptr<MeshResource>& meshResource);
 	Ptr<GLProgram> CreateProgram(
+		const Ptr<GLAttributes>& vao,
 		const std::weak_ptr<ShaderResource>& vertShader,
 		const std::weak_ptr<ShaderResource>& fragShader
 	);
 	Ptr<GLAttributes> CreateAttributes();
 	void SwapBuffers(GLFWwindow* window);
+	void DrawElements(size_t size);
 
 private:
+	std::vector<GLuint> mVAOS;
 	std::vector<GLMesh> mMeshes;
 	std::vector<GLProgram> mPrograms;
 	std::vector<GLAttributes> mAttributes;

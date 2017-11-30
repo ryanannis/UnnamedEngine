@@ -23,6 +23,15 @@ Renderer::Renderer(Ptr<Context> c) :
 	mDriver = std::make_unique<GLDriver>();
 }
 
+// This comes in after the resource manager is done
+void Renderer::Initialize()
+{
+	ResourceType<ShaderResource> basicVertType("Engine/Basic.vert");
+	ResourceType<ShaderResource> basicFragType("Engine/Basic.frag");
+	mBasicVert = mContext->GetResourceManager()->LoadResource(basicVertType);
+	mBasicFrag = mContext->GetResourceManager()->LoadResource(basicFragType);
+}
+
 const CameraData& Renderer::GetCameraData() const
 {
 	return(mCameraData);
@@ -33,36 +42,44 @@ void Renderer::SetCameraData(const CameraData& data)
 	mCameraData = data;
 }
 
+Matrix4 Renderer::GetCameraVPMatrix()
+{
+	const auto viewMat = glm::mat4_cast(mCameraData.rotation);
+	const auto perspectiveMat = glm::perspective(mCameraData.fov, mCameraData.aspectRatio, 0.01f, 1000.0f);
+	return(perspectiveMat * glm::inverse(viewMat));
+}
+
+
 void Renderer::Render()
 {
-	// this is temp as I don't have structure for render passes setup atm
-	ResourceType<ShaderResource> basicVertType("Engine/Basic.vert");
-	ResourceType<ShaderResource> basicFragType("Engine/Basic.frag");
-	auto basicVert = mContext->GetResourceManager()->LoadResource(basicVertType);
-	auto basicFrag = mContext->GetResourceManager()->LoadResource(basicFragType);
+	mDriver->ClearFramebuffer(0, 0, 0);
 
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	RenderMeshes();
+
+	mDriver->SwapBuffers(mContext->GetClient()->GetWindow());
+	mDriver->ClearResources();
+}
+
+void Renderer::RenderMeshes()
+{
+	// Generate VAO
+	auto vao = mDriver->CreateAttributes();
+	vao->Bind();
+
+	// Generate Programs
+	auto basicProgram = mDriver->CreateProgram(vao, mBasicVert, mBasicFrag);
+	basicProgram->SetUniformMatrix4("MVP", GetCameraVPMatrix());
+	basicProgram->Bind();
 
 	for(const GraphicsData& g : mGraphicsData)
 	{
-		Matrix4 viewMat = glm::mat4_cast(mCameraData.rotation);
-		viewMat = glm::translate(viewMat, mCameraData.translation);
+		vao->Bind();
 		auto meshWkRes = mContext->GetResourceManager()->LoadResource(g.mesh);
-
-		// GL stuff for drawing a mesh - should be moved in the future
-		auto basicProgram = mDriver->CreateProgram(basicVert, basicFrag);
-		basicProgram->SetUniformMatrix4("MVP", viewMat);
-		basicProgram->Bind();
-		auto basicProgramAttributes = mDriver->CreateAttributes();
-		basicProgramAttributes->AddAttribute(0, 3, GL_FLOAT, 3 * sizeof(float));
-		basicProgramAttributes->Bind();
 		auto mesh = mDriver->CreateMesh(meshWkRes);
-
-		glDrawElements(GL_TRIANGLES, mesh->GetSize(), GL_UNSIGNED_INT, 0);
+		vao->AddAttribute(0, 3, GL_FLOAT, 3 * sizeof(float));
+		mDriver->DrawElements(mesh->GetSize());
 	}
-	mDriver->SwapBuffers(mContext->GetClient()->GetWindow());
-	mDriver->ClearResources();
+
 }
 
 
@@ -84,3 +101,4 @@ GraphicsData& Renderer::GetGraphicsData(const GraphicsHandle& handle)
 	assert(handle.id != 0); // invalid handle
 	return(mGraphicsData[handle.id - 1]);
 }
+
