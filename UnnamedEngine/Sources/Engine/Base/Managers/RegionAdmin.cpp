@@ -58,12 +58,16 @@ Entity RegionAdmin::CreateEntity(const ResourceType<EntityResource>& res, Vector
 
 		//todo:  how useful would an entity event system be? this just adds the GD but could be 
 		auto renderComponent = mEntityAdmin.GetComponent<RenderComponent>(e);
-		auto handle = mContext->GetRenderer()->GenerateGraphicsData();
-		renderComponent->handle = handle;
-		auto& gd = mContext->GetRenderer()->GetGraphicsData(handle);
-		gd.mesh = renderComponent->mesh;
-		gd.rotation = rotation;
-		gd.translation = position;
+
+		if(renderComponent)
+		{
+			auto handle = mContext->GetRenderer()->GenerateGraphicsData();
+			renderComponent->handle = handle;
+			auto& gd = mContext->GetRenderer()->GetGraphicsData(handle);
+			gd.mesh = renderComponent->mesh;
+			gd.rotation = rotation;
+			gd.translation = position;
+		}
 
 		return(e);
 	}

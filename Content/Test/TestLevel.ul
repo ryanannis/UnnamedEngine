@@ -8,3 +8,18 @@
     Position = [2,2,2];
     Rotation = [0,0,0];
 }
+3 {
+    Resource = Test/BasicEntity/TestEntity;
+    Position = [1,1,1];
+    Rotation = [0,0,0];
+}
+4 {
+    Resource = Test/BasicEntity/TestEntity;
+    Position = [0.5,0.5,0.5];
+    Rotation = [0,0,0];
+}
+5 {
+    Resource = Test/BasicEntity/TestEntity;
+    Position = [0.1,0,0.1];
+    Rotation = [0,0,0];
+}

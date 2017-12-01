@@ -21,5 +21,5 @@ public:
 };
 
 template<> std::string Component<RenderComponent>::sName = "RenderComponent";
-template<> StorageStrategy Component<RenderComponent>::sStorageStrategy = StorageStrategy::Consecutive;
+template<> StorageStrategy Component<RenderComponent>::sStorageStrategy = StorageStrategy::HashMap;
 

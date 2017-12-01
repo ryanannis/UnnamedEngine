@@ -40,7 +40,7 @@ void FreecamPlayerSystem::Update(float delta, Ptr<EntityAdmin> e)
 		}
 		else if(input.GetKeycode() == KEY_S)
 		{
-			forward = -1.0f;
+			forward = 1.0f;
 			forwardInputs++;
 		}
 		else if(input.GetKeycode() == KEY_A)
@@ -78,6 +78,10 @@ void FreecamPlayerSystem::Update(float delta, Ptr<EntityAdmin> e)
 
 	// Update entity camera transform
 	auto cameraEulers = glm::eulerAngles(cameraComponent->pEntityCameraRotation);
+	if(cameraEulers.x < 0)
+	{
+		cameraEulers.x += 2 * M_PI;
+	}
 	cameraEulers.y += mouseDx * SENSITIVITY; // pitch
 	cameraEulers.x += mouseDy * SENSITIVITY; // yaw
 	cameraComponent->pEntityCameraRotation = glm::quat(cameraEulers);

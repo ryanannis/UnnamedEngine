@@ -68,7 +68,6 @@ void Renderer::RenderMeshes()
 
 	// Generate Programs
 	auto basicProgram = mDriver->CreateProgram(vao, mBasicVert, mBasicFrag);
-	basicProgram->SetUniformMatrix4("MVP", GetCameraVPMatrix());
 	basicProgram->Bind();
 
 	for(const GraphicsData& g : mGraphicsData)
@@ -77,6 +76,7 @@ void Renderer::RenderMeshes()
 		auto meshWkRes = mContext->GetResourceManager()->LoadResource(g.mesh);
 		auto mesh = mDriver->CreateMesh(meshWkRes);
 		vao->AddAttribute(0, 3, GL_FLOAT, 3 * sizeof(float));
+		basicProgram->SetUniformMatrix4("MVP", GetCameraVPMatrix() * glm::translate(g.translation));
 		mDriver->DrawElements(mesh->GetSize());
 	}
 
