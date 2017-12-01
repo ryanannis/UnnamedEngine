@@ -1,5 +1,5 @@
 #pragma once
-#include "Engine/Base/Common/Ptr.h"
+#include "Engine/Base/Common/Common.h"
 
 #include <deque>
 #include <queue>
@@ -23,10 +23,15 @@ public:
 
 private:
 	void QueueInput(InputEvent e);
+	void QueueMouseInput(Vector2f pos);
 	static void RecieveGLFWInput(GLFWwindow* self, int keycode, int scancode, int action, int mods);
+	static void RecieveGLFWMouseInput(GLFWwindow* window, double xpos, double ypos);
 	Ptr<Context> GetContext() { return(mContext); }
 	
 	std::queue<InputEvent> mInputQueue;
+
+	Vector2f mLastMousePosition;
+	Vector2f mSecondLastMousePosition;
 
 	Ptr<Context> mContext;
 

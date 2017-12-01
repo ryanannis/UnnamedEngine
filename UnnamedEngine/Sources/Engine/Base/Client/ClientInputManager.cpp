@@ -30,12 +30,19 @@ void ClientInputManager::RecieveGLFWInput(GLFWwindow* self, int keycode, int sca
 
 	sActiveInstance->QueueInput(event);
 }
+void ClientInputManager::RecieveGLFWMouseInput(GLFWwindow* window, double xpos, double ypos)
+{
+	Vector2f mouseMovement(xpos, ypos);
+	sActiveInstance->QueueMouseInput(mouseMovement);
+}
 #pragma warning( pop ) 
 
 //////////////////////////////////////////////////////////
 
 ClientInputManager::ClientInputManager(Ptr<Context> context) :
-	mContext(context)
+	mContext(context),
+	mLastMousePosition(Vector2f(0.f,0.f)),
+	mSecondLastMousePosition(Vector2f(0.f, 0.f))
 {
 	/* We shouldn't ever need more than one of these active at once.
 	 * If we do...  It's time to deal with the GLFW C-style fpointer 
@@ -55,10 +62,33 @@ void ClientInputManager::QueueInput(InputEvent e)
 	mInputQueue.emplace(e);
 }
 
+void ClientInputManager::QueueMouseInput(Vector2f pos)
+{
+	mSecondLastMousePosition = mLastMousePosition;
+	mLastMousePosition = pos;
+	InputEvent eventX(
+		MOUSE_X.keycode,
+		InputState::MOUSE_MOVEMENT,
+		mLastMousePosition.x - mSecondLastMousePosition.x
+	);
+	mInputQueue.push(eventX);
+
+	InputEvent eventY(
+		MOUSE_Y.keycode,
+		InputState::MOUSE_MOVEMENT,
+		mLastMousePosition.y - mSecondLastMousePosition.y
+	);
+	mInputQueue.push(eventY);
+}
+
 void ClientInputManager::Initialize()
 {
 	sActiveInstance = this;
 
+	glfwSetCursorPosCallback(
+		mContext->GetClient()->GetGLFWContext(), 
+		&RecieveGLFWMouseInput
+	);
 	glfwSetKeyCallback(
 		mContext->GetClient()->GetGLFWContext(),
 		&RecieveGLFWInput

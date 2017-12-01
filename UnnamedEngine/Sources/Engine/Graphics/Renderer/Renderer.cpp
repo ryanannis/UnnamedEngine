@@ -44,9 +44,9 @@ void Renderer::SetCameraData(const CameraData& data)
 
 Matrix4 Renderer::GetCameraVPMatrix()
 {
-	const auto viewMat = glm::translate(glm::mat4_cast(mCameraData.rotation), mCameraData.translation);
+	const auto viewMat = glm::transpose(glm::mat4_cast(mCameraData.rotation)) * glm::translate(-mCameraData.translation);
 	const auto perspectiveMat = glm::perspective(mCameraData.fov, mCameraData.aspectRatio, 0.01f, 1000.0f);
-	return(perspectiveMat * glm::inverse(viewMat));
+	return(perspectiveMat * viewMat);
 }
 
 

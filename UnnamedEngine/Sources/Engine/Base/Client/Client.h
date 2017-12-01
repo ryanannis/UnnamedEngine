@@ -32,6 +32,7 @@ public:
 	Ptr<Context> GetContext() { return(mContext); }
 	Ptr<GLFWwindow> GetGLFWContext() { return(mWindow); }
 	Ptr<ClientInputManager> GetInputManager() { return(&mInputManager); }
+	Vector2i GetWindowSize() const;
 
 private:
 	bool mShouldTerminate;

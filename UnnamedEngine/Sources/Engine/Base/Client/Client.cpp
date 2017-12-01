@@ -13,6 +13,9 @@
 #include <chrono>
 #include <thread>
 
+const int SCREENWIDTH = 1280;
+const int SCREENHEIGHT = 720;
+
 Client::Client(Ptr<Context> context, std::unique_ptr<GameFramework>&& target) :
 	mShouldTerminate(false),
 	mContext(context), // we create this in main to avoid a depedency betwen GameFramework and Client
@@ -47,8 +50,8 @@ void Client::InitializeRenderer()
 {
 	RenderSettings s;
 	// hardcoded for now
-	s.screenHeight = 720;
-	s.screenWidth = 1280;
+	s.screenHeight = SCREENHEIGHT;
+	s.screenWidth = SCREENWIDTH;
 
 	mRenderer = std::make_unique<Renderer>(mContext);
 }
@@ -63,7 +66,7 @@ void Client::InitializeWindow()
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	mWindow = glfwCreateWindow(1280, 720, "OpenGL", nullptr, nullptr);
+	mWindow = glfwCreateWindow(SCREENWIDTH, SCREENHEIGHT, "OpenGL", nullptr, nullptr);
 
 	if(mWindow == nullptr){
 		std::cerr << "Failed to initialize OpenGL context." << std::endl;
@@ -73,6 +76,8 @@ void Client::InitializeWindow()
 	gladLoadGL();
 
 	std::cerr << "Successfully initialized OpenGL context." << std::endl;
+
+	glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void Client::InitializeContext()
@@ -105,10 +110,12 @@ void Client::Run()
 		auto after = std::chrono::high_resolution_clock::now();
 		auto elapsed = after - before;
 
-		auto int_ms = std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed);
-		//std::cout << "Rendered frame in: " << int_ms.count() << "ns" << std::endl;
+		auto int_ms = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed);
+		std::cout << "Rendered frame in: " << int_ms.count() << "ns" << std::endl;
 
 		std::this_thread::sleep_for(std::chrono::nanoseconds(16666666) - int_ms);
+
+		mShouldTerminate = mShouldTerminate || glfwWindowShouldClose(mWindow);
 	}
 
 	glfwDestroyWindow(GetWindow());
@@ -122,5 +129,10 @@ Ptr<GLFWwindow> Client::GetWindow()
 Ptr<Renderer> Client::GetRenderer()
 {
 	return(mRenderer.get());
+}
+
+Vector2i Client::GetWindowSize() const
+{
+	return(Vector2i(SCREENWIDTH, SCREENHEIGHT));
 }
 
