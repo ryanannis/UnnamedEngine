@@ -21,6 +21,8 @@ option(BUILD_OPENGL3_DEMOS OFF)
 option(BUILD_UNIT_TESTS OFF)
 add_subdirectory(UnnamedEngine/Vendor/bullet)
 
+add_subdirectory(UnnamedEngine/Vendor/freetype)
+
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /std:c++17 /Zi")
 else()
@@ -37,7 +39,8 @@ include_directories(UnnamedEngine/Sources/
 					UnnamedEngine/Vendor/glad/include/
                     UnnamedEngine/Vendor/glfw/include/
                     UnnamedEngine/Vendor/glm/
-                    UnnamedEngine/Vendor/stb/)
+                    UnnamedEngine/Vendor/stb/
+					UnnamedEngine/Vendor/freetype/include/)
 
 file(GLOB VENDORS_SOURCES UnnamedEngine/Vendor/glad/src/glad.c)
 file(GLOB_RECURSE PROJECT_HEADERS UnnamedEngine/Sources/*.h)
