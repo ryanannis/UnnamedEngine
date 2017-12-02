@@ -62,7 +62,7 @@ void ModelResource::ProcessAssimpNode(const aiNode* node, const aiScene* scene)
 	for(size_t i = 0; i < node->mNumMeshes; i++)
 	{
 		auto mesh = scene->mMeshes[scene->mRootNode->mMeshes[i]];
-		Parse(mesh);
+		Parse(mesh, scene);
 	}
 
 	// recursivelyparse children
@@ -72,7 +72,7 @@ void ModelResource::ProcessAssimpNode(const aiNode* node, const aiScene* scene)
 	}
 }
 
-void ModelResource::Parse(aiMesh const* mesh)
+void ModelResource::Parse(aiMesh const* mesh, const aiScene* scene)
 {
 	std::vector<uint32_t> indices;
 	std::vector<glm::vec2> uvs;
@@ -84,7 +84,8 @@ void ModelResource::Parse(aiMesh const* mesh)
 	{
 		if(mesh->mTextureCoords[0])
 		{
-			
+			const auto textureCoords = mesh->mTextureCoords[0];
+			uvs.push_back(Vector2f(textureCoords[i].x, textureCoords[i].y));
 		}
 		vertices.push_back(glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z));
 		normals.push_back(glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z));

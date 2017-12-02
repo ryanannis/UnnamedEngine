@@ -5,6 +5,9 @@
 #include "Engine/Base/Client/GameFramework.h"
 #include "Engine/Base/Components/CameraComponent.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #include "Engine/Base/Types/StaticRegistry.h"
 static int dummy = StaticRegister();
 

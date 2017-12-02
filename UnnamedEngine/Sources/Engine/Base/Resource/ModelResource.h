@@ -16,7 +16,7 @@ struct Mesh
 	std::vector<glm::vec2> mUVs;
 	std::vector<glm::vec3> mVertices;
 	std::vector<glm::vec3> mNormals;
-};
+}
 
 class ModelResource : public Resource
 {
@@ -28,7 +28,7 @@ public:
 
 private:
 	void ProcessAssimpNode(const aiNode* node, const aiScene* scene);
-	void Parse(aiMesh const* scene);
+	void Parse(aiMesh const* mesh, const aiScene* scene);
 
 	std::vector<Mesh> mMeshes;
 
