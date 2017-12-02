@@ -6,7 +6,7 @@
 #include "Engine/Graphics/Driver/GLShader.h"
 #include "Engine/Graphics/Driver/GLAttributes.h"
 
-#include "Engine/Base/Resource/MeshResource.h"
+#include "Engine/Base/Resource/ModelResource.h"
 
 #include "Engine/Base/Client/Context.h"
 #include "Engine/Base/Client/Client.h"
@@ -90,7 +90,7 @@ void Renderer::RenderMeshes()
 		auto mesh = mDriver->CreateMesh(meshWkRes);
 		vao->AddAttribute(0, 3, GL_FLOAT, 3 * sizeof(float));
 		basicProgram->SetUniformMatrix4("MVP", GetCameraVPMatrix() * glm::translate(g.translation));
-		mDriver->DrawElements(mesh->GetSize());
+		mDriver->DrawMesh(mesh);
 	}
 
 }

@@ -6,7 +6,7 @@ class ResourceManager;
 
 /*
  * A resource is something that can be used as a factory to construct a runtime type
- * or contains information used by a system (eg. a MeshResource)
+ * or contains information used by a system (eg. a ModelResource)
  */
 class Resource
 {

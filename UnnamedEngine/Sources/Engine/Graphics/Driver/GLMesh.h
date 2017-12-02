@@ -4,17 +4,23 @@
 #include <memory>
 #include <glad/glad.h>
 
-class MeshResource;
+class ModelResource;
+
+struct GLSubmesh
+{
+	GLuint verticesbuffer;
+	GLuint indicesBuffer;
+	size_t numIndices;
+};
 
 class GLMesh
 {
 public:
-	GLMesh(const std::weak_ptr<MeshResource>& resource);
+	GLMesh(const std::weak_ptr<ModelResource>& resource);
 	void Free();
-	size_t GetSize() const;
+	const std::vector<GLSubmesh>& GetSubmeshes() const;
+
 
 private:
-	size_t mSize;
-	GLuint mVertices;
-	GLuint mIndices;
+	std::vector<GLSubmesh> mSubmeshes;
 };

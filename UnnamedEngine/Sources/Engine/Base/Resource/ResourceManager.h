@@ -1,7 +1,7 @@
 #pragma once
 #include "Engine/Base/Common/Common.h"
 #include "Engine/Base/Resource/Resource.h"
-#include "Engine/Base/Resource/MeshResource.h"
+#include "Engine/Base/Resource/ModelResource.h"
 #include "Engine/Base/Resource/ResourceType.h"
 #include "Engine/Base/Resource/URI.h"
 

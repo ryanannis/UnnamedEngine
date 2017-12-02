@@ -2,7 +2,7 @@
 #include "Engine/Base/Common/Common.h"
 #include "Engine/Graphics/Renderer/GraphicsHandle.h"
 #include "Engine/Graphics/Renderer/RenderSettings.h"
-#include "Engine/Base/Resource/MeshResource.h"
+#include "Engine/Base/Resource/ModelResource.h"
 #include "Engine/Base/Resource/ResourceType.h"
 #include "Engine/Graphics/Driver/GLDriver.h"
 
@@ -27,7 +27,7 @@ struct ViewportData
 
 struct GraphicsData
 {
-	ResourceType<MeshResource> mesh;
+	ResourceType<ModelResource> mesh;
 	Vector3f translation;
 	Quat rotation;
 };

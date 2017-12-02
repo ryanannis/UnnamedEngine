@@ -33,10 +33,20 @@ void GLDriver::ClearResources()
 	mAttributes.clear();
 }
 
-Ptr<GLMesh> GLDriver::CreateMesh(const std::weak_ptr<MeshResource>& meshResource)
+Ptr<GLMesh> GLDriver::CreateMesh(const std::weak_ptr<ModelResource>& ModelResource)
 {
-	mMeshes.push_back(GLMesh(meshResource));
+	mMeshes.push_back(GLMesh(ModelResource));
 	return(&mMeshes.back());
+}
+
+void GLDriver::DrawMesh(Ptr<GLMesh> mesh)
+{
+	for(const auto& submesh : mesh->GetSubmeshes())
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, submesh.verticesbuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, submesh.indicesBuffer);
+		glDrawElements(GL_TRIANGLES, submesh.numIndices, GL_UNSIGNED_INT, 0);
+	}
 }
 
 Ptr<GLProgram> GLDriver::CreateProgram(
@@ -74,6 +84,8 @@ void GLDriver::SwapBuffers(GLFWwindow* window)
 {
 	glfwSwapBuffers(window);
 }
+
+
 
 void GLDriver::DrawElements(size_t size)
 {

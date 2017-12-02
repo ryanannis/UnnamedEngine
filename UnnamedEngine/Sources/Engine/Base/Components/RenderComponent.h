@@ -3,7 +3,7 @@
 
 #include "Engine/Base/Types/Component.h"
 #include "Engine/Base/Resource/ResourceType.h"
-#include "Engine/Base/Resource/MeshResource.h"
+#include "Engine/Base/Resource/ModelResource.h"
 #include "Engine/Base/Types/StaticComponent.h"
 
 struct PropTree;
@@ -12,7 +12,7 @@ class RenderComponent : public Component<RenderComponent>
 {
 public:
 	RenderComponent();
-	ResourceType<MeshResource> mesh;
+	ResourceType<ModelResource> mesh;
 	GraphicsHandle handle;
 
 

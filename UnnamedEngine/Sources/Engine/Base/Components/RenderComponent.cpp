@@ -26,7 +26,7 @@ void RenderComponent::Deserialize(const DeserializationData& s)
 	if(nameIt != t.leaves.end())
 	{
 		auto resName = nameIt->second.GetAsString();
-		mesh = ResourceType<MeshResource>(resName);
+		mesh = ResourceType<ModelResource>(resName);
 		s.GetResourceManager()->LoadResource(mesh);
 	}
 }

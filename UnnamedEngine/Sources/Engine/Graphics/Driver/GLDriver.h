@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "Engine/Base/Resource/MeshResource.h"
+#include "Engine/Base/Resource/ModelResource.h"
 #include "Engine/Base/Resource/ShaderResource.h"
 
 #include "Engine/Graphics/Driver/GLMesh.h"
@@ -18,7 +18,8 @@ public:
 	void ClearResources();
 	void ClearFramebuffer(uint8_t r, uint8_t b, uint8_t g);
 
-	Ptr<GLMesh> CreateMesh(const std::weak_ptr<MeshResource>& meshResource);
+	Ptr<GLMesh> CreateMesh(const std::weak_ptr<ModelResource>& ModelResource);
+	void DrawMesh(Ptr<GLMesh> mesh);
 	Ptr<GLProgram> CreateProgram(
 		const Ptr<GLAttributes>& vao,
 		const std::weak_ptr<ShaderResource>& vertShader,
