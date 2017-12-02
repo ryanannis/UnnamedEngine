@@ -8,9 +8,27 @@ static const std::string DATA_FILE_EXTENSION = "udf";
 
 URI::URI(const std::string strURI)
 {
+	// Do a pass to normalize all '\\' stuff into nice '/'s
+	// Todo - could do this inplace...
+	std::stringstream ss;
+	for(size_t i = 0; i < strURI.length(); i++)
+	{
+		if(strURI[i] == '\\' && i + 1 < strURI.length() && strURI[i + 1] == '\\')
+		{
+			continue;
+		}
+		else if(strURI[i] == '\\')
+		{
+			ss << '/';
+		}
+		else
+		{
+			ss << strURI[i];
+		}
+	}
+
 	// Split string
 	std::vector<std::string> split;
-	std::stringstream ss(strURI);
 	std::string item;
 	while(getline(ss, item, '/')) {
 		split.push_back(item);
@@ -52,6 +70,11 @@ URI::URI(const std::string strURI)
 std::string URI::GetFilePath() const
 {
 	return(CONTENT_DIR + path + file + "." + ext);
+}
+
+std::string URI::GetPathFromRoot() const
+{
+	return(path);
 }
 
 std::string URI::GetComponent() const

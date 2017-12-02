@@ -13,6 +13,7 @@ struct Texture
 public:
 	~Texture() { std::free(data); }
 	URI filepath;
+	TextureType type;
 	int width;
 	int height;
 	int channels;
@@ -24,8 +25,11 @@ class MaterialResource : public Resource
 public:
 	MaterialResource(URI uri);
 	virtual bool IsReady() const override;
-	virtual void Load(Ptr<ResourceManager> manager) override;
+	virtual void Load(Ptr<ResourceManager>) override;
 	const Texture& GetTexture() const;
+
+	//todo:  set up custom data format so we don't have to do this :(
+	void SetType(TextureType t);
 
 private:
 	bool mReady;

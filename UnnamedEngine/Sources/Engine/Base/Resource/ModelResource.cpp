@@ -5,6 +5,10 @@
 #include <assimp/scene.h>
 #include <assimp/mesh.h>
 #include <glm/glm.hpp>
+#include "Engine/Base/Resource/MaterialResource.h"
+#include "Engine/Base/Resource/ResourceType.h"
+#include "Engine/Base/Resource/ResourceManager.h"
+
 
 ModelResource::ModelResource(URI uri) : 
 	Resource(uri),
@@ -45,12 +49,12 @@ void ModelResource::Load(Ptr<ResourceManager> manager)
 	}
 	else
 	{
-		ProcessAssimpNode(scene->mRootNode, scene);
+		ProcessAssimpNode(manager, scene->mRootNode, scene);
 		mReady = true;
 	}
 }
 
-void ModelResource::ProcessAssimpNode(const aiNode* node, const aiScene* scene)
+void ModelResource::ProcessAssimpNode(Ptr<ResourceManager> manager, const aiNode* node, const aiScene* scene)
 {
 	// no node - this should only happen at root
 	if(!node)
@@ -62,17 +66,17 @@ void ModelResource::ProcessAssimpNode(const aiNode* node, const aiScene* scene)
 	for(size_t i = 0; i < node->mNumMeshes; i++)
 	{
 		auto mesh = scene->mMeshes[scene->mRootNode->mMeshes[i]];
-		Parse(mesh, scene);
+		Parse(manager, mesh, scene);
 	}
 
 	// recursivelyparse children
 	for(size_t i = 0; i < node->mNumChildren; i++)
 	{
-		ProcessAssimpNode(node->mChildren[i], scene);
+		ProcessAssimpNode(manager, node->mChildren[i], scene);
 	}
 }
 
-void ModelResource::Parse(aiMesh const* mesh, const aiScene* scene)
+void ModelResource::Parse(Ptr<ResourceManager> manager, aiMesh const* mesh, const aiScene* scene)
 {
 	std::vector<uint32_t> indices;
 	std::vector<glm::vec2> uvs;
@@ -105,5 +109,46 @@ void ModelResource::Parse(aiMesh const* mesh, const aiScene* scene)
 	newMesh.mVertices = vertices;
 	newMesh.mUVs = uvs;
 
+	// Load textures
+	if(mesh->mMaterialIndex >= 0)
+	{
+		aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+		newMesh.mDiffuseTextures = LoadMaterials(manager, material, aiTextureType_DIFFUSE);
+		newMesh.mSpecularTextures = LoadMaterials(manager, material, aiTextureType_SPECULAR);
+	}
+
 	mMeshes.push_back(newMesh);
+}
+
+std::vector<std::weak_ptr<MaterialResource>> ModelResource::LoadMaterials
+(
+	Ptr<ResourceManager> manager,
+	aiMaterial const* material,
+	aiTextureType type
+)
+{
+	std::vector<std::weak_ptr<MaterialResource>> resources;
+
+	for(unsigned int i = 0; i < material->GetTextureCount(type); i++)
+	{
+		aiString str;
+		material->GetTexture(type, i, &str);
+		// Assimp returns path relative to .mat
+		auto path = GetURI().GetPathFromRoot() + str.C_Str();
+
+		ResourceType<MaterialResource> resType(path);
+		auto& res = manager->LoadResource(resType);
+		res.lock()->Load(manager);
+
+		if(type == aiTextureType_DIFFUSE)
+		{
+			res.lock()->SetType(TextureType::DIFFUSE);
+		}
+		else if(type == aiTextureType_SPECULAR)
+		{
+			res.lock()->SetType(TextureType::SPECULAR);
+		}
+		resources.push_back(res);
+	}
+	return(resources);
 }

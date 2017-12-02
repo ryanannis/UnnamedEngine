@@ -10,14 +10,15 @@
 
 MaterialResource::MaterialResource(URI uri) :
 	Resource(uri)
-{}
+{
+}
 
 bool MaterialResource::IsReady() const
 {
 	return(mReady);
 }
 
-void MaterialResource::Load(Ptr<ResourceManager> manager)
+void MaterialResource::Load(Ptr<ResourceManager>)
 {
 	const auto& textureURI = GetURI();
 	const auto& extension = textureURI.GetExtension();
@@ -28,4 +29,9 @@ void MaterialResource::Load(Ptr<ResourceManager> manager)
 const Texture& MaterialResource::GetTexture() const
 {
 	return(t);
+}
+
+void MaterialResource::SetType(TextureType type)
+{
+	t.type = type;
 }
