@@ -12,6 +12,8 @@
 #include "Engine/Base/Client/Client.h"
 #include "Engine/Base/Resource/ResourceManager.h"
 
+#include <math.h>
+
 
 #include <glad/glad.h> // haven't abstracted the enums yet
 
@@ -44,7 +46,18 @@ void Renderer::SetCameraData(const CameraData& data)
 
 Matrix4 Renderer::GetCameraVPMatrix()
 {
-	const auto viewMat = glm::transpose(glm::mat4_cast(mCameraData.rotation)) * glm::translate(-mCameraData.translation);
+	// Vector look
+	// Build camera view matrix
+
+	const auto& camRot = mCameraData.rotation;
+	const Vector3f lookDirection(cos(camRot.y) * cos(camRot.x), sin(camRot.y), cos(camRot.y) * sin(camRot.x));
+	const Vector3f up(0.f, 1.f, 0.f);
+	const auto viewMat = glm::lookAt(
+		mCameraData.translation,
+		mCameraData.translation + glm::normalize(lookDirection),
+		up
+	);
+
 	const auto perspectiveMat = glm::perspective(mCameraData.fov, mCameraData.aspectRatio, 0.01f, 1000.0f);
 	return(perspectiveMat * viewMat);
 }

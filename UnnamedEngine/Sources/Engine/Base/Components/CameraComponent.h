@@ -8,8 +8,8 @@ class CameraComponent : public Component<CameraComponent>
 public:
 	CameraComponent();
 
-	glm::fvec3 pEntityCameraTranslation;
-	glm::fquat pEntityCameraRotation;
+	Vector3f pEntityCameraTranslation;
+	Vector3f pCameraRotation;
 };
 
 template<> std::string Component<CameraComponent>::sName = "HealthComponent";

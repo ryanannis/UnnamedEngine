@@ -15,8 +15,8 @@ FreecamPlayerSystem::FreecamPlayerSystem(Ptr<Context> context) :
 
 void FreecamPlayerSystem::Update(float delta, Ptr<EntityAdmin> e)
 {
-	const float SENSITIVITY = 0.001;  // rot = pixels * deg * SENSITIVITY
-	const float FREECAMSPEED = 1.0;  // 10m/s
+	const float SENSITIVITY = 0.001;  // rot = pixels * rad * SENSITIVITY
+	const float FREECAMSPEED = 3.0;  // 3m/s
 	Ptr<const InputComponent> inputComponent = GetSingletonComponent<InputComponent>(e);
 	const Entity& playerEntity = mContext->GetGameFramework()->GetGameClient()->GetLocalPlayerEntity();
 	Ptr<TransformComponent> transformComponent = GetWriteComponent<TransformComponent>(e, playerEntity);
@@ -33,27 +33,7 @@ void FreecamPlayerSystem::Update(float delta, Ptr<EntityAdmin> e)
 
 	for(auto input : inputComponent->inputEvents)
 	{
-		if(input.GetKeycode() == KEY_W)
-		{
-			forward = 1.0;
-			forwardInputs++;
-		}
-		else if(input.GetKeycode() == KEY_S)
-		{
-			forward = 1.0f;
-			forwardInputs++;
-		}
-		else if(input.GetKeycode() == KEY_A)
-		{
-			right = -1.0f;
-			horizontalInputs++;
-		}
-		else if(input.GetKeycode() == KEY_D)
-		{
-			right = 1.0f;
-			horizontalInputs++;
-		}
-		else if(input.GetKeycode() == MOUSE_X)
+		if(input.GetKeycode() == MOUSE_X)
 		{
 			mouseDx = input.GetValue();
 		}
@@ -61,6 +41,27 @@ void FreecamPlayerSystem::Update(float delta, Ptr<EntityAdmin> e)
 		{
 			mouseDy = input.GetValue();
 		}
+	}
+
+	if(inputComponent->keycodeDown[KEY_W.keycode])
+	{
+		forward = 1.0;
+		forwardInputs++;
+	}
+	else if(inputComponent->keycodeDown[KEY_S.keycode])
+	{
+		forward = -1.0f;
+		forwardInputs++;
+	}
+	else if(inputComponent->keycodeDown[KEY_A.keycode])
+	{
+		right = -1.0f;
+		horizontalInputs++;
+	}
+	else if(inputComponent->keycodeDown[KEY_D.keycode])
+	{
+		right = 1.0f;
+		horizontalInputs++;
 	}
 
 	if(horizontalInputs > 1)
@@ -73,18 +74,33 @@ void FreecamPlayerSystem::Update(float delta, Ptr<EntityAdmin> e)
 	}
 
 	// Update entity transform
-	auto viewRotation = glm::mat3_cast(transformComponent->pEntityWorldRotation * cameraComponent->pEntityCameraRotation);
-	transformComponent->pEntityWorldTranslation += viewRotation * Vector3f(right, 0, forward);
+	auto viewRotation = glm::mat3_cast(transformComponent->pEntityWorldRotation * Quat(cameraComponent->pCameraRotation));
+	
+	const auto& camRot = cameraComponent->pCameraRotation;
+	const Vector3f up(0.0, 1.0, 0.0);
+	const Vector3f lookDirection(cos(camRot.y) * cos(camRot.x), sin(camRot.y), cos(camRot.y) * sin(camRot.x));
+
+	transformComponent->pEntityWorldTranslation += glm::normalize(lookDirection) * forward;
+	transformComponent->pEntityWorldTranslation += glm::normalize(glm::cross(lookDirection, up)) * -right;
+
+	auto cameraEulers = cameraComponent->pCameraRotation;
 
 	// Update entity camera transform
-	auto cameraEulers = glm::eulerAngles(cameraComponent->pEntityCameraRotation);
-	if(cameraEulers.x < 0)
-	{
-		cameraEulers.x += 2 * M_PI;
-	}
-	cameraEulers.y += mouseDx * SENSITIVITY; // pitch
-	cameraEulers.x += mouseDy * SENSITIVITY; // yaw
-	cameraComponent->pEntityCameraRotation = glm::quat(cameraEulers);
+	cameraEulers.x -= mouseDx * SENSITIVITY; // pitch (counterclockwise for right/pos x)
+	cameraEulers.y += mouseDy * SENSITIVITY; // yaw
+
+	cameraEulers.x += 2 * M_PI;
+	cameraEulers.x = fmod(cameraEulers.x, 2 * M_PI);
+	
+	// can't let pitch get to 0 (cuz then it's the same as the up vector)
+	// so do a hard stop
+	cameraEulers.y = glm::clamp(
+		cameraEulers.y, 
+		static_cast<float>(-M_PI / 2 + M_PI / 16), 
+		static_cast<float>(M_PI / 2 - M_PI / 16)
+	);
+
+	cameraComponent->pCameraRotation = cameraEulers;
 }
 
 void FreecamPlayerSystem::StaticInitDependencies()

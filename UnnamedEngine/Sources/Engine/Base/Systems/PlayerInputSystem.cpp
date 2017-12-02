@@ -20,6 +20,11 @@ void PlayerInputSystem::Update(float, Ptr<EntityAdmin> e)
 		InputEvent event = manager->GetInputEvent();
 		inputComponent->inputEvents.push_back(event);
 	}
+
+	for(const auto& key : KEYMAPPINGS)
+	{
+		inputComponent->keycodeDown[key.keycode] = manager->KeyIsDown(key.keycode);
+	}
 	
 }
 

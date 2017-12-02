@@ -4,5 +4,5 @@ STATICREGISTER(CameraComponent, "CameraComponent")
 
 CameraComponent::CameraComponent() :
 	pEntityCameraTranslation{},
-	pEntityCameraRotation{}
+	pCameraRotation{}
 {}

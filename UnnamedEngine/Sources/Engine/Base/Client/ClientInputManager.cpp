@@ -105,6 +105,11 @@ bool ClientInputManager::HasInput() const
 	return(!mInputQueue.empty());
 }
 
+bool ClientInputManager::KeyIsDown(Keycode k) const
+{
+	return(glfwGetKey(mContext->GetClient()->GetGLFWContext(), k));
+}
+
 InputEvent ClientInputManager::GetInputEvent()
 {
 	assert(!mInputQueue.empty());

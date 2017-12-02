@@ -12,7 +12,7 @@ class Context;
 struct CameraData
 {
 	Vector3f translation;
-	Quat rotation;
+	Vector3f rotation;
 	float fov;
 	float aspectRatio;
 

@@ -18,8 +18,8 @@ public:
 	void Initialize();
 	void Update();
 	bool HasInput() const;
+	bool KeyIsDown(Keycode k) const;
 	InputEvent GetInputEvent();
-
 
 private:
 	void QueueInput(InputEvent e);

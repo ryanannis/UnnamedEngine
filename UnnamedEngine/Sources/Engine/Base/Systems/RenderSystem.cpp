@@ -20,7 +20,7 @@ void RenderSystem::Update(float, Ptr<EntityAdmin> entityAdmin)
 
 	const auto cameraEntity = cameraEntities[0];
 	const auto camera = GetComponent<const CameraComponent>(entityAdmin, cameraEntity);
-	const auto& rotation = camera->pEntityCameraRotation;
+	const auto& rotation = camera->pCameraRotation;
 	const auto& translation = camera->pEntityCameraTranslation;
 
 	const auto transform = GetComponent<const TransformComponent>(entityAdmin, cameraEntity);
