@@ -11,22 +11,25 @@ This is an unfinished game engine.  It is inspired by the architecture of [Overw
 - Client framework
 - Data driven resource management and static registration system
 - Level loading
-- ECS framework
+- ECS framework and memory pools
 - Input
+- Basic Graphics
+
+### Short Term Goals
+-  More generalized render pass system
+-  Custom binary formats and compression for data driven resources, levels and meshes
+-  Global Rewind + Playback
+-  Physics
+-  Better generalized allocators than malloc
 
 ### Unimplemented
 
-- Optimized memory management (only placeholder pools currently)
-- Graphics
 - Sound
 - Network and seperation of server/client duties
-- Physics
 - Scripting
-- OPTIMIZATION
 
-### Long term 'dreams'
+### "Sometime"
 
-- Blazing fast level streaming
 - Custom state based scripting language
 - ECS paralellization
 - Predictive network sync
