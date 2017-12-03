@@ -1,5 +1,5 @@
 #include <Catch.h>
-#include "Engine/Base/Resource/MeshResource.h"
+#include "Engine/Base/Resource/ModelResource.h"
 #include "Engine/Base/Resource/ResourceManager.h"
 #include "Engine/Base/Resource/EntityResource.h"
 

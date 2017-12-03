@@ -47,6 +47,7 @@ GLTexture::GLTexture(const std::shared_ptr<MaterialResource>& resource)
 	}
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture.width, texture.height, 0, format, GL_UNSIGNED_BYTE, texture.data);
+	glEnable(GL_TEXTURE_2D); // intel driver bug
 	glGenerateMipmap(GL_TEXTURE_2D);
 }
 
