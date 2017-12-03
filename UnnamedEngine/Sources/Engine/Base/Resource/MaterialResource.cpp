@@ -27,6 +27,7 @@ void MaterialResource::Load(Ptr<ResourceManager>)
 {
 	const auto& textureURI = GetURI();
 	const auto& extension = textureURI.GetExtension();
+	stbi_set_flip_vertically_on_load(true);
 
 	t.data = stbi_load(textureURI.GetFilePath().data(), &t.width, &t.height, &t.channels, 0);
 	

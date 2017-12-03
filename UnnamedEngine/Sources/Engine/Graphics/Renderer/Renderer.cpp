@@ -32,6 +32,14 @@ void Renderer::Initialize()
 	mBasicVert = mContext->GetResourceManager()->LoadResource(basicVertType);
 	mBasicFrag = mContext->GetResourceManager()->LoadResource(basicFragType);
 	mDriver = std::make_unique<GLDriver>(mContext->GetResourceManager());
+
+	// Generate VAO
+	mVao = mDriver->CreateAttributes();
+	mVao->Bind();
+
+	// Generate Programs
+	mBasicProgram = mDriver->CreateProgram(mVao, mBasicVert, mBasicFrag);
+	mBasicProgram->Bind();
 }
 
 const CameraData& Renderer::GetCameraData() const
@@ -74,27 +82,21 @@ void Renderer::Render()
 
 void Renderer::RenderMeshes()
 {
-	// Generate VAO
-	auto vao = mDriver->CreateAttributes();
-	vao->Bind();
-
-	// Generate Programs
-	auto basicProgram = mDriver->CreateProgram(vao, mBasicVert, mBasicFrag);
-	basicProgram->Bind();
-
+	mVao->Bind();
+	mBasicProgram->Bind();
 	for(const GraphicsData& g : mGraphicsData)
 	{
-		vao->Bind();
 		auto mesh = mDriver->CreateMesh(g.mesh);
-		vao->AddAttribute(0, 3, GL_FLOAT, 8 * sizeof(float), 0); // vertexes
-		vao->AddAttribute(1, 3, GL_FLOAT, 8 * sizeof(float), sizeof(float)); // normals
-		vao->AddAttribute(2, 2, GL_FLOAT, 8 * sizeof(float), 6 * sizeof(float)); // uvs
-		basicProgram->SetUniformMatrix4("MVP", GetCameraVPMatrix() * glm::translate(g.translation));
-		basicProgram->SetUniformInt("DiffuseSampler", 0);
-		basicProgram->SetUniformInt("SpecularSampler", 1);
+
+		mVao->AddAttribute(0, 3, GL_FLOAT, 8 * sizeof(float), 0); // vertexes
+		mVao->AddAttribute(1, 3, GL_FLOAT, 8 * sizeof(float), 3 * sizeof(float)); // normals
+		mVao->AddAttribute(2, 2, GL_FLOAT, 8 * sizeof(float), 6 * sizeof(float)); // uvs
+
+		mBasicProgram->SetUniformMatrix4("MVP", GetCameraVPMatrix() * glm::translate(g.translation));
+		mBasicProgram->SetUniformInt("DiffuseSampler", 0);
+		mBasicProgram->SetUniformInt("SpecularSampler", 1);
 		mDriver->DrawMesh(mesh);
 	}
-
 }
 
 

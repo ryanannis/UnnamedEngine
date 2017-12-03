@@ -18,8 +18,26 @@ GLTexture::GLTexture(const std::shared_ptr<MaterialResource>& resource)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	
+	GLenum format;
+	if(texture.channels == 1)
+	{
+		format = GL_RED;
+	}
+	else if(texture.channels == 3)
+	{
+		format = GL_RGB;
+	}
+	else if(texture.channels == 4)
+	{
+		format = GL_RGBA;
+	}
+	else
+	{
+		assert(false);
+	}
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture.width, texture.height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture.data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture.width, texture.height, 0, format, GL_UNSIGNED_BYTE, texture.data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 }
 

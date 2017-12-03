@@ -87,6 +87,7 @@ void ModelResource::Parse(Ptr<ResourceManager> manager, aiMesh const* mesh, cons
 		vectors.push_back(mesh->mVertices[i].x);
 		vectors.push_back(mesh->mVertices[i].y);
 		vectors.push_back(mesh->mVertices[i].z);
+
 		vectors.push_back(mesh->mNormals[i].x);
 		vectors.push_back(mesh->mNormals[i].y);
 		vectors.push_back(mesh->mNormals[i].z);

@@ -64,6 +64,10 @@ private:
 	std::shared_ptr<ShaderResource> mBasicVert;
 	std::shared_ptr<ShaderResource> mBasicFrag;
 
+	// Temp
+	Ptr<GLAttributes> mVao;
+	Ptr<GLProgram> mBasicProgram;
+
 	// Disable copying
 	Renderer& operator=(const Renderer&) = delete;
 	Renderer(const Renderer&) = delete;
