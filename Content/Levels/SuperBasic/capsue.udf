@@ -1,0 +1,5 @@
+SuperBasicLevel {
+    RenderComponent {
+        Mesh = Levels/SuperBasic/nanosuit/nanosuit.obj;
+    }
+}

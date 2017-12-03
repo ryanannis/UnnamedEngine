@@ -1,0 +1,5 @@
+1 {
+    Resource = Levels/SuperBasic/capsue/SuperBasicLevel;
+    Position = [0,0,0];
+    Rotation = [0,0,0];
+}
