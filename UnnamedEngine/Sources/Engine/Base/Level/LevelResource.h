@@ -15,10 +15,10 @@ public:
 	virtual bool IsReady() const override;
 	virtual void Load(Ptr<ResourceManager> manager) override;
 	const std::vector<LevelObject>& GetLevelObjects() const;
-	const std::vector<std::weak_ptr<EntityResource>>& GetLevelObjectResources() const;
+	const std::vector<std::shared_ptr<EntityResource>>& GetLevelObjectResources() const;
 
 private:
-	std::vector<std::weak_ptr<EntityResource>> mLevelObjectResources;
+	std::vector<std::shared_ptr<EntityResource>> mLevelObjectResources;
 	std::vector<LevelObject> mLevelObjects;
 	bool mReady;
 };

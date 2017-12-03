@@ -61,8 +61,8 @@ private:
 	std::vector<GraphicsData> mGraphicsData;
 
 	// Hardcoded Resources
-	std::weak_ptr<ShaderResource> mBasicVert;
-	std::weak_ptr<ShaderResource> mBasicFrag;
+	std::shared_ptr<ShaderResource> mBasicVert;
+	std::shared_ptr<ShaderResource> mBasicFrag;
 
 	// Disable copying
 	Renderer& operator=(const Renderer&) = delete;

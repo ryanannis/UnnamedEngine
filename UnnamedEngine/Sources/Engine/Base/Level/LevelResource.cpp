@@ -56,7 +56,7 @@ const std::vector<LevelObject>& LevelResource::GetLevelObjects() const
 	return(mLevelObjects);
 }
 
-const std::vector<std::weak_ptr<EntityResource>>& LevelResource::GetLevelObjectResources() const
+const std::vector<std::shared_ptr<EntityResource>>& LevelResource::GetLevelObjectResources() const
 {
 	assert(mReady);
 	return(mLevelObjectResources);

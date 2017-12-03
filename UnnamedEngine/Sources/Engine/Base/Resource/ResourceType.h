@@ -25,6 +25,11 @@ public:
 		mURI{URI(uri)}
 	{}
 
+	const URI& ResourceType::GetURI() const
+	{
+		return(mURI);
+	}
+
 
 private:
 	URI mURI;

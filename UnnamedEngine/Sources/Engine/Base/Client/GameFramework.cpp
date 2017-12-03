@@ -71,7 +71,7 @@ void GameFramework::LoadIntoLevel(ResourceType<LevelResource> levelResource)
 {
 	assert(!mRegionAdmin);
 	mRegionAdmin = std::make_unique<RegionAdmin>(mContext);
-	std::shared_ptr<LevelResource> level = mResourceManager->LoadResource(levelResource).lock();
+	std::shared_ptr<LevelResource> level = mResourceManager->LoadResource(levelResource);
 	mRegionAdmin->LoadLevel(level);
 	InitSingletons();
 	// todo:  this is running sync - will get a MASSIVE hitch 

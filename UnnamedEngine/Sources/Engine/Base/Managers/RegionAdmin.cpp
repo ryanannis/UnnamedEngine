@@ -44,7 +44,7 @@ Entity RegionAdmin::CreateEntity(const ResourceType<EntityResource>& res, Vector
 		auto resourceManager = mContext->GetResourceManager();
 		
 		// Oh no!  Spot loading is bad!
-		std::shared_ptr<EntityResource> loadedRes = resourceManager->LoadResource(res).lock();
+		std::shared_ptr<EntityResource> loadedRes = resourceManager->LoadResource(res);
 		Entity e = loadedRes->ConstructEntity(mEntityAdmin);
 
 		// todo:  DON'T BLOCK TRANSFORM COMPONENT

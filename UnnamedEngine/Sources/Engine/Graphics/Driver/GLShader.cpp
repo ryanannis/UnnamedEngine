@@ -7,9 +7,9 @@
 
 #include "Engine/Graphics/Driver/GLCommon.h"
 
-GLShader::GLShader(const std::weak_ptr<ShaderResource>& resource)
+GLShader::GLShader(const std::shared_ptr<ShaderResource>& resource)
 {
-	std::shared_ptr<ShaderResource> res = resource.lock();
+	std::shared_ptr<ShaderResource> res = resource;
 	auto shaderType = res->GetShaderType();
 
 	if(shaderType == ShaderType::VERTEX){

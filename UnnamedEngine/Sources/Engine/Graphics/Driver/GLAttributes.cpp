@@ -9,11 +9,12 @@ void GLAttributes::AddAttribute(
 	GLuint index,
 	GLint size,
 	GLenum type,
-	GLsizei stride
+	GLsizei stride,
+	GLsizei start
 )
 {
 	Bind();
-	glVertexAttribPointer(index, size, type, GL_FALSE, stride, (void*)0);
+	glVertexAttribPointer(index, size, type, GL_FALSE, stride, (void*)start);
 	glEnableVertexAttribArray(index);
 	mAttributeIndices.push_back(index);
 }

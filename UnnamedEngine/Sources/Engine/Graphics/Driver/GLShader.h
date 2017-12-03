@@ -8,7 +8,7 @@ class ShaderResource;
 class GLShader
 {
 public:
-	GLShader(const std::weak_ptr<ShaderResource>& resource);
+	GLShader(const std::shared_ptr<ShaderResource>& resource);
 	void Free();
 	GLuint GetShaderHandle() const;
 

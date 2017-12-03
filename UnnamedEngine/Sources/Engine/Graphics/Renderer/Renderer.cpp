@@ -22,7 +22,6 @@ static size_t sGraphicsHandleCt;
 Renderer::Renderer(Ptr<Context> c) :
 	mContext{c}
 {
-	mDriver = std::make_unique<GLDriver>();
 }
 
 // This comes in after the resource manager is done
@@ -32,6 +31,7 @@ void Renderer::Initialize()
 	ResourceType<ShaderResource> basicFragType("Engine/Basic.frag");
 	mBasicVert = mContext->GetResourceManager()->LoadResource(basicVertType);
 	mBasicFrag = mContext->GetResourceManager()->LoadResource(basicFragType);
+	mDriver = std::make_unique<GLDriver>(mContext->GetResourceManager());
 }
 
 const CameraData& Renderer::GetCameraData() const
@@ -70,7 +70,6 @@ void Renderer::Render()
 	RenderMeshes();
 
 	mDriver->SwapBuffers(mContext->GetClient()->GetWindow());
-	mDriver->ClearResources();
 }
 
 void Renderer::RenderMeshes()
@@ -86,10 +85,13 @@ void Renderer::RenderMeshes()
 	for(const GraphicsData& g : mGraphicsData)
 	{
 		vao->Bind();
-		auto meshWkRes = mContext->GetResourceManager()->LoadResource(g.mesh);
-		auto mesh = mDriver->CreateMesh(meshWkRes);
-		vao->AddAttribute(0, 3, GL_FLOAT, 3 * sizeof(float));
+		auto mesh = mDriver->CreateMesh(g.mesh);
+		vao->AddAttribute(0, 3, GL_FLOAT, 8 * sizeof(float), 0); // vertexes
+		vao->AddAttribute(1, 3, GL_FLOAT, 8 * sizeof(float), sizeof(float)); // normals
+		vao->AddAttribute(2, 2, GL_FLOAT, 8 * sizeof(float), 6 * sizeof(float)); // uvs
 		basicProgram->SetUniformMatrix4("MVP", GetCameraVPMatrix() * glm::translate(g.translation));
+		basicProgram->SetUniformInt("DiffuseSampler", 0);
+		basicProgram->SetUniformInt("SpecularSampler", 1);
 		mDriver->DrawMesh(mesh);
 	}
 

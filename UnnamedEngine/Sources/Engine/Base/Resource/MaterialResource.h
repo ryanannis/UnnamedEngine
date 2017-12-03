@@ -11,7 +11,7 @@ enum class TextureType
 struct Texture
 {
 public:
-	~Texture() { std::free(data); }
+	~Texture();
 	URI filepath;
 	TextureType type;
 	int width;

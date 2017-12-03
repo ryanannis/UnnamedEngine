@@ -2,6 +2,8 @@
 
 #pragma warning(push)
 #pragma warning(disable:4201)
+// truncation in 32bit
+#pragma warning(disable:4310)
 //GLM
 #include <glm/glm.hpp>
 

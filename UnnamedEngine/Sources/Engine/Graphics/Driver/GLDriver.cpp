@@ -2,10 +2,23 @@
 
 #include <GLFW/glfw3.h>
 
+#include "Engine/Base/Resource/URI.h"
+#include "Engine/Base/Resource/ResourceManager.h"
+
+#include "Engine/Base/Resource/ModelResource.h"
+#include "Engine/Base/Resource/MaterialResource.h"
+#include "Engine/Base/Resource/ShaderResource.h"
+
 #include "Engine/Graphics/Driver/GLMesh.h"
 #include "Engine/Graphics/Driver/GLProgram.h"
 #include "Engine/Graphics/Driver/GLShader.h"
 #include "Engine/Graphics/Driver/GLAttributes.h"
+#include "Engine/Graphics/Driver/GLTexture.h"
+
+GLDriver::GLDriver(Ptr<ResourceManager> manager)
+	: mResourceManager(manager)
+{
+}
 
 void GLDriver::ClearFramebuffer(uint8_t r, uint8_t b, uint8_t g)
 {
@@ -17,7 +30,11 @@ void GLDriver::ClearResources()
 {
 	for(auto& mesh : mMeshes)
 	{
-		mesh.Free();
+		mesh.second.Free();
+	}
+	for(auto& texture : mTextures)
+	{
+		texture.second.Free();
 	}
 	for(auto& program: mPrograms)
 	{
@@ -33,16 +50,51 @@ void GLDriver::ClearResources()
 	mAttributes.clear();
 }
 
-Ptr<GLMesh> GLDriver::CreateMesh(const std::weak_ptr<ModelResource>& ModelResource)
+Ptr<GLMesh> GLDriver::CreateMesh(const ResourceType<ModelResource>& modelResource)
 {
-	mMeshes.push_back(GLMesh(ModelResource));
-	return(&mMeshes.back());
+	// Check if already loaded
+	const auto& key = modelResource.GetURI();
+	const auto& hash = key.GetHash();
+	auto mesh = mMeshes.find(hash);
+	if(mesh != mMeshes.end())
+	{
+		return(&mesh->second);
+	}
+
+	auto loadedMesh = mResourceManager->LoadResource(modelResource);
+	auto meshPointer = mMeshes.emplace(hash, GLMesh(loadedMesh, this));
+	return(&(meshPointer.first->second));
+}
+
+Ptr<GLTexture> GLDriver::LoadTexture(const ResourceType<MaterialResource>& textureResource)
+{
+	// Check if already loaded
+	auto key = textureResource.GetURI();
+	auto hash = key.GetHash();
+	auto texture = mTextures.find(hash);
+	if(texture != mTextures.end())
+	{
+		return(&texture->second);
+	}
+
+	auto loadedTexture = mResourceManager->LoadResource(textureResource);
+	auto texturePointer = mTextures.emplace(hash, GLTexture(loadedTexture));
+	return(&(texturePointer.first->second));
 }
 
 void GLDriver::DrawMesh(Ptr<GLMesh> mesh)
 {
 	for(const auto& submesh : mesh->GetSubmeshes())
 	{
+		if(submesh.diffuse)
+		{
+			submesh.diffuse->Bind(0);
+		}
+		if(submesh.specular)
+		{
+			submesh.specular->Bind(1);
+		}
+
 		glBindBuffer(GL_ARRAY_BUFFER, submesh.verticesbuffer);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, submesh.indicesBuffer);
 		glDrawElements(GL_TRIANGLES, submesh.numIndices, GL_UNSIGNED_INT, 0);
@@ -51,13 +103,12 @@ void GLDriver::DrawMesh(Ptr<GLMesh> mesh)
 
 Ptr<GLProgram> GLDriver::CreateProgram(
 	const Ptr<GLAttributes>& vao,
-	const std::weak_ptr<ShaderResource>& vertShader,
-	const std::weak_ptr<ShaderResource>& fragShader
+	const std::shared_ptr<ShaderResource>& vertShader,
+	const std::shared_ptr<ShaderResource>& fragShader
 )
 {
 	vao->Bind();
 
-	// need to use emplace_back here since program is noncopyable
 	GLProgram program;
 	GLShader vert(vertShader);
 	GLShader frag(fragShader);
@@ -84,8 +135,6 @@ void GLDriver::SwapBuffers(GLFWwindow* window)
 {
 	glfwSwapBuffers(window);
 }
-
-
 
 void GLDriver::DrawElements(size_t size)
 {

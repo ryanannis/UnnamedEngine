@@ -8,6 +8,11 @@
 
 #include "stb_image.h"
 
+Texture::~Texture()
+{
+	stbi_image_free(data);
+}
+
 MaterialResource::MaterialResource(URI uri) :
 	Resource(uri)
 {
@@ -24,6 +29,15 @@ void MaterialResource::Load(Ptr<ResourceManager>)
 	const auto& extension = textureURI.GetExtension();
 
 	t.data = stbi_load(textureURI.GetFilePath().data(), &t.width, &t.height, &t.channels, 0);
+	
+	if(t.data)
+	{
+		mReady = true;
+	}
+	else
+	{
+		std::cout << "MaterialResource failed to load: " << textureURI.GetFilePath() << std::endl;
+	}
 }
 
 const Texture& MaterialResource::GetTexture() const

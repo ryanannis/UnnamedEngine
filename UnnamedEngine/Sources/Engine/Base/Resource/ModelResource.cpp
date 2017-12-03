@@ -45,7 +45,6 @@ void ModelResource::Load(Ptr<ResourceManager> manager)
 	if(!scene)
 	{
 		fprintf(stderr, "%s\n", loader.GetErrorString());
-		assert(false);
 	}
 	else
 	{
@@ -53,6 +52,7 @@ void ModelResource::Load(Ptr<ResourceManager> manager)
 		mReady = true;
 	}
 }
+
 
 void ModelResource::ProcessAssimpNode(Ptr<ResourceManager> manager, const aiNode* node, const aiScene* scene)
 {
@@ -79,20 +79,28 @@ void ModelResource::ProcessAssimpNode(Ptr<ResourceManager> manager, const aiNode
 void ModelResource::Parse(Ptr<ResourceManager> manager, aiMesh const* mesh, const aiScene* scene)
 {
 	std::vector<uint32_t> indices;
-	std::vector<glm::vec2> uvs;
-	std::vector<glm::vec3> vertices;
-	std::vector<glm::vec3> normals;
+	std::vector<float> vectors;
 
 	// Create Vertex Data from Mesh Node
 	for(size_t i = 0; i < mesh->mNumVertices; i++)
 	{
+		vectors.push_back(mesh->mVertices[i].x);
+		vectors.push_back(mesh->mVertices[i].y);
+		vectors.push_back(mesh->mVertices[i].z);
+		vectors.push_back(mesh->mNormals[i].x);
+		vectors.push_back(mesh->mNormals[i].y);
+		vectors.push_back(mesh->mNormals[i].z);
 		if(mesh->mTextureCoords[0])
 		{
 			const auto textureCoords = mesh->mTextureCoords[0];
-			uvs.push_back(Vector2f(textureCoords[i].x, textureCoords[i].y));
+			vectors.push_back(textureCoords[i].x);
+			vectors.push_back(textureCoords[i].y);
 		}
-		vertices.push_back(glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z));
-		normals.push_back(glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z));
+		else
+		{
+			vectors.push_back(0.f);
+			vectors.push_back(0.f);
+		}
 	}
 
 	for(size_t i = 0; i < mesh->mNumFaces; i++)
@@ -105,9 +113,7 @@ void ModelResource::Parse(Ptr<ResourceManager> manager, aiMesh const* mesh, cons
 
 	Mesh newMesh;
 	newMesh.mIndices = indices;
-	newMesh.mNormals = normals;
-	newMesh.mVertices = vertices;
-	newMesh.mUVs = uvs;
+	newMesh.mVectors = vectors;
 
 	// Load textures
 	if(mesh->mMaterialIndex >= 0)
@@ -120,14 +126,14 @@ void ModelResource::Parse(Ptr<ResourceManager> manager, aiMesh const* mesh, cons
 	mMeshes.push_back(newMesh);
 }
 
-std::vector<std::weak_ptr<MaterialResource>> ModelResource::LoadMaterials
+std::vector<ResourceType<MaterialResource>> ModelResource::LoadMaterials
 (
 	Ptr<ResourceManager> manager,
 	aiMaterial const* material,
 	aiTextureType type
 )
 {
-	std::vector<std::weak_ptr<MaterialResource>> resources;
+	std::vector<ResourceType<MaterialResource>> resources;
 
 	for(unsigned int i = 0; i < material->GetTextureCount(type); i++)
 	{
@@ -136,19 +142,8 @@ std::vector<std::weak_ptr<MaterialResource>> ModelResource::LoadMaterials
 		// Assimp returns path relative to .mat
 		auto path = GetURI().GetPathFromRoot() + str.C_Str();
 
-		ResourceType<MaterialResource> resType(path);
-		auto& res = manager->LoadResource(resType);
-		res.lock()->Load(manager);
-
-		if(type == aiTextureType_DIFFUSE)
-		{
-			res.lock()->SetType(TextureType::DIFFUSE);
-		}
-		else if(type == aiTextureType_SPECULAR)
-		{
-			res.lock()->SetType(TextureType::SPECULAR);
-		}
-		resources.push_back(res);
+		resources.push_back(ResourceType<MaterialResource>(path));
 	}
 	return(resources);
 }
+

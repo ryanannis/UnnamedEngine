@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Base/Common/Common.h"
 #include "Engine/Base/Resource/Resource.h"
+#include "Engine/Base/Resource/ResourceType.h"
 
 #include <vector>
 #include <map>
@@ -15,11 +16,10 @@ class MaterialResource;
 struct Mesh
 {
 	std::vector<uint32_t> mIndices;
-	std::vector<glm::vec2> mUVs;
-	std::vector<glm::vec3> mVertices;
-	std::vector<glm::vec3> mNormals;
-	std::vector<std::weak_ptr<MaterialResource>> mDiffuseTextures;
-	std::vector<std::weak_ptr<MaterialResource>> mSpecularTextures;
+	// format vvvnnnuu
+	std::vector<float> mVectors;
+	std::vector<ResourceType<MaterialResource>> mDiffuseTextures;
+	std::vector<ResourceType<MaterialResource>> mSpecularTextures;
 };
 
 class ModelResource : public Resource
@@ -33,7 +33,7 @@ public:
 private:
 	void ProcessAssimpNode(Ptr<ResourceManager> manager, const aiNode* node, const aiScene* scene);
 	void Parse(Ptr<ResourceManager> manager, aiMesh const* mesh, const aiScene* scene);
-	std::vector<std::weak_ptr<MaterialResource>> LoadMaterials(Ptr<ResourceManager> manager, aiMaterial const* material, aiTextureType type);
+	std::vector<ResourceType<MaterialResource>> LoadMaterials(Ptr<ResourceManager> manager, aiMaterial const* material, aiTextureType type);
 
 	std::vector<Mesh> mMeshes;
 	bool mReady;

@@ -11,7 +11,8 @@ public:
 		GLuint index,
 		GLint size,
 		GLenum type,
-		GLsizei stride
+		GLsizei stride,
+		GLsizei start
 	);
 
 	GLuint GetHandle();
