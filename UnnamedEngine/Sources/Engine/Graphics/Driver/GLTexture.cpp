@@ -9,6 +9,11 @@
 
 GLTexture::GLTexture(const std::shared_ptr<MaterialResource>& resource)
 {
+	if(!resource->IsReady())
+	{
+		// If the texture is for some reason broken, then just let it get bound to 0 (black)
+		return;
+	}
 	const auto& texture = resource->GetTexture();
 	glGenTextures(1, &mTextureHandle);
 	glBindTexture(GL_TEXTURE_2D, mTextureHandle);
@@ -23,6 +28,10 @@ GLTexture::GLTexture(const std::shared_ptr<MaterialResource>& resource)
 	if(texture.channels == 1)
 	{
 		format = GL_RED;
+	}
+	else if(texture.channels == 2)
+	{
+		format = GL_RG;
 	}
 	else if(texture.channels == 3)
 	{
@@ -54,6 +63,6 @@ GLuint GLTexture::GetTextureHandle() const
 void GLTexture::Bind(size_t unit)
 {
 	auto glUnit = GL_TEXTURE0 + unit;
-	glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(glUnit);
 	glBindTexture(GL_TEXTURE_2D, mTextureHandle);
 }

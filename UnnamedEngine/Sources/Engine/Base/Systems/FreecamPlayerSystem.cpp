@@ -16,7 +16,7 @@ FreecamPlayerSystem::FreecamPlayerSystem(Ptr<Context> context) :
 void FreecamPlayerSystem::Update(float delta, Ptr<EntityAdmin> e)
 {
 	const float SENSITIVITY = 0.001;  // rot = pixels * rad * SENSITIVITY
-	const float FREECAMSPEED = 3.0;  // 3m/s
+	const float FREECAMSPEED = 100.0;  // 3m/s
 	Ptr<const InputComponent> inputComponent = GetSingletonComponent<InputComponent>(e);
 	const Entity& playerEntity = mContext->GetGameFramework()->GetGameClient()->GetLocalPlayerEntity();
 	Ptr<TransformComponent> transformComponent = GetWriteComponent<TransformComponent>(e, playerEntity);
@@ -80,14 +80,14 @@ void FreecamPlayerSystem::Update(float delta, Ptr<EntityAdmin> e)
 	const Vector3f up(0.0, 1.0, 0.0);
 	const Vector3f lookDirection(cos(camRot.y) * cos(camRot.x), sin(camRot.y), cos(camRot.y) * sin(camRot.x));
 
-	transformComponent->pEntityWorldTranslation += glm::normalize(lookDirection) * forward;
-	transformComponent->pEntityWorldTranslation += glm::normalize(glm::cross(lookDirection, up)) * -right;
+	transformComponent->pEntityWorldTranslation += glm::normalize(lookDirection) * forward * FREECAMSPEED * delta;
+	transformComponent->pEntityWorldTranslation += glm::normalize(glm::cross(lookDirection, up)) * right * FREECAMSPEED * delta;
 
 	auto cameraEulers = cameraComponent->pCameraRotation;
 
 	// Update entity camera transform
-	cameraEulers.x -= mouseDx * SENSITIVITY; // pitch (counterclockwise for right/pos x)
-	cameraEulers.y += mouseDy * SENSITIVITY; // yaw
+	cameraEulers.x += mouseDx * SENSITIVITY; // pitch (counterclockwise for right/pos x)
+	cameraEulers.y -= mouseDy * SENSITIVITY; // yaw
 
 	cameraEulers.x += 2 * M_PI;
 	cameraEulers.x = fmod(cameraEulers.x, 2 * M_PI);

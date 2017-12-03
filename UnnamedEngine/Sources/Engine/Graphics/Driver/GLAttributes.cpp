@@ -37,3 +37,8 @@ void GLAttributes::Free()
 		glEnableVertexAttribArray(indice);
 	}
 }
+
+void GLAttributes::Unbind()
+{
+	glBindVertexArray(mVAO);
+}

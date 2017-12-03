@@ -35,11 +35,12 @@ void Renderer::Initialize()
 
 	// Generate VAO
 	mVao = mDriver->CreateAttributes();
-	mVao->Bind();
 
 	// Generate Programs
 	mBasicProgram = mDriver->CreateProgram(mVao, mBasicVert, mBasicFrag);
 	mBasicProgram->Bind();
+
+	mDriver->EnableDepthTest();
 }
 
 const CameraData& Renderer::GetCameraData() const
@@ -66,7 +67,13 @@ Matrix4 Renderer::GetCameraVPMatrix()
 		up
 	);
 
-	const auto perspectiveMat = glm::perspective(mCameraData.fov, mCameraData.aspectRatio, 0.01f, 1000.0f);
+	const auto perspectiveMat = glm::perspective(
+		mCameraData.fov,
+		mCameraData.aspectRatio,
+		0.1f,
+		10000.0f
+	);
+
 	return(perspectiveMat * viewMat);
 }
 
@@ -82,20 +89,17 @@ void Renderer::Render()
 
 void Renderer::RenderMeshes()
 {
-	mVao->Bind();
 	mBasicProgram->Bind();
 	for(const GraphicsData& g : mGraphicsData)
 	{
+		mVao->Bind();
 		auto mesh = mDriver->CreateMesh(g.mesh);
+		mVao->Unbind();
 
-		mVao->AddAttribute(0, 3, GL_FLOAT, 8 * sizeof(float), 0); // vertexes
-		mVao->AddAttribute(1, 3, GL_FLOAT, 8 * sizeof(float), 3 * sizeof(float)); // normals
-		mVao->AddAttribute(2, 2, GL_FLOAT, 8 * sizeof(float), 6 * sizeof(float)); // uvs
-
-		mBasicProgram->SetUniformMatrix4("MVP", GetCameraVPMatrix() * glm::translate(g.translation));
+		mBasicProgram->SetUniformMatrix4("MVP", GetCameraVPMatrix());
 		mBasicProgram->SetUniformInt("DiffuseSampler", 0);
 		mBasicProgram->SetUniformInt("SpecularSampler", 1);
-		mDriver->DrawMesh(mesh);
+		mDriver->DrawMesh(mVao, mesh);
 	}
 }
 

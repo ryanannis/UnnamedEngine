@@ -37,7 +37,6 @@ void ModelResource::Load(Ptr<ResourceManager> manager)
 		GetURI().GetFilePath(),
 		aiProcessPreset_TargetRealtime_MaxQuality |
 		aiProcess_OptimizeGraph |
-		aiProcess_FlipUVs |
 		aiProcess_OptimizeMeshes
 	);
 

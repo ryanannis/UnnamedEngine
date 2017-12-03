@@ -17,7 +17,7 @@ int main(int, char* [])
 	Client c(&context, std::make_unique<GameFramework>(&context));
 	c.Initialize();
 	// temp for testing
-	ResourceType<LevelResource> level("Levels/SuperBasic/capsule.ul");
+	ResourceType<LevelResource> level("Levels/Sponza/sponza.ul");
 	ResourceType<EntityResource> player("Test/BasicPlayer/TestPlayer");
 	c.GetTarget()->LoadIntoLevel(level);
 	Entity& e = c.GetTarget()->GetRegionAdmin()->CreateEntity(player, Vector3f(2, 2, 2), Vector3f(0, 0, 0), false);

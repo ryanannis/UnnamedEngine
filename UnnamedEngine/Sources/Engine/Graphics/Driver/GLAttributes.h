@@ -17,6 +17,7 @@ public:
 
 	GLuint GetHandle();
 	void Bind();
+	void Unbind();
 
 	void Free();
 

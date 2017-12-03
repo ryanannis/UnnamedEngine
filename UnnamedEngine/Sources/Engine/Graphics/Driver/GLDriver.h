@@ -21,12 +21,13 @@ class GLDriver
 public:
 	GLDriver(Ptr<ResourceManager> manager);
 	
+	void EnableDepthTest();
 	void ClearResources();
 	void ClearFramebuffer(uint8_t r, uint8_t b, uint8_t g);
 
 	Ptr<GLMesh> CreateMesh(const ResourceType<ModelResource>& ModelResource);
 	Ptr<GLTexture> LoadTexture(const ResourceType<MaterialResource>& textureResource);
-	void DrawMesh(Ptr<GLMesh> mesh);
+	void DrawMesh(Ptr<GLAttributes> vao, Ptr<GLMesh> mesh);
 	Ptr<GLProgram> CreateProgram(
 		const Ptr<GLAttributes>& vao,
 		const std::shared_ptr<ShaderResource>& vertShader,
@@ -34,7 +35,6 @@ public:
 	);
 	Ptr<GLAttributes> CreateAttributes();
 	void SwapBuffers(GLFWwindow* window);
-	void DrawElements(size_t size);
 
 private:
 	Ptr<ResourceManager> mResourceManager;

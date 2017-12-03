@@ -14,7 +14,8 @@ Texture::~Texture()
 }
 
 MaterialResource::MaterialResource(URI uri) :
-	Resource(uri)
+	Resource(uri),
+	mReady(false)
 {
 }
 
@@ -37,6 +38,7 @@ void MaterialResource::Load(Ptr<ResourceManager>)
 	}
 	else
 	{
+		mReady = false;
 		std::cout << "MaterialResource failed to load: " << textureURI.GetFilePath() << std::endl;
 	}
 }

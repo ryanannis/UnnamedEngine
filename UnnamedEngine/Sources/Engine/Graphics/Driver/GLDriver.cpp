@@ -20,10 +20,15 @@ GLDriver::GLDriver(Ptr<ResourceManager> manager)
 {
 }
 
+void GLDriver::EnableDepthTest()
+{
+	glEnable(GL_DEPTH_TEST);
+}
+
 void GLDriver::ClearFramebuffer(uint8_t r, uint8_t b, uint8_t g)
 {
 	glClearColor(r, b, g, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void GLDriver::ClearResources()
@@ -82,10 +87,12 @@ Ptr<GLTexture> GLDriver::LoadTexture(const ResourceType<MaterialResource>& textu
 	return(&(texturePointer.first->second));
 }
 
-void GLDriver::DrawMesh(Ptr<GLMesh> mesh)
+void GLDriver::DrawMesh(Ptr<GLAttributes> vao, Ptr<GLMesh> mesh)
 {
-	for(const auto& submesh : mesh->GetSubmeshes())
+	for(const GLSubmesh& submesh : mesh->GetSubmeshes())
 	{
+
+		//auto submesh = mesh->GetSubmeshes()[3];
 		if(submesh.diffuse)
 		{
 			submesh.diffuse->Bind(0);
@@ -95,9 +102,15 @@ void GLDriver::DrawMesh(Ptr<GLMesh> mesh)
 			submesh.specular->Bind(1);
 		}
 
+		vao->Bind();
 		glBindBuffer(GL_ARRAY_BUFFER, submesh.verticesbuffer);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, submesh.indicesBuffer);
+
+		vao->AddAttribute(0, 3, GL_FLOAT, 8 * sizeof(float), 0); // vertexes
+		vao->AddAttribute(1, 3, GL_FLOAT, 8 * sizeof(float), 3 * sizeof(float)); // normals
+		vao->AddAttribute(2, 2, GL_FLOAT, 8 * sizeof(float), 6 * sizeof(float)); // uvs
 		glDrawElements(GL_TRIANGLES, submesh.numIndices, GL_UNSIGNED_INT, 0);
+		vao->Unbind();
 	}
 }
 
@@ -134,9 +147,4 @@ Ptr<GLAttributes> GLDriver::CreateAttributes()
 void GLDriver::SwapBuffers(GLFWwindow* window)
 {
 	glfwSwapBuffers(window);
-}
-
-void GLDriver::DrawElements(size_t size)
-{
-	glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, 0);
 }
