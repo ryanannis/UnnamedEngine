@@ -48,17 +48,17 @@ void FreecamPlayerSystem::Update(float delta, Ptr<EntityAdmin> e)
 		forward = 1.0;
 		forwardInputs++;
 	}
-	else if(inputComponent->keycodeDown[KEY_S.keycode])
+	if(inputComponent->keycodeDown[KEY_S.keycode])
 	{
 		forward = -1.0f;
 		forwardInputs++;
 	}
-	else if(inputComponent->keycodeDown[KEY_A.keycode])
+	if(inputComponent->keycodeDown[KEY_A.keycode])
 	{
 		right = -1.0f;
 		horizontalInputs++;
 	}
-	else if(inputComponent->keycodeDown[KEY_D.keycode])
+	if(inputComponent->keycodeDown[KEY_D.keycode])
 	{
 		right = 1.0f;
 		horizontalInputs++;
