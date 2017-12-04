@@ -4,6 +4,7 @@ layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoord;
 
 out vec2 TexCoord;
+
 uniform mat4 MVP;
 
 void main()

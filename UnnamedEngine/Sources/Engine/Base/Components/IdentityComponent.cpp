@@ -10,17 +10,6 @@ IdentityComponent::IdentityComponent() :
 
 Serializer& IdentityComponent::Serialize(Serializer& s)
 {
-	s.Serialize("Name", entityName);
+	SERIALIZE(s, "Name", entityName);
 	return(s);
-}
-
-void IdentityComponent::Deserialize(const DeserializationData& s)
-{
-	const PropTree& t = s.GetProps();
-	auto nameIt = t.leaves.find("Name");
-
-	if(nameIt != t.leaves.end())
-	{
-		entityName = nameIt->second.GetAsString();
-	}
 }

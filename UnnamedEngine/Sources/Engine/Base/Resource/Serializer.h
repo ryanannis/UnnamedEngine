@@ -10,18 +10,21 @@
 class Resource;
 class ComponentBase;
 class EntityResource;
+
+#define SERIALIZE(serializer, name, var) \
+if(serializer.GetSerializationState() == SerializationState::SERIALIZING){ \
+	serializer.Serialize(name, var);											   \
+}																		   \
+else{																	   \
+	serializer.Deserialize(name, var);									   \
+}																		   \
+
 class ResourceManager;
 
-class DeserializationData
+enum class SerializationState
 {
-public:
-	DeserializationData(PropTree t, Ptr<ResourceManager> resourceManager);
-	const PropTree& GetProps() const;
-	Ptr<ResourceManager> GetResourceManager() const;
-
-private:
-	Ptr<ResourceManager> mResourceManager;
-	PropTree mSerializationTree;
+	SERIALIZING,
+	DESERIALIZING
 };
 
 class Serializer
@@ -30,9 +33,11 @@ public:
 	// Serializes with an empty proptree
 	Serializer();
 
+	SerializationState GetSerializationState();
 	Serializer& Serialize(ComponentBase& c);
 	Serializer& Serialize(std::string tag, std::string s);
 	Serializer& Serialize(std::string tag, int i);
+	Serializer& Serialize(std::string tag, const Vector3f& vec);
 
 	template <typename T>
 	Serializer& Serialize(std::string tag, ResourceType<T>& res)
@@ -40,9 +45,20 @@ public:
 		mSerializationTree.leaves.emplace(tag, CreateLeaf(Serialize(res)));
 		return(*this);
 	}
+	
+	template <typename T>
+	void Deserialize(std::string name, T& ref)
+	{
+		auto leaf = mSerializationTree.leaves.find(name);
+		if(leaf != mSerializationTree.leaves.end())
+		{
+			ref << leaf->second;
+		}
+		// otherwise, the component doesn't exist - this is ok, just means we use default
+	}
 
 private:
-	Serializer(PropTree t);
+	Serializer(PropTree t, SerializationState s = SerializationState::SERIALIZING);
 
 	std::string Serialize(std::string s) const;
 	std::string Serialize(int i) const;
@@ -54,8 +70,10 @@ private:
 	}
 
 	PropTreeLeaf CreateLeaf(std::string s) const;
+	PropTreeLeaf CreateLeaf(const Vector3f& vec) const;
 	
 	PropTree mSerializationTree;
+	SerializationState mSerializationState;
 
 	friend EntityResource;
 };

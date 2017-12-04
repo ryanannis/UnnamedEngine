@@ -12,22 +12,6 @@ RenderComponent::RenderComponent() :
 
 Serializer& RenderComponent::Serialize(Serializer& s)
 {
-	s.Serialize("Name", mesh);
+	SERIALIZE(s, "Mesh", mesh);
 	return(s);
 }
-
-void RenderComponent::Deserialize(const DeserializationData& s)
-{
-	assert(s.GetResourceManager());
-
-	const PropTree& t = s.GetProps();	
-	auto nameIt = t.leaves.find("Mesh");
-
-	if(nameIt != t.leaves.end())
-	{
-		auto resName = nameIt->second.GetAsString();
-		mesh = ResourceType<ModelResource>(resName);
-		s.GetResourceManager()->LoadResource(mesh);
-	}
-}
-

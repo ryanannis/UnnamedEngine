@@ -7,7 +7,7 @@ SingletonLogger& SingletonLogger::GetSingleton()
 	return(sLoggerInstance);
 }
 
-std::iostream& SingletonLogger::GetStreamSingleton(std::string channel, LogType type)
+Logger& SingletonLogger::GetStreamSingleton(std::string channel, LogType type)
 {
 	auto stream = mStreams.find(channel);
 	if(stream == mStreams.end())
@@ -27,10 +27,10 @@ void SingletonLogger::RegisterStreamSingleton(std::string channel)
 		// Logging stream already exists!
 		assert(false);
 	}
-	mStreams.emplace(channel, std::cout);
+	//mStreams.emplace(channel, std::cout);
 }
 
-std::iostream& SingletonLogger::Log(std::string channel, LogType type)
+Logger& SingletonLogger::Log(std::string channel, LogType type)
 {
 	return(GetSingleton().GetStreamSingleton(channel, type));
 }

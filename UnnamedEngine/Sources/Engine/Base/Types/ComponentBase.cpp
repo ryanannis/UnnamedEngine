@@ -7,7 +7,3 @@ Serializer& ComponentBase::Serialize(Serializer& s)
 {
 	return(s);
 };
-
-void ComponentBase::Deserialize(const DeserializationData&)
-{
-}

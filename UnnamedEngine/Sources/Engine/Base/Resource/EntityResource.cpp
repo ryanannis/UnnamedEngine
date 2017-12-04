@@ -56,8 +56,8 @@ void EntityResource::Load(Ptr<ResourceManager> resourceManager)
 		std::unique_ptr<ComponentBase> prototype = StaticReg::StaticCreateComponent(componentName);
 		
 		// todo:  Might want to handle recursive resource loading in here?
-		const DeserializationData d(componentTree, resourceManager);
-		prototype->Deserialize(d);
+		Serializer d(componentTree, SerializationState::DESERIALIZING);
+		prototype->Serialize(d);
 
 		mConstructionInfo.push_back(std::make_pair(registryData, std::move(prototype)));
 	}

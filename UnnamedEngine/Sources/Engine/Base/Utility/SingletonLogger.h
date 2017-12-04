@@ -10,18 +10,22 @@ enum class LogType
 	ERROR
 };
 
+class Logger
+{
+};
+
 class SingletonLogger : public NonCopyable
 {
 public:
 	SingletonLogger() = default;
-	static std::iostream& Log(std::string channel, LogType type);
+	static Logger& Log(std::string channel, LogType type);
 	static void RegisterStream(std::string channel);
 
 private:
-	std::iostream& GetStreamSingleton(std::string channel, LogType type);
+	Logger& GetStreamSingleton(std::string channel, LogType type);
 	void RegisterStreamSingleton(std::string channel);
 
-	std::unordered_map<std::string, std::iostream> mStreams;
+	std::unordered_map<std::string, Logger> mStreams;
 	static SingletonLogger& GetSingleton();
 };
 

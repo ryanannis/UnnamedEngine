@@ -10,6 +10,8 @@ public:
 
 	Vector3f pEntityCameraTranslation;
 	Vector3f pCameraRotation;
+
+	virtual Serializer& Serialize(Serializer& s) override;
 };
 
 template<> std::string Component<CameraComponent>::sName = "HealthComponent";

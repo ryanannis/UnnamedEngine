@@ -4,6 +4,10 @@
 #include <unordered_map>
 #include <optional>
 
+// for << overrides
+#include "Engine/Base/Resource/MaterialResource.h"
+#include "Engine/Base/Resource/ModelResource.h"
+
 enum class ParsedTokenType
 {
 	NONE,
@@ -52,6 +56,17 @@ private:
 	friend PropParser;
 	friend Serializer;
 };
+
+class ModelResource;
+class MaterialResource;
+
+void operator<<(ResourceType<ModelResource>& res, const PropTreeLeaf& p);
+void operator<<(ResourceType<MaterialResource>& res, const PropTreeLeaf& p);
+void operator<<(std::string& val, const PropTreeLeaf& p);
+void operator<<(float& val, const PropTreeLeaf& p);
+void operator<<(int& val, const PropTreeLeaf& p);
+void operator<<(URI& val, const PropTreeLeaf& p);
+void operator<<(Vector3f& val, const PropTreeLeaf& p);
 
 struct PropTree
 {

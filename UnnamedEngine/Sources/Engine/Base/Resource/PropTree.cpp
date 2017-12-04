@@ -67,3 +67,38 @@ std::optional<Vector3f> PropTreeLeaf::GetAsVector() const
 		)
 	);
 }
+
+void operator<<(std::string& val, const PropTreeLeaf& p)
+{
+	val = p.GetAsString();
+}
+
+void operator<<(float& val, const PropTreeLeaf& p)
+{
+	val = *p.GetAsFloat();
+}
+
+void operator<<(int& val, const PropTreeLeaf& p)
+{
+	val = *p.GetAsInt();
+}
+
+void operator<<(URI& val, const PropTreeLeaf& p)
+{
+	val = *p.GetAsURI();
+}
+
+void operator<<(Vector3f& val, const PropTreeLeaf& p)
+{
+	val = *p.GetAsVector();
+}
+
+void operator<<(ResourceType<ModelResource>& res, const PropTreeLeaf& p)
+{
+	res = ResourceType<ModelResource>(*p.GetAsURI());
+}
+
+void operator<<(ResourceType<MaterialResource>& res, const PropTreeLeaf& p)
+{
+	res = ResourceType<MaterialResource>(*p.GetAsURI());
+}
