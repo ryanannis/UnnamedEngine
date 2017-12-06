@@ -11,6 +11,6 @@ TransformComponent::TransformComponent() :
 Serializer& TransformComponent::Serialize(Serializer& s)
 {
 	SERIALIZE(s, "", pEntityWorldTranslation);
-	SERIALIZE(s, "", pEntityWorldRotation);
+	//SERIALIZE(s, "", pEntityWorldRotation);
 	return(s);
 }
