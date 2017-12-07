@@ -91,18 +91,16 @@ void GLDriver::DrawMesh(Ptr<GLAttributes> vao, Ptr<GLMesh> mesh)
 {
 	for(const GLSubmesh& submesh : mesh->GetSubmeshes())
 	{
-
-		//auto submesh = mesh->GetSubmeshes()[3];
+		vao->Bind();
 		if(submesh.diffuse)
 		{
-			submesh.diffuse->Bind(0);
+			submesh.diffuse->Bind(10);
 		}
 		if(submesh.specular)
 		{
-			submesh.specular->Bind(1);
+			submesh.specular->Bind(11);
 		}
 
-		vao->Bind();
 		glBindBuffer(GL_ARRAY_BUFFER, submesh.verticesbuffer);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, submesh.indicesBuffer);
 
@@ -142,6 +140,13 @@ Ptr<GLAttributes> GLDriver::CreateAttributes()
 	GLAttributes attributes;
 	mAttributes.push_back(std::move(attributes));
 	return(&mAttributes.back());
+}
+
+Ptr<GLRenderTarget> GLDriver::CreateRenderTarget()
+{
+	GLRenderTarget target;
+	mRenderTargets.push_back(std::move(target));
+	return(&mRenderTargets.back());
 }
 
 void GLDriver::SwapBuffers(GLFWwindow* window)

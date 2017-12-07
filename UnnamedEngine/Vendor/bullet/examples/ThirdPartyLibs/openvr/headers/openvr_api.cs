@@ -16,7 +16,7 @@ namespace Valve.VR
 public struct IVRSystem
 {
 	[UnmanagedFunctionPointer(CallingConvention.StdCall)]
-	internal delegate void _GetRecommendedRenderTargetSize(ref uint pnWidth, ref uint pnHeight);
+	internal delegate void glrendertarget_GetRecommendedRenderTargetSize(ref uint pnWidth, ref uint pnHeight);
 	[MarshalAs(UnmanagedType.FunctionPtr)]
 	internal _GetRecommendedRenderTargetSize GetRecommendedRenderTargetSize;
 

@@ -14,7 +14,17 @@ public:
 
 	void Free();
 
-private:
+	// render buffers
+	GLuint mDiffuse;
+	GLuint mPosition;
+	GLuint mNormals;
+	GLuint mDepth;
+	
+	// textures
+	GLuint mDiffuseTex;
+	GLuint mPositionTex;
+	GLuint mNormalTex;
+
 	GLuint mTexture;
 	GLuint mFbo;
 };

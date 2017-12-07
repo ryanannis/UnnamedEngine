@@ -87,6 +87,7 @@ enable_testing()
 file(GLOB_RECURSE TESTING_SOURCES UnnamedEngine/Test/*.cpp)
 file(GLOB_RECURSE TESTING_HEADERS UnnamedEngine/Test/*.h)
 
+message("${TESTING_SOURCES}")
 add_executable(runUnitTests ${TESTING_SOURCES} ${TESTING_HEADERS})
 
 target_link_libraries(runUnitTests ProjectLib assimp glfw

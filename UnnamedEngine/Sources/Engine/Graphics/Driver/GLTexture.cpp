@@ -66,4 +66,5 @@ void GLTexture::Bind(size_t unit)
 	auto glUnit = GL_TEXTURE0 + unit;
 	glActiveTexture(glUnit);
 	glBindTexture(GL_TEXTURE_2D, mTextureHandle);
+	glActiveTexture(GL_TEXTURE0);
 }

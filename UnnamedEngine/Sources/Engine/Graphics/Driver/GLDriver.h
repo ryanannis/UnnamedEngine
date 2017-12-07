@@ -6,12 +6,12 @@
 #include "Engine/Base/Resource/MaterialResource.h"
 #include <unordered_map>
 
-
 #include "Engine/Graphics/Driver/GLMesh.h"
 #include "Engine/Graphics/Driver/GLTexture.h"
 #include "Engine/Graphics/Driver/GLProgram.h"
 #include "Engine/Graphics/Driver/GLShader.h"
 #include "Engine/Graphics/Driver/GLAttributes.h"
+#include "Engine/Graphics/Driver/GLRenderTarget.h"
 
 struct GLFWwindow;
 class ResourceManager;
@@ -33,7 +33,9 @@ public:
 		const std::shared_ptr<ShaderResource>& vertShader,
 		const std::shared_ptr<ShaderResource>& fragShader
 	);
+	void DrawScreenQuad();
 	Ptr<GLAttributes> CreateAttributes();
+	Ptr<GLRenderTarget> CreateRenderTarget();
 	void SwapBuffers(GLFWwindow* window);
 
 private:
@@ -43,4 +45,5 @@ private:
 	std::unordered_map<std::string, GLTexture> mTextures;
 	std::vector<GLProgram> mPrograms;
 	std::vector<GLAttributes> mAttributes;
+	std::vector<GLRenderTarget> mRenderTargets;
 };

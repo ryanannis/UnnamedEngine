@@ -27,18 +27,50 @@ Renderer::Renderer(Ptr<Context> c) :
 // This comes in after the resource manager is done
 void Renderer::Initialize()
 {
+	mDriver = std::make_unique<GLDriver>(mContext->GetResourceManager());
+
+	// Basic 
+	float fullscreenQuadVertices[] = {
+		-1.0, -1.0, -1.0, //top left corner
+		0.f, 0.f,		  //texture top left
+		-1.0, 1.0, -1.0,  //bottom left corner
+		0.f, 1.f,		  //texture bottom left
+		1.0, -1.0, -1.0,  //top right corner
+		1.f, 0.f,		  //
+		1.0, 1.0, -1.0,   //bottom right corner
+		1.f, 1.f        // 
+	};
+	glGenBuffers(1, &mFullscreenQuadVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, mFullscreenQuadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(fullscreenQuadVertices), fullscreenQuadVertices, GL_STATIC_DRAW);
+
+	// Basic forward rendering program
 	ResourceType<ShaderResource> basicVertType("Engine/Basic.vert");
 	ResourceType<ShaderResource> basicFragType("Engine/Basic.frag");
-	mBasicVert = mContext->GetResourceManager()->LoadResource(basicVertType);
-	mBasicFrag = mContext->GetResourceManager()->LoadResource(basicFragType);
-	mDriver = std::make_unique<GLDriver>(mContext->GetResourceManager());
+	auto basicVert = mContext->GetResourceManager()->LoadResource(basicVertType);
+	auto basicFrag = mContext->GetResourceManager()->LoadResource(basicFragType);
+
+	// Basic deferred rendering program
+	ResourceType<ShaderResource> deferredVertType("Engine/Deferred.vert");
+	ResourceType<ShaderResource> deferredFragType("Engine/Deferred.frag");
+	auto deferredVert = mContext->GetResourceManager()->LoadResource(deferredVertType);
+	auto deferredFrag = mContext->GetResourceManager()->LoadResource(deferredFragType);
+	
 
 	// Generate VAO
 	mVao = mDriver->CreateAttributes();
 
+	
+	mBasicProgram = mDriver->CreateProgram(mVao, basicVert, basicFrag);
+
 	// Generate Programs
-	mBasicProgram = mDriver->CreateProgram(mVao, mBasicVert, mBasicFrag);
-	mBasicProgram->Bind();
+	mBasicDeferred = mDriver->CreateProgram(mVao, deferredVert, deferredFrag);
+	mBasicDeferred->Bind();
+
+	//mBasicProgram = mDriver->CreateProgram(mVao, basicVert, basicFrag);
+	//mBasicProgram->Bind();
+
+	mGBuffer = mDriver->CreateRenderTarget();
 
 	mDriver->EnableDepthTest();
 }
@@ -51,6 +83,12 @@ const CameraData& Renderer::GetCameraData() const
 void Renderer::SetCameraData(const CameraData& data)
 {
 	mCameraData = data;
+}
+
+void Renderer::DrawFullscreenQuad()
+{
+	mBasicProgram->Bind();
+
 }
 
 Matrix4 Renderer::GetCameraVPMatrix()
@@ -82,27 +120,51 @@ void Renderer::Render()
 {
 	mDriver->ClearFramebuffer(0, 0, 0);
 
-	RenderMeshes();
+	RenderGBuffer();
 
 	mDriver->SwapBuffers(mContext->GetClient()->GetWindow());
 }
 
 void Renderer::RenderMeshes()
 {
-	mBasicProgram->Bind();
 	for(const GraphicsData& g : mGraphicsData)
 	{
 		mVao->Bind();
 		auto mesh = mDriver->CreateMesh(g.mesh);
-		mVao->Unbind();
 
-		mBasicProgram->SetUniformMatrix4("MVP", GetCameraVPMatrix());
-		mBasicProgram->SetUniformInt("DiffuseSampler", 0);
-		mBasicProgram->SetUniformInt("SpecularSampler", 1);
+		mBasicDeferred->Bind();
+		mBasicDeferred->SetUniformMatrix4("MVP", GetCameraVPMatrix());
+		mBasicDeferred->SetUniformInt("DiffuseSampler", 10);
+		mBasicDeferred->SetUniformInt("SpecularSampler", 11);
 		mDriver->DrawMesh(mVao, mesh);
+		mVao->Unbind();
 	}
 }
 
+void Renderer::RenderGBuffer()
+{
+	mGBuffer->Bind();
+	RenderMeshes();
+	mGBuffer->Unbind();
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, mGBuffer->mDiffuseTex);
+
+	mVao->Bind();
+	mDriver->ClearFramebuffer(0, 0, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, mFullscreenQuadVBO);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+	mBasicProgram->Bind();
+	mBasicDeferred->SetUniformMatrix4("MVP", Matrix4());
+	mBasicDeferred->SetUniformInt("DiffuseSampler", 0);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	mVao->Unbind();
+}
 
 // Generates an object which represents the data needed
 // to render an entity

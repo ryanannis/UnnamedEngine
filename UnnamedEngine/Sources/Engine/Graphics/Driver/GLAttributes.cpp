@@ -40,5 +40,5 @@ void GLAttributes::Free()
 
 void GLAttributes::Unbind()
 {
-	glBindVertexArray(mVAO);
+	glBindVertexArray(0);
 }

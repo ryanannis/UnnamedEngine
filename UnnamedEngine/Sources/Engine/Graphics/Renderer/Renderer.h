@@ -47,6 +47,8 @@ public:
 	const CameraData& GetCameraData() const;
 	void SetCameraData(const CameraData& data);
 
+	void DrawFullscreenQuad();
+
 private:
 	RenderSettings mRenderSettings;
 
@@ -55,18 +57,18 @@ private:
 	Matrix4 GetCameraVPMatrix();
 
 	void RenderMeshes();
+	void RenderGBuffer();
 
 	CameraData mCameraData;
 	Ptr<Context> mContext;
 	std::vector<GraphicsData> mGraphicsData;
 
-	// Hardcoded Resources
-	std::shared_ptr<ShaderResource> mBasicVert;
-	std::shared_ptr<ShaderResource> mBasicFrag;
-
 	// Temp
+	GLuint mFullscreenQuadVBO;
 	Ptr<GLAttributes> mVao;
 	Ptr<GLProgram> mBasicProgram;
+	Ptr<GLProgram> mBasicDeferred;
+	Ptr<GLRenderTarget> mGBuffer;
 
 	// Disable copying
 	Renderer& operator=(const Renderer&) = delete;
