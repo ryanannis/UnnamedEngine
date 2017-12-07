@@ -1,60 +1,58 @@
 #include "GLMesh.h"
+
 #include <memory>
+#include <glad/glad.h>
 
-#include "Engine/Base/Resource/ModelResource.h"
-#include "Engine/Graphics/Driver/GLDriver.h"
+#include "Engine/Graphics/Driver/GLCommon.h"
 
-GLMesh::GLMesh(const std::shared_ptr<ModelResource>& resource, GLDriver* driver)
+GLMesh::GLMesh() : 
+	mVertices(0),
+	mIndices(0)
+{}
+
+GLMesh::GLMesh(
+	const std::vector<float>& vertices,
+	const std::vector<GLuint>& indices
+)
 {
-	auto res = resource;
-	const auto& meshes = res->GetMeshes();
-	for(auto mesh : meshes)
-	{
-		GLuint verticeBuffer;
-		GLuint indicesBuffer;
+	//Bind VBO of interleaved vertices
+	glGenBuffers(1, &mVertices);
+	glBindBuffer(GL_ARRAY_BUFFER, mVertices);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
 
-		//Bind VBO of interleaved vertices
-		glGenBuffers(1, &verticeBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, verticeBuffer);
-		const auto& vertices = mesh.mVectors;
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+	// Bind EBO
+	glGenBuffers(1, &mIndices);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndices);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * indices.size(), indices.data(), GL_STATIC_DRAW);
 
-		// Bind EBO
-		glGenBuffers(1, &indicesBuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
-		const auto& indices = mesh.mIndices;
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * indices.size(), indices.data(), GL_STATIC_DRAW);
-
-		GLSubmesh s;
-		s.indicesBuffer = indicesBuffer;
-		s.verticesbuffer = verticeBuffer;
-		s.numIndices = indices.size();
-		
-		// assigne texes
-		// todo:  why would a mesh have multiple texs?
-		if(mesh.mDiffuseTextures.size() > 0)
-		{
-			s.diffuse = driver->LoadTexture(mesh.mDiffuseTextures[0]);
-		}
-		if(mesh.mSpecularTextures.size() > 0)
-		{
-			s.specular = driver->LoadTexture(mesh.mSpecularTextures[0]);
-		}
-
-		mSubmeshes.push_back(s);
-	}
+	mNumIndices = indices.size();
 }
 
 void GLMesh::Free()
 {
-	for(const auto& submesh : mSubmeshes)
-	{
-		glDeleteBuffers(1, &submesh.indicesBuffer);
-		glDeleteBuffers(1, &submesh.verticesbuffer);
-	}
+	glDeleteBuffers(1, &mVertices);
+	glDeleteBuffers(1, &mIndices);
+	mVertices = 0;
+	mIndices = 0;
 }
 
-const std::vector<GLSubmesh>& GLMesh::GetSubmeshes() const
+void GLMesh::Bind() const
 {
-	return(mSubmeshes);
+	assert(mVertices != 0);
+	assert(mIndices != 0);
+	glBindBuffer(GL_ARRAY_BUFFER, mVertices);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndices);
+}
+
+void GLMesh::Unbind() const
+{
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+size_t GLMesh::GetNumIndices() const
+{
+	assert(mVertices != 0);
+	assert(mIndices != 0);
+	return(mNumIndices);
 }

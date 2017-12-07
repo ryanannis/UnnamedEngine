@@ -9,7 +9,7 @@
 #include "Engine/Base/Resource/MaterialResource.h"
 #include "Engine/Base/Resource/ShaderResource.h"
 
-#include "Engine/Graphics/Driver/GLMesh.h"
+#include "Engine/Graphics/Driver/GLModel.h"
 #include "Engine/Graphics/Driver/GLProgram.h"
 #include "Engine/Graphics/Driver/GLShader.h"
 #include "Engine/Graphics/Driver/GLAttributes.h"
@@ -55,7 +55,7 @@ void GLDriver::ClearResources()
 	mAttributes.clear();
 }
 
-Ptr<GLMesh> GLDriver::CreateMesh(const ResourceType<ModelResource>& modelResource)
+Ptr<GLModel> GLDriver::CreateMesh(const ResourceType<ModelResource>& modelResource)
 {
 	// Check if already loaded
 	const auto& key = modelResource.GetURI();
@@ -67,7 +67,7 @@ Ptr<GLMesh> GLDriver::CreateMesh(const ResourceType<ModelResource>& modelResourc
 	}
 
 	auto loadedMesh = mResourceManager->LoadResource(modelResource);
-	auto meshPointer = mMeshes.emplace(hash, GLMesh(loadedMesh, this));
+	auto meshPointer = mMeshes.emplace(hash, GLModel(loadedMesh, this));
 	return(&(meshPointer.first->second));
 }
 
@@ -87,9 +87,9 @@ Ptr<GLTexture> GLDriver::LoadTexture(const ResourceType<MaterialResource>& textu
 	return(&(texturePointer.first->second));
 }
 
-void GLDriver::DrawMesh(Ptr<GLAttributes> vao, Ptr<GLMesh> mesh)
+void GLDriver::DrawMesh(Ptr<GLAttributes> vao, Ptr<GLModel> mesh)
 {
-	for(const GLSubmesh& submesh : mesh->GetSubmeshes())
+	for(const GLSubModel& submesh : mesh->GetSubmeshes())
 	{
 		vao->Bind();
 		if(submesh.diffuse)
@@ -101,13 +101,12 @@ void GLDriver::DrawMesh(Ptr<GLAttributes> vao, Ptr<GLMesh> mesh)
 			submesh.specular->Bind(11);
 		}
 
-		glBindBuffer(GL_ARRAY_BUFFER, submesh.verticesbuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, submesh.indicesBuffer);
+		submesh.mesh.Bind();
 
 		vao->AddAttribute(0, 3, GL_FLOAT, 8 * sizeof(float), 0); // vertexes
 		vao->AddAttribute(1, 3, GL_FLOAT, 8 * sizeof(float), 3 * sizeof(float)); // normals
 		vao->AddAttribute(2, 2, GL_FLOAT, 8 * sizeof(float), 6 * sizeof(float)); // uvs
-		glDrawElements(GL_TRIANGLES, submesh.numIndices, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, submesh.mesh.GetNumIndices(), GL_UNSIGNED_INT, 0);
 		vao->Unbind();
 	}
 }

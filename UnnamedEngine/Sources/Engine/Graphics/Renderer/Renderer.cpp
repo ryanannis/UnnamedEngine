@@ -1,7 +1,7 @@
 #include "Renderer.h"
 #include "Engine/Base/Common/Common.h"
 
-#include "Engine/Graphics/Driver/GLMesh.h"
+#include "Engine/Graphics/Driver/GLModel.h"
 #include "Engine/Graphics/Driver/GLProgram.h"
 #include "Engine/Graphics/Driver/GLShader.h"
 #include "Engine/Graphics/Driver/GLAttributes.h"

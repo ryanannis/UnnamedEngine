@@ -1,30 +1,26 @@
 #pragma once
 #include "Engine/Base/Common/Common.h"
-
-#include <memory>
 #include <glad/glad.h>
+#include <memory>
 
-class ModelResource;
-class GLTexture;
-class GLDriver;
-
-struct GLSubmesh
-{
-	GLuint verticesbuffer;
-	GLuint indicesBuffer;
-	size_t numIndices;
-	Ptr<GLTexture> diffuse;
-	Ptr<GLTexture> specular;
-};
+class ShaderResource;
 
 class GLMesh
 {
 public:
-	// todo:  move tex initialization and remove driver ptr in cstr
-	GLMesh(const std::shared_ptr<ModelResource>& resource, GLDriver* driver);
+	GLMesh();
+	GLMesh(
+		const std::vector<float>& vertices, 
+		const std::vector<GLuint>& indices
+	);
+	void Bind() const;
+	void Unbind() const;
 	void Free();
-	const std::vector<GLSubmesh>& GetSubmeshes() const;
+	size_t GetNumIndices() const;
+	GLuint GetHandle() const;
 
 private:
-	std::vector<GLSubmesh> mSubmeshes;
+	GLuint mVertices;
+	GLuint mIndices;
+	size_t mNumIndices;
 };
