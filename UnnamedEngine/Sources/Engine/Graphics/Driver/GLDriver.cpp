@@ -33,7 +33,7 @@ void GLDriver::ClearFramebuffer(uint8_t r, uint8_t b, uint8_t g)
 
 void GLDriver::ClearResources()
 {
-	for(auto& mesh : mMeshes)
+	for(auto& mesh : mModels)
 	{
 		mesh.second.Free();
 	}
@@ -50,25 +50,31 @@ void GLDriver::ClearResources()
 		attribute.Free();
 	}
 
-	mMeshes.clear();
+	mModels.clear();
 	mPrograms.clear();
 	mAttributes.clear();
 }
 
-Ptr<GLModel> GLDriver::CreateMesh(const ResourceType<ModelResource>& modelResource)
+Ptr<GLModel> GLDriver::CreateModel(const ResourceType<ModelResource>& modelResource)
 {
 	// Check if already loaded
 	const auto& key = modelResource.GetURI();
 	const auto& hash = key.GetHash();
-	auto mesh = mMeshes.find(hash);
-	if(mesh != mMeshes.end())
+	auto mesh = mModels.find(hash);
+	if(mesh != mModels.end())
 	{
 		return(&mesh->second);
 	}
 
 	auto loadedMesh = mResourceManager->LoadResource(modelResource);
-	auto meshPointer = mMeshes.emplace(hash, GLModel(loadedMesh, this));
+	auto meshPointer = mModels.emplace(hash, GLModel(loadedMesh, this));
 	return(&(meshPointer.first->second));
+}
+
+Ptr<GLMesh> GLDriver::CreateMesh(const std::vector<float>& vertices, const std::vector<GLuint>& indices)
+{
+	mMeshes.push_back(GLMesh(vertices, indices));
+	return(&mMeshes.back());
 }
 
 Ptr<GLTexture> GLDriver::LoadTexture(const ResourceType<MaterialResource>& textureResource)

@@ -64,7 +64,7 @@ private:
 	std::vector<GraphicsData> mGraphicsData;
 
 	// Temp
-	GLuint mFullscreenQuadVBO;
+	Ptr<GLMesh> mFullscreenMesh;
 	Ptr<GLAttributes> mVao;
 	Ptr<GLProgram> mBasicProgram;
 	Ptr<GLProgram> mBasicDeferred;

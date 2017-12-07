@@ -30,7 +30,7 @@ void Renderer::Initialize()
 	mDriver = std::make_unique<GLDriver>(mContext->GetResourceManager());
 
 	// Basic 
-	float fullscreenQuadVertices[] = {
+	const static auto fsQuadVerts = std::vector<float>{
 		-1.0, -1.0, -1.0, //top left corner
 		0.f, 0.f,		  //texture top left
 		-1.0, 1.0, -1.0,  //bottom left corner
@@ -40,9 +40,11 @@ void Renderer::Initialize()
 		1.0, 1.0, -1.0,   //bottom right corner
 		1.f, 1.f        // 
 	};
-	glGenBuffers(1, &mFullscreenQuadVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, mFullscreenQuadVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(fullscreenQuadVertices), fullscreenQuadVertices, GL_STATIC_DRAW);
+	const static auto fsQuadIndices = std::vector<GLuint>{
+		2, 1, 0,
+		2, 3, 1
+	};
+	mFullscreenMesh = mDriver->CreateMesh(fsQuadVerts, fsQuadIndices);
 
 	// Basic forward rendering program
 	ResourceType<ShaderResource> basicVertType("Engine/Basic.vert");
@@ -66,9 +68,6 @@ void Renderer::Initialize()
 	// Generate Programs
 	mBasicDeferred = mDriver->CreateProgram(mVao, deferredVert, deferredFrag);
 	mBasicDeferred->Bind();
-
-	//mBasicProgram = mDriver->CreateProgram(mVao, basicVert, basicFrag);
-	//mBasicProgram->Bind();
 
 	mGBuffer = mDriver->CreateRenderTarget();
 
@@ -130,7 +129,7 @@ void Renderer::RenderMeshes()
 	for(const GraphicsData& g : mGraphicsData)
 	{
 		mVao->Bind();
-		auto mesh = mDriver->CreateMesh(g.mesh);
+		auto mesh = mDriver->CreateModel(g.mesh);
 
 		mBasicDeferred->Bind();
 		mBasicDeferred->SetUniformMatrix4("MVP", GetCameraVPMatrix());
@@ -148,17 +147,18 @@ void Renderer::RenderGBuffer()
 	mGBuffer->Unbind();
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mGBuffer->mDiffuseTex);
+	glBindTexture(GL_TEXTURE_2D, );
 
 	mVao->Bind();
 	mDriver->ClearFramebuffer(0, 0, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, mFullscreenQuadVBO);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	//glBindBuffer(GL_ARRAY_BUFFER, mFullscreenQuadVBO);
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
+	
+	//glEnableVertexAttribArray(0);
+	//glDisableVertexAttribArray(1);
+	//glEnableVertexAttribArray(2);
 	mBasicProgram->Bind();
 	mBasicDeferred->SetUniformMatrix4("MVP", Matrix4());
 	mBasicDeferred->SetUniformInt("DiffuseSampler", 0);

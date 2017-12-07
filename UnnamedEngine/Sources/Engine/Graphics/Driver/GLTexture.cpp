@@ -51,6 +51,17 @@ GLTexture::GLTexture(const std::shared_ptr<MaterialResource>& resource)
 	glGenerateMipmap(GL_TEXTURE_2D);
 }
 
+size_t GLTexture::GetWidth() const
+{
+	return(mWidth);
+}
+
+size_t GLTexture::GetHeight() const
+{
+	return(mHeight);
+}
+
+
 void GLTexture::Free()
 {
 	glDeleteTextures(1, &mTextureHandle);
