@@ -94,7 +94,7 @@ add_library(ProjectLib ${PROJECT_SOURCES} ${PROJECT_HEADERS}
 
 add_executable(${PROJECT_NAME} UnnamedEngine/Sources/main.cpp)
 target_link_libraries(${PROJECT_NAME} ProjectLib assimp glfw
-						${GLFW_LIBRARIES} ${GLAD_LIBRARIES} ${Vulkan_LIBRARIES}
+						${GLFW_LIBRARIES} ${GLAD_LIBRARIES} ${Vulkan_LIBRARY}
 						BulletDynamics BulletCollision LinearMath)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -111,5 +111,5 @@ file(GLOB_RECURSE TESTING_HEADERS UnnamedEngine/Test/*.h)
 message("${TESTING_SOURCES}")
 add_executable(runUnitTests ${TESTING_SOURCES} ${TESTING_HEADERS})
 
-target_link_libraries(runUnitTests ProjectLib assimp glfw ${Vulkan_LIBRARIES}
+target_link_libraries(runUnitTests ProjectLib assimp glfw ${Vulkan_LIBRARY}
 						${GLFW_LIBRARIES} ${GLAD_LIBRARIES} BulletDynamics BulletCollision LinearMath)

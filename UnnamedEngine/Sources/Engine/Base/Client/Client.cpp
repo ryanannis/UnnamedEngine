@@ -60,16 +60,16 @@ void Client::InitializeRenderer()
 
 void Client::InitializeWindow()
 {
-	assert(glfwVulkanSupported());
+	//assert(glfwVulkanSupported());
 	glfwInit();
 	// The GL stuff should really be in the renderer... 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-	mWindow = glfwCreateWindow(SCREENWIDTH, SCREENHEIGHT, "OpenGL", nullptr, nullptr);
+	mWindow = glfwCreateWindow(SCREENWIDTH, SCREENHEIGHT, "UnnamedEngine", nullptr, nullptr);
+
+	uint32_t extensionCount = 0;
+	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+	std::cout << extensionCount << " extensions supported" << std::endl;
 
 	if(mWindow == nullptr){
 		std::cerr << "Failed to initialize OpenGL context." << std::endl;
