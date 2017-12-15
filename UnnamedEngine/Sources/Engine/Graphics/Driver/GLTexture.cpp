@@ -7,6 +7,15 @@
 
 #include "Engine/Graphics/Driver/GLCommon.h"
 
+
+GLTexture::GLTexture(GLuint resourcePtr, size_t width, size_t height, GLuint textureType) :
+	mTextureHandle(resourcePtr),
+	mWidth(width),
+	mHeight(height),
+	mTextureType(textureType)
+{
+}
+
 GLTexture::GLTexture(const std::shared_ptr<MaterialResource>& resource)
 {
 	if(!resource->IsReady())
@@ -70,6 +79,11 @@ void GLTexture::Free()
 GLuint GLTexture::GetTextureHandle() const
 {
 	return(mTextureHandle);
+}
+
+GLuint GLTexture::GetTextureType() const
+{
+	return(mTextureType);
 }
 
 void GLTexture::Bind(size_t unit)

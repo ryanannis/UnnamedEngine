@@ -4,6 +4,8 @@
 #include "Engine/Graphics/Renderer/Renderer.h"
 
 #include <glad/glad.h>
+
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include "Engine/Base/Client/GameFramework.h"
@@ -58,6 +60,7 @@ void Client::InitializeRenderer()
 
 void Client::InitializeWindow()
 {
+	assert(glfwVulkanSupported());
 	glfwInit();
 	// The GL stuff should really be in the renderer... 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);

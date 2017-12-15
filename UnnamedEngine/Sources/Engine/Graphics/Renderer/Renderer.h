@@ -58,6 +58,7 @@ private:
 
 	void RenderMeshes();
 	void RenderGBuffer();
+	void RenderLights();
 
 	CameraData mCameraData;
 	Ptr<Context> mContext;
@@ -68,7 +69,11 @@ private:
 	Ptr<GLAttributes> mVao;
 	Ptr<GLProgram> mBasicProgram;
 	Ptr<GLProgram> mBasicDeferred;
+
 	Ptr<GLRenderTarget> mGBuffer;
+	Ptr<GLTexture> mGBufferDiffuseTexture;
+	Ptr<GLTexture> mGBufferNormalTexture;
+	Ptr<GLTexture> mGBufferDepthTexture;
 
 	// Disable copying
 	Renderer& operator=(const Renderer&) = delete;

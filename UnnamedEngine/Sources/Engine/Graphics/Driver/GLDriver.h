@@ -31,6 +31,7 @@ public:
 	Ptr<GLModel> RenderFullscreen();
 
 	Ptr<GLTexture> LoadTexture(const ResourceType<MaterialResource>& textureResource);
+	Ptr<GLTexture> CreateTexture();
 	void DrawMesh(Ptr<GLAttributes> vao, Ptr<GLModel> mesh);
 	Ptr<GLProgram> CreateProgram(
 		const Ptr<GLAttributes>& vao,
@@ -39,15 +40,20 @@ public:
 	);
 	void DrawScreenQuad();
 	Ptr<GLAttributes> CreateAttributes();
-	Ptr<GLRenderTarget> CreateRenderTarget();
+	Ptr<GLRenderTarget> CreateRenderTarget(size_t width, size_t height, size_t numTargets, size_t requiresDepth);
 	void SwapBuffers(GLFWwindow* window);
 
 private:
 	Ptr<ResourceManager> mResourceManager;
 	std::vector<GLuint> mVAOS;
 	std::vector<GLMesh> mMeshes;
+
+	// Externally loaded resources
 	std::unordered_map<std::string, GLModel> mModels;
 	std::unordered_map<std::string, GLTexture> mTextures;
+
+	// Internal textures (eg. for GBuffer, passes)
+	std::vector<GLTexture> mTextureBuffers;
 	std::vector<GLProgram> mPrograms;
 	std::vector<GLAttributes> mAttributes;
 	std::vector<GLRenderTarget> mRenderTargets;

@@ -1,31 +1,32 @@
 #pragma once
+#include "Engine/Base/Common/Common.h"
 #include <glad/glad.h>
 #include <vector>
 #include "Engine/Graphics/Driver/GLTexture.h"
 
+class GLTexture;
+
 class GLRenderTarget
 {
 public:
-	GLRenderTarget();
+	GLRenderTarget(size_t width, size_t height, size_t numTargets, bool requireDepths);
 
 	GLuint GetHandle();
-	void Bind();
+	void Bind(size_t textureSlot);
 	void Unbind();
+	void SetTarget(size_t index, Ptr<GLTexture> texture);
 
 	void Free();
 
-	// render buffers
-	GLuint mDiffuse;
-	GLuint mPosition;
-	GLuint mNormals;
-	GLuint mDepth;
+private:
+	std::vector<GLuint> mRenderBuffers;
+	std::vector<GLuint> mTextures;
+	std::vector<GLuint> mColorAttachments;
+	GLuint mDepthRenderBuffer;
 	
-	// textures
-	GLuint mDiffuseTex;
-	GLuint mPositionTex;
-	GLuint mNormalTex;
-
-	GLuint mTexture;
+	size_t mWidth;
+	size_t mHeight;
+	bool mHasDepth;
 	GLuint mFbo;
 };
 

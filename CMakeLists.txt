@@ -17,7 +17,7 @@ add_subdirectory(UnnamedEngine/Vendor/assimp)
 option(BUILD_BULLET2_DEMOS OFF)
 option(BUILD_CPU_DEMOS OFF)
 option(BUILD_EXTRAS OFF)
-option(BUILD_OPENGL3_DEMOS OFF)
+option(BUILD_OPENGL3_DEMOS OFF)	
 option(BUILD_UNIT_TESTS OFF)
 add_subdirectory(UnnamedEngine/Vendor/bullet)
 
@@ -32,12 +32,32 @@ else()
 	endif()
 endif()
 
+# Vulkan setup
+
+
+# https://cmake.org/cmake/help/v3.7/module/FindVulkan.html
+if (NOT CMAKE_VERSION VERSION_LESS 3.7.0)
+	message(STATUS "Using module to find Vulkan")
+	find_package(Vulkan)
+endif()
+
+IF (NOT Vulkan_FOUND)
+	message(FATAL_ERROR "Could not find Vulkan library!")
+ELSE()
+	message("Found Vulkan")
+	message(${Vulkan_INCLUDE_DIRS})
+	message(${Vulkan_LIBRARY})
+ENDIF()
+
+# Includes
+
 include_directories(UnnamedEngine/Sources/
                     UnnamedEngine/Vendor/assimp/include/
 					UnnamedEngine/Vendor/catch/
                     UnnamedEngine/Vendor/bullet/src/
 					UnnamedEngine/Vendor/glad/include/
                     UnnamedEngine/Vendor/glfw/include/
+					${Vulkan_INCLUDE_DIRS}
                     UnnamedEngine/Vendor/glm/
                     UnnamedEngine/Vendor/stb/
 					UnnamedEngine/Vendor/freetype/include/)
@@ -51,7 +71,7 @@ file(GLOB_RECURSE PROJECT_SHADERS UnnamedEngine/Shaders/*.comp
                           UnnamedEngine/Shaders/*.vert)
 file(GLOB PROJECT_CONFIGS CMakeLists.txt
                           Readme.md
-                         .gitattributes
+                         .gitattributess
                          .gitignore
                          .gitmodules)
 
@@ -69,11 +89,12 @@ add_library(ProjectLib ${PROJECT_SOURCES} ${PROJECT_HEADERS}
 										  ${PROJECT_CONFIGS}
 										  ${VENDORS_SOURCES})
 
+
 # Compile main executable
 
 add_executable(${PROJECT_NAME} UnnamedEngine/Sources/main.cpp)
 target_link_libraries(${PROJECT_NAME} ProjectLib assimp glfw
-						${GLFW_LIBRARIES} ${GLAD_LIBRARIES}
+						${GLFW_LIBRARIES} ${GLAD_LIBRARIES} ${Vulkan_LIBRARIES}
 						BulletDynamics BulletCollision LinearMath)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -90,5 +111,5 @@ file(GLOB_RECURSE TESTING_HEADERS UnnamedEngine/Test/*.h)
 message("${TESTING_SOURCES}")
 add_executable(runUnitTests ${TESTING_SOURCES} ${TESTING_HEADERS})
 
-target_link_libraries(runUnitTests ProjectLib assimp glfw
+target_link_libraries(runUnitTests ProjectLib assimp glfw ${Vulkan_LIBRARIES}
 						${GLFW_LIBRARIES} ${GLAD_LIBRARIES} BulletDynamics BulletCollision LinearMath)

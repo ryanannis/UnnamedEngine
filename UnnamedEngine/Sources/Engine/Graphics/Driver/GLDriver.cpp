@@ -1,5 +1,6 @@
 #include "GLDriver.h"
 
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include "Engine/Base/Resource/URI.h"
@@ -147,9 +148,9 @@ Ptr<GLAttributes> GLDriver::CreateAttributes()
 	return(&mAttributes.back());
 }
 
-Ptr<GLRenderTarget> GLDriver::CreateRenderTarget()
+Ptr<GLRenderTarget> GLDriver::CreateRenderTarget(size_t width, size_t height, size_t numTargets, size_t requiresDepth)
 {
-	GLRenderTarget target;
+	GLRenderTarget target(width, height, numTargets, requiresDepth);
 	mRenderTargets.push_back(std::move(target));
 	return(&mRenderTargets.back());
 }
