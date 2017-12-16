@@ -121,7 +121,14 @@ void Client::Run()
 		mShouldTerminate = mShouldTerminate || glfwWindowShouldClose(mWindow);
 	}
 
-	glfwDestroyWindow(GetWindow());
+	Cleanup();
+}
+
+void Client::Cleanup()
+{
+	assert(mWindow);
+	glfwDestroyWindow(mWindow);
+	glfwTerminate();
 }
 
 Ptr<GLFWwindow> Client::GetWindow()

@@ -1,10 +1,7 @@
 #include "Renderer.h"
 #include "Engine/Base/Common/Common.h"
 
-#include "Engine/Graphics/Driver/GLModel.h"
-#include "Engine/Graphics/Driver/GLProgram.h"
-#include "Engine/Graphics/Driver/GLShader.h"
-#include "Engine/Graphics/Driver/GLAttributes.h"
+#include "Engine/Graphics/VulkanDriver/VulkanDriver.h"
 
 #include "Engine/Base/Resource/ModelResource.h"
 
@@ -26,7 +23,8 @@ Renderer::Renderer(Ptr<Context> c) :
 // This comes in after the resource manager is done
 void Renderer::Initialize()
 {
-	mDriver = std::make_unique<GLDriver>(mContext->GetResourceManager());
+	mDriver = std::make_unique<VulkanDriver>(mContext->GetResourceManager());
+	mDriver->Initialize();
 
 	// For drawing fullscreen quad 
 	const static auto fsQuadVerts = std::vector<float>{
@@ -58,7 +56,6 @@ void Renderer::SetCameraData(const CameraData& data)
 
 void Renderer::DrawFullscreenQuad()
 {
-	mBasicProgram->Bind();
 
 }
 

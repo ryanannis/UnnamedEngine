@@ -4,7 +4,8 @@
 #include "Engine/Graphics/Renderer/RenderSettings.h"
 #include "Engine/Base/Resource/ModelResource.h"
 #include "Engine/Base/Resource/ResourceType.h"
-#include "Engine/Graphics/Driver/GLDriver.h"
+
+#include "Engine/Graphics/VulkanDriver/VulkanDriver.h"
 
 class GLDriver;
 class Context;
@@ -52,7 +53,7 @@ public:
 private:
 	RenderSettings mRenderSettings;
 
-	std::unique_ptr<GLDriver> mDriver;
+	std::unique_ptr<VulkanDriver> mDriver;
 
 	Matrix4 GetCameraVPMatrix();
 
@@ -63,17 +64,6 @@ private:
 	CameraData mCameraData;
 	Ptr<Context> mContext;
 	std::vector<GraphicsData> mGraphicsData;
-
-	// Temp
-	Ptr<GLMesh> mFullscreenMesh;
-	Ptr<GLAttributes> mVao;
-	Ptr<GLProgram> mBasicProgram;
-	Ptr<GLProgram> mBasicDeferred;
-
-	Ptr<GLRenderTarget> mGBuffer;
-	Ptr<GLTexture> mGBufferDiffuseTexture;
-	Ptr<GLTexture> mGBufferNormalTexture;
-	Ptr<GLTexture> mGBufferDepthTexture;
 
 	// Disable copying
 	Renderer& operator=(const Renderer&) = delete;

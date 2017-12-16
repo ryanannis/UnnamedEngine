@@ -5,7 +5,7 @@ GLRenderTarget::GLRenderTarget(size_t width, size_t height, size_t numTargets, b
 {
 	// OpenGL allows 16 renderbuffer color attachments.
 	// This is probably more than is ever needed.
-	assert(numTargets < 16);
+  	assert(numTargets < 16);
 	glGenFramebuffers(1, &mFbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, mFbo);
 

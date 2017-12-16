@@ -52,6 +52,9 @@ private:
 	void InitializeRenderer();
 	void InitializeInputManager();
 
+	// GLFW/Resource cleanup
+	void Cleanup();
+
 	// Disable copying
 	Client& operator=(const Client&) = delete;
 	Client(const Client&) = delete;

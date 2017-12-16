@@ -34,7 +34,6 @@ endif()
 
 # Vulkan setup
 
-
 # https://cmake.org/cmake/help/v3.7/module/FindVulkan.html
 if (NOT CMAKE_VERSION VERSION_LESS 3.7.0)
 	message(STATUS "Using module to find Vulkan")

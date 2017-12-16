@@ -1,5 +1,5 @@
 #include <Catch.h>
-#include "Engine/Base/Resource/MeshResource.h"
+//#include "Engine/Base/Resource/MeshResource.h"
 #include "Engine/Base/Resource/ResourceManager.h"
 
 TEST_CASE("URL Parser works!", "[urlparser]") {
