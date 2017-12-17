@@ -21,10 +21,15 @@ Renderer::Renderer(Ptr<Context> c) :
 }
 
 // This comes in after the resource manager is done
-void Renderer::Initialize()
+void Renderer::Initialize(const RendererSettings& c)
 {
 	mDriver = std::make_unique<VulkanDriver>(mContext->GetResourceManager());
-	mDriver->Initialize();
+
+	DriverSettings settings;
+	settings.windowManagerExtensions = c.windowManagerExtensions;
+	settings.numExtensions = c.numExtensions;
+
+	mDriver->Initialize(settings);
 
 	// For drawing fullscreen quad 
 	const static auto fsQuadVerts = std::vector<float>{

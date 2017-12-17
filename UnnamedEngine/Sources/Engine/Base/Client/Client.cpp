@@ -45,12 +45,24 @@ void Client::Initialize()
 	InitializeContext();
 
 	GetTarget()->Initialize();
-	mRenderer->Initialize();
+
+	// Tell the render what grapcis driver extensions are needed (this should only be needed
+	// for DX12/Vulkan in practice)
+	RendererSettings r;
+	uint32_t glfwExtensionCount = 0;
+	const char** glfwExtensions;
+	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+	r.numExtensions = glfwExtensionCount;
+	r.windowManagerExtensions = const_cast<char**>(glfwExtensions);
+
+	mRenderer->Initialize(r);
 }
 
 void Client::InitializeRenderer()
 {
 	RenderSettings s;
+	
 	// hardcoded for now
 	s.screenHeight = SCREENHEIGHT;
 	s.screenWidth = SCREENWIDTH;
@@ -62,24 +74,19 @@ void Client::InitializeWindow()
 {
 	//assert(glfwVulkanSupported());
 	glfwInit();
-	// The GL stuff should really be in the renderer... 
+	
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 	mWindow = glfwCreateWindow(SCREENWIDTH, SCREENHEIGHT, "UnnamedEngine", nullptr, nullptr);
 
-	uint32_t extensionCount = 0;
-	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-	std::cout << extensionCount << " extensions supported" << std::endl;
 
 	if(mWindow == nullptr){
-		std::cerr << "Failed to initialize OpenGL context." << std::endl;
+		std::cerr << "Failed to initialize GLFW window." << std::endl;
 	}
 
 	glfwMakeContextCurrent(mWindow);
-	gladLoadGL();
-
-	std::cerr << "Successfully initialized OpenGL context." << std::endl;
-
+	
 	glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 

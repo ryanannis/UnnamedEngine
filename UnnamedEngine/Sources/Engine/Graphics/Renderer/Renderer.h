@@ -10,6 +10,12 @@
 class GLDriver;
 class Context;
 
+struct RendererSettings
+{
+	char** windowManagerExtensions;
+	size_t numExtensions;
+};
+
 struct CameraData
 {
 	Vector3f translation;
@@ -39,7 +45,7 @@ public:
 	Renderer(Ptr<Context> c);
 	~Renderer() = default;
 
-	void Initialize();
+	void Initialize(const RendererSettings& c);
 
 	void Render();
 	GraphicsHandle GenerateGraphicsData();
