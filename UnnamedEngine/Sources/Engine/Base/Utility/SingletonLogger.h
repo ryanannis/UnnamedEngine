@@ -3,6 +3,7 @@
 #include <iostream>
 #include <unordered_map>
 
+#define GFX_DRIVER_LOG "Graphics"
 
 enum class LogType
 {
@@ -12,6 +13,8 @@ enum class LogType
 
 class Logger
 {
+public:
+	void Log(std::string stringToLog);
 };
 
 class SingletonLogger : public NonCopyable

@@ -29,6 +29,12 @@ void Renderer::Initialize(const RendererSettings& c)
 	settings.windowManagerExtensions = c.windowManagerExtensions;
 	settings.numExtensions = c.numExtensions;
 
+#ifdef NDEBUG
+	settings.useValidationLayers = false;
+#else
+	settings.useValidationLayers = true;
+#endif
+
 	mDriver->Initialize(settings);
 
 	// For drawing fullscreen quad 
