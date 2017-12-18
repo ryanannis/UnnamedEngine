@@ -6,6 +6,7 @@
 
 struct PropTree;
 struct UDFToken;
+struct PropTreeLeaf;
 
 class PropParser
 {
@@ -15,6 +16,7 @@ public:
 private:
 	static void Tokenize(std::string str, std::vector<UDFToken>& tokens);
 	static void ParserFailed(int lineNumber, std::string around);
+	static PropTreeLeaf ParseValueTokens(std::vector<char> valueTokens, bool& status);
 	static std::optional<PropTree> ParseTokens(std::vector<UDFToken>& tokens);
 };
 

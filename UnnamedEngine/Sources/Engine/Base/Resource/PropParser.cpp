@@ -12,6 +12,9 @@ enum class DSMState
 	START,
 	Sym, //T
 	ALPHANUM, //NT
+	STRING,
+	NUMBER,
+	DECIMALNUMBER,
 	RELATIVEPATH, //NT
 	END // T
 };
@@ -86,13 +89,69 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 			}
 		}
 
+		// If this flag is set to true, it will use all input since last terminal token
+		// to form the lexeme for the token
 		bool shouldTerminate = false;
-		// Relative Path Chars
-		if(c == '/' || c == '\\' || c == '.')
+		
+		if(c == '"')
+		{
+			if(state == DSMState::STRING)
+			{
+				nextState == DSMState::START;
+				shouldTerminate = true;
+			}
+			else
+			{
+				state = DSMState::STRING;
+				shouldTerminate = true;
+			}
+		}
+		else if(nextState == DSMState::STRING)
+		{
+			// There is a edge from String->String for every character
+			nextState = DSMState::STRING;
+		}
+		else if(c >= '0' && c <= '9')
+		{
+			if(state == DSMState::ALPHANUM)
+			{
+				nextState == DSMState::ALPHANUM;
+			}
+			else if(state == DSMState::NUMBER)
+			{
+				nextState = DSMState::NUMBER;
+			}
+			else if(state == DSMState::DECIMALNUMBER)
+			{
+				nextState = DSMState::DECIMALNUMBER;
+			}
+			else
+			{
+				nextState == DSMState::NUMBER;
+				shouldTerminate = true;
+			}
+			
+		}
+		else if(c == '.')
+		{
+			if(state == DSMState::RELATIVEPATH || state == DSMState::START)
+			{
+				nextState = DSMState::RELATIVEPATH;
+			}
+			else if (state == DSMState::NUMBER)
+			{
+				nextState = DSMState::DECIMALNUMBER;
+			}
+			else
+			{
+				shouldTerminate = true;
+				nextState =  DSMState::RELATIVEPATH;
+			}
+		}
+		else if(c == '/' || c == '\\' )
 		{
 			if
 			(
-				state == DSMState::ALPHANUM ||
 				state == DSMState::RELATIVEPATH ||
 				state == DSMState::START
 			)
@@ -101,6 +160,7 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 			}
 			else
 			{
+				nextState = DSMState::RELATIVEPATH;
 				shouldTerminate = true;
 			}
 		}
@@ -109,8 +169,7 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 			(
 				(c >= 'A' && c <= 'Z') || 
 				(c >= 'a' && c <= 'z')
-			) || 
-			(c >= '0' && c <= '9') ||
+			)  || 
 			c == '_'
 		)
 		{
@@ -118,7 +177,7 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 			{
 				nextState = DSMState::RELATIVEPATH;
 			}
-			else if(state == DSMState::ALPHANUM || state == DSMState::START)
+			else if(state == DSMState::NUMBER || state == DSMState::ALPHANUM || state == DSMState::START)
 			{
 				nextState = DSMState::ALPHANUM;
 			}
@@ -128,6 +187,7 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 				nextState = DSMState::ALPHANUM;
 			}
 		}
+		// Ignore whitespace
 		else if(c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == '\x0b') {
 			if(c == '\n')
 			{
@@ -160,6 +220,18 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 			if(state == DSMState::ALPHANUM)
 			{
 				ParsedTokenType = ParsedTokenType::ALPHANUM;
+			}
+			else if(state == DSMState::NUMBER)
+			{
+				ParsedTokenType = ParsedTokenType::NUMBER;
+			}
+			else if(state == DSMState::DECIMALNUMBER)
+			{
+				ParsedTokenType = ParsedTokenType::DECIMALNUMBER;
+			}
+			else if(state == DSMState::STRING)
+			{
+				ParsedTokenType = ParsedTokenType::STRING;
 			}
 			else if(state == DSMState::RELATIVEPATH)
 			{
@@ -251,9 +323,14 @@ void PropParser::ParserFailed(int lineNumber, std::string around)
 	std::cerr << "ERROR:  Parsing failed at line " << lineNumber << " around " << around << std::endl;
 }
 
+PropTreeLeaf PropParser::ParseValueTokens(std::vector<char> valueTokens, bool& status)
+{
+	assert(valueTokens.size > 0);
+}
+
 std::optional<PropTree> PropParser::ParseTokens(std::vector<UDFToken>& tokens)
 {
-	/* This is (hopefully) simple enough we can get away without a real L** parser*/
+	/* This is (hopefully) simple enough we can get away with ghetto parsing (without a real L** parser)*/
 	PropTree root{};
 
 	// We keep track of our current block scope by
@@ -272,28 +349,24 @@ std::optional<PropTree> PropParser::ParseTokens(std::vector<UDFToken>& tokens)
 				const std::string key = tokens[i].value;
 
 				std::vector<UDFToken> valueTokens;
-				// Start parsing leaf
+				
+				// Parse the leaf
 				for(i = i + 2; i < tokens.size(); i++)
 				{
 					if(tokens[i].type == ParsedTokenType::SEMI)
 					{
 						break;
 					}
-					else if
-					(
-						tokens[i].type == ParsedTokenType::COLON ||
-						tokens[i].type == ParsedTokenType::EQUALS ||
-						tokens[i].type == ParsedTokenType::LCURLY ||
-						tokens[i].type == ParsedTokenType::RCURLY
-					)
+
+					// If we're still trying to parse a value and are at EOF
+					// then we're royally screwed.
+					if(i == tokens.size() - 1)
 					{
 						goto FAIL;
 					}
-					else
-					{
-						// todo: parse into the actual value once we figure out what exactly should be enumerated
-						valueTokens.push_back(tokens[i]);
-					}
+
+					// todo: parse into the actual value once we figure out what exactly should be enumerated
+					valueTokens.push_back(tokens[i]);
 				}
 
 				auto& topLeaves = propTreeStack.top();

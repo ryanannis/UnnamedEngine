@@ -20,6 +20,9 @@ enum class ParsedTokenType
 	COLON,
 	COMMA,
 	ALPHANUM,
+	NUMBER,
+	STRING,
+	DECIMALNUMBER,
 	FILEPATH,
 	EQUALS,
 	SEMI
@@ -36,6 +39,15 @@ struct URI;
 class PropParser;
 class Serializer;
 
+enum class ValueType
+{
+	String,
+	Float,
+	Int,
+	URI,
+	Vector3
+};
+
 // A container for value tokens parsed by the PropParser
 // Our language is looser than something eg. JSON
 // so the token type cannot be determined strictly from
@@ -50,7 +62,8 @@ public:
 	std::optional<Vector3f> GetAsVector() const;
 
 private:
-	const std::vector<UDFToken> mTokens;
+	ValueType mType;
+	void* mData;
 	
 	explicit PropTreeLeaf(std::vector<UDFToken>&& tokens);
 	friend PropParser;
