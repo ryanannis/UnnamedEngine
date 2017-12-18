@@ -2,7 +2,9 @@
 
 ## What is this?
 
-This is an unfinished game engine.  It is inspired by the architecture of [Overwatch](https://www.gdcvault.com/play/1024653/Networking-Scripted-Weapons-and-Abilities)
+This is an unfinished game engine.  It inspired by the architecture of [Overwatch](https://www.gdcvault.com/play/1024653/Networking-Scripted-Weapons-and-Abilities).
+
+It is a personal project of Ryan Annis, but hopefully can implement some novel features in the future.
 
 ## Overview
 
@@ -13,11 +15,16 @@ This is an unfinished game engine.  It is inspired by the architecture of [Overw
 - Level loading
 - ECS framework and memory pools
 - Input
-- Basic Graphics
+
+### Current Work
+
+- The renderer is being rewritten in Vulkan
 
 ### Short Term Goals
+
 -  More generalized render pass system
--  Custom binary formats and compression for data driven resources, levels and meshes
+-  Voxel cone real time global illumination
+-  Custom binary formats and compression for data driven resources, levels and meshes.  Strong typing for data resource format. 
 -  Global Rewind + Playback
 -  Physics
 -  Better generalized allocators than malloc
@@ -32,14 +39,9 @@ This is an unfinished game engine.  It is inspired by the architecture of [Overw
 
 - Custom state based scripting language
 - ECS paralellization
-- Predictive network sync
-- Real time global illumination
+- Predictive network sync (?)
 - Unique NPR styles
-
-## Contributing
-
-You might want to hold off on contributing for a while.
 
 ## License
 
-MIT - If you are making anything with this or have any questions it would be great to hear from you!
+MIT
