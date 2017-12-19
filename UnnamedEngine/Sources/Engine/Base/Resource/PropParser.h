@@ -16,7 +16,7 @@ public:
 
 	static void Tokenize(std::string str, std::vector<UDFToken>& tokens);
 	static void ParserFailed(int lineNumber, std::string around);
-	static bool ParseValueTokens(const PropTree& tree, const std::string& identifier, const std::vector<UDFToken>& valueTokens);
+	static bool ParseValueTokens(PropTree& tree, const std::string& identifier, const std::vector<UDFToken>& valueTokens);
 	static PropTree ParseTokens(std::vector<UDFToken>& tokens);
 };
 

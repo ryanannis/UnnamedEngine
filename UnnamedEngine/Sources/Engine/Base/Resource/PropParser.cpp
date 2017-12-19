@@ -334,28 +334,51 @@ void PropParser::ParserFailed(int lineNumber, std::string around)
 	std::cerr << "ERROR:  Parsing failed at line " << lineNumber << " around " << around << std::endl;
 }
 
-bool PropParser::ParseValueTokens(const PropTree& tree, const std::string& identifier, const std::vector<UDFToken>& valueTokens)
+bool PropParser::ParseValueTokens(PropTree& tree, const std::string& identifier, const std::vector<UDFToken>& valueTokens)
 {
 	assert(valueTokens.size() > 0);
 	if(valueTokens[0].type == ParsedTokenType::STRING)
 	{
 		assert(valueTokens.size() == 0);
+		tree.AddLeaf(identifier, valueTokens[0].value);
 	}
 	else if(valueTokens[0].type == ParsedTokenType::LSQUARE)
 	{
-		// Is a vector
+		assert(valueTokens.size() == 7);
+		assert(valueTokens[1].type == ParsedTokenType::DECIMALNUMBER || valueTokens[1].type == ParsedTokenType::NUMBER);
+		assert(valueTokens[2].type == ParsedTokenType::COMMA);
+		assert(valueTokens[3].type == ParsedTokenType::DECIMALNUMBER || valueTokens[3].type == ParsedTokenType::NUMBER);
+		assert(valueTokens[4].type == ParsedTokenType::COMMA);
+		assert(valueTokens[5].type == ParsedTokenType::DECIMALNUMBER || valueTokens[5].type == ParsedTokenType::NUMBER);
+		assert(valueTokens[6].type == ParsedTokenType::RSQUARE);
+		tree.AddLeaf(
+			identifier,
+			Vector3f(
+				std::stof(valueTokens[1].value),
+				std::stof(valueTokens[3].value),
+				std::stof(valueTokens[5].value)
+			)
+		);
 	}
 	else if(valueTokens[0].type == ParsedTokenType::NUMBER)
 	{
-		// Is an ints
+		assert(valueTokens.size() == 1);
+		tree.AddLeaf(identifier, std::stoi(valueTokens[0].value));
 	}
 	else if (valueTokens[0].type == ParsedTokenType::DECIMALNUMBER)
 	{
-		// Is an ints
+		assert(valueTokens.size() == 1);
+		tree.AddLeaf(identifier, std::stof(valueTokens[0].value));
 	}
 	else if(valueTokens[0].type == ParsedTokenType::FILEPATH)
 	{
-		// Is a filepath
+		assert(valueTokens.size() > 1);
+		std::stringstream s;
+		for(auto token : valueTokens)
+		{
+			s << token.value;
+		}
+		tree.AddLeaf(identifier, URI(s.str()));
 	}
 	else
 	{
