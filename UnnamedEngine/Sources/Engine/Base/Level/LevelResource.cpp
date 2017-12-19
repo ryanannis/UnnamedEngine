@@ -31,10 +31,10 @@ void LevelResource::Load(Ptr<ResourceManager> resourceManager)
 	std::stringstream buffer;
 	buffer << f.rdbuf();
 
-	std::optional<PropTree> propTree = PropParser::Parse(buffer.str());
+	PropTree propTree(PropParser::Parse(buffer.str()));
 	
 	// Load all of the objects in the level
-	for(const auto& subTreePair: propTree->components)
+	for(const auto& subTreePair: propTree.components)
 	{
 		const auto& subtree = subTreePair.second;
 		mLevelObjects.push_back(LevelObject(subtree));

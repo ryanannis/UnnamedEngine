@@ -17,7 +17,7 @@ SerializationState Serializer::GetSerializationState()
 	return(mSerializationState);
 }
 
-Serializer::Serializer(PropTree&& tree, SerializationState s) :
+Serializer::Serializer(PropTree tree, SerializationState s) :
 	mSerializationTree(tree),
 	mSerializationState(s)
 {

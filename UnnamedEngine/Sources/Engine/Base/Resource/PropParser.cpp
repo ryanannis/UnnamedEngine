@@ -45,7 +45,7 @@ PropParser::PropParser()
 {
 }
 
-std::optional<PropTree> PropParser::Parse(std::string str)
+PropTree PropParser::Parse(std::string str)
 {
 	std::vector<UDFToken> tokens;
 	Tokenize(str, tokens);
@@ -365,7 +365,7 @@ bool PropParser::ParseValueTokens(const PropTree& tree, const std::string& ident
 	return(false);
 }
 
-std::optional<PropTree> PropParser::ParseTokens(std::vector<UDFToken>& tokens)
+PropTree PropParser::ParseTokens(std::vector<UDFToken>& tokens)
 {
 	/* This is (hopefully) simple enough we can get away with ghetto parsing (without a real L** parser)*/
 	PropTree root{};

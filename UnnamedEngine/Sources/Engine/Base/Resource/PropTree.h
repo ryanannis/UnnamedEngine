@@ -53,6 +53,7 @@ class PropTreeLeafBase {
 public:
 	PropTreeLeafBase() {};
 	virtual ~PropTreeLeafBase() {};
+	virtual PropTreeLeafBase* Copy() = 0;
 };
 
 template <typename T>
@@ -60,6 +61,7 @@ class PropTreeLeaf : public PropTreeLeafBase {
 public:
 	PropTreeLeaf(const T& t) : object(t) {};
 	const T& Get() const { return(object); };
+	virtual PropTreeLeafBase* Copy() { return(static_cast<PropTreeLeafBase*>(new PropTreeLeaf<T>(*this))); };
 private:
 	T object;
 };
@@ -71,7 +73,9 @@ struct PropTree
 {
 public:
 	PropTree() {}
-	~PropTree() {}
+	~PropTree();
+	PropTree(const PropTree& other);
+
 	std::unordered_map<std::string, PropTree> components;
 	std::unordered_map<std::string, PropTreeLeafBase*> leaves;
 
@@ -88,8 +92,4 @@ public:
 	void AddLeaf(std::string name, int leaf);
 	void AddLeaf(std::string name, const URI& leaf);
 	void AddLeaf(std::string name, const Vector3f& leaf);
-
-private:
-	PropTree & operator=(const PropTree&) = delete;
-	PropTree(const PropTree&) = delete;
 };

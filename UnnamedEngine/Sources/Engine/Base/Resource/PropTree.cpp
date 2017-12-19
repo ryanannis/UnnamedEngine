@@ -50,3 +50,23 @@ void PropTree::AddLeaf(std::string name, const Vector3f& leaf)
 		static_cast<PropTreeLeafBase*>(new PropTreeLeaf<Vector3f>(leaf))
 	);
 }
+
+PropTree::~PropTree()
+{
+	for(auto it = leaves.begin(); it != leaves.end(); it++)
+	{
+		delete(it->second);
+	}
+}
+
+PropTree::PropTree(const PropTree& other)
+{
+	// this is really bad and should hopefully be elided out in all cases we use it
+	components = other.components;
+	leaves = other.leaves;
+	
+	for(auto it = leaves.begin(); it != leaves.end(); it++)
+	{
+		it->second = it->second->Copy();
+	}
+}

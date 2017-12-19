@@ -62,7 +62,7 @@ public:
 	}
 
 private:
-	Serializer(PropTree&& tree, SerializationState s = SerializationState::SERIALIZING);
+	Serializer(PropTree tree, SerializationState s = SerializationState::SERIALIZING);
 
 	std::string Serialize(std::string s) const;
 	std::string Serialize(int i) const;
