@@ -15,8 +15,8 @@ FreecamPlayerSystem::FreecamPlayerSystem(Ptr<Context> context) :
 
 void FreecamPlayerSystem::Update(float delta, Ptr<EntityAdmin> e)
 {
-	const float SENSITIVITY = 0.001;  // rot = pixels * rad * SENSITIVITY
-	const float FREECAMSPEED = 100.0;  // 3m/s
+	const float SENSITIVITY = 0.001f;  // rot = pixels * rad * SENSITIVITY
+	const float FREECAMSPEED = 100.0f;  // 3m/s
 	Ptr<const InputComponent> inputComponent = GetSingletonComponent<InputComponent>(e);
 	const Entity& playerEntity = mContext->GetGameFramework()->GetGameClient()->GetLocalPlayerEntity();
 	Ptr<TransformComponent> transformComponent = GetWriteComponent<TransformComponent>(e, playerEntity);
@@ -89,15 +89,15 @@ void FreecamPlayerSystem::Update(float delta, Ptr<EntityAdmin> e)
 	cameraEulers.x += mouseDx * SENSITIVITY; // pitch (counterclockwise for right/pos x)
 	cameraEulers.y -= mouseDy * SENSITIVITY; // yaw
 
-	cameraEulers.x += 2 * M_PI;
-	cameraEulers.x = fmod(cameraEulers.x, 2 * M_PI);
+	cameraEulers.x += 2 * FL_PI;
+	cameraEulers.x = fmod(cameraEulers.x, 2 * FL_PI);
 	
 	// can't let pitch get to 0 (cuz then it's the same as the up vector)
 	// so do a hard stop
 	cameraEulers.y = glm::clamp(
 		cameraEulers.y, 
-		static_cast<float>(-M_PI / 2 + M_PI / 16), 
-		static_cast<float>(M_PI / 2 - M_PI / 16)
+		static_cast<float>(-FL_PI / 2 + FL_PI / 16), 
+		static_cast<float>(FL_PI / 2 - FL_PI / 16)
 	);
 
 	cameraComponent->pCameraRotation = cameraEulers;

@@ -90,7 +90,7 @@ protected:
 		const ComponentFlag accessingComponent = ComponentGroup<T>();
 		assert(std::find(readDeps.begin(), readDeps.end(), accessingComponent) != readDeps.end());
 
-		return(admin->GetSingletonComponent<T>());
+		return(Ptr<const T>(admin->GetSingletonComponent<T>()));
 	}
 
 	template <typename T>

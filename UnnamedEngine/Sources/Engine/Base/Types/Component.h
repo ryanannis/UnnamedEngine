@@ -2,7 +2,7 @@
 #include "Engine/Base/Common/Common.h"
 #include "Engine/Base/Types/ComponentBase.h"
 
-typedef uint64_t ComponentFlag;
+typedef uint32_t ComponentFlag;
 
 // Need a static but don't want it in a templated class...
 struct ComponentStatics

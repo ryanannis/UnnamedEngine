@@ -14,7 +14,7 @@ RegionAdmin::RegionAdmin(Ptr<Context> context) :
 {
 }
 
-void RegionAdmin::Update(float dt)
+void RegionAdmin::Update(float )
 {
 }
 

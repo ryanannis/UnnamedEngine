@@ -27,7 +27,7 @@ void RenderSystem::Update(float, Ptr<EntityAdmin> entityAdmin)
 
 	// todo:  temp
 	CameraData c;
-	c.fov = M_PI / 4; // 45 deg vertical
+	c.fov = FL_PI / 4; // 45 deg vertical
 	c.aspectRatio = 1.78f;
 	c.rotation = rotation;
 	c.translation = translation;
