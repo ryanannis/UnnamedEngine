@@ -31,7 +31,7 @@ void EntityResource::Load(Ptr<ResourceManager> resourceManager)
 	std::stringstream buffer;
 	buffer << f.rdbuf();
 	
-	std::optional<PropTree> propTree = PropParser::Parse(buffer.str());
+	std::optional<PropTree> propTree = std::move(PropParser::Parse(buffer.str()));
 
 	if(!propTree.has_value())
 	{

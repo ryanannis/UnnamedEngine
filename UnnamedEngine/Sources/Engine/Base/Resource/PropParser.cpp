@@ -92,21 +92,24 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 		// If this flag is set to true, it will use all input since last terminal token
 		// to form the lexeme for the token
 		bool shouldTerminate = false;
+		bool discardCharacter = false;
 		
 		if(c == '"')
 		{
 			if(state == DSMState::STRING)
 			{
-				nextState == DSMState::START;
+				nextState = DSMState::START;
 				shouldTerminate = true;
+				discardCharacter = true;
 			}
 			else
 			{
-				state = DSMState::STRING;
+				nextState = DSMState::STRING;
 				shouldTerminate = true;
+				discardCharacter = true;
 			}
 		}
-		else if(nextState == DSMState::STRING)
+		else if(state == DSMState::STRING)
 		{
 			// There is a edge from String->String for every character
 			nextState = DSMState::STRING;
@@ -115,7 +118,7 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 		{
 			if(state == DSMState::ALPHANUM)
 			{
-				nextState == DSMState::ALPHANUM;
+				nextState = DSMState::ALPHANUM;
 			}
 			else if(state == DSMState::NUMBER)
 			{
@@ -127,7 +130,7 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 			}
 			else
 			{
-				nextState == DSMState::NUMBER;
+				nextState = DSMState::NUMBER;
 				shouldTerminate = true;
 			}
 			
@@ -243,13 +246,20 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 				ParsedTokenType = ParsedTokenType::NONE; 
 			}
 
-			internalTokens.push_back(UDFTokenInternal(ParsedTokenType, tokenVal.str(), lnCount));
-			
+			// Strings are currently the only thing that can discard tokens during parsing
+			if(tokenVal.str().size() > 0 || ParsedTokenType == ParsedTokenType::STRING)
+			{
+				internalTokens.push_back(UDFTokenInternal(ParsedTokenType, tokenVal.str(), lnCount));
+			}
+
 			tokenVal.clear();
 			tokenVal.str(std::string());
 		}
 		state = nextState;
-		tokenVal << c;
+		if(!discardCharacter)
+		{
+			tokenVal << c;
+		}
 	}
 
 	// Replace SYMs with the proper tokens
@@ -302,6 +312,7 @@ void PropParser::Tokenize(std::string str, std::vector<UDFToken>& tokens)
 				//Why did something of ParsedTokenType::None even get past the regular parsing?
 				ParserFailed(t.line, t.value);
 				failed = true;
+				assert(false);
 				break;
 			}
 		}
@@ -323,9 +334,35 @@ void PropParser::ParserFailed(int lineNumber, std::string around)
 	std::cerr << "ERROR:  Parsing failed at line " << lineNumber << " around " << around << std::endl;
 }
 
-PropTreeLeaf PropParser::ParseValueTokens(std::vector<char> valueTokens, bool& status)
+bool PropParser::ParseValueTokens(const PropTree& tree, const std::string& identifier, const std::vector<UDFToken>& valueTokens)
 {
-	assert(valueTokens.size > 0);
+	assert(valueTokens.size() > 0);
+	if(valueTokens[0].type == ParsedTokenType::STRING)
+	{
+		assert(valueTokens.size() == 0);
+	}
+	else if(valueTokens[0].type == ParsedTokenType::LSQUARE)
+	{
+		// Is a vector
+	}
+	else if(valueTokens[0].type == ParsedTokenType::NUMBER)
+	{
+		// Is an ints
+	}
+	else if (valueTokens[0].type == ParsedTokenType::DECIMALNUMBER)
+	{
+		// Is an ints
+	}
+	else if(valueTokens[0].type == ParsedTokenType::FILEPATH)
+	{
+		// Is a filepath
+	}
+	else
+	{
+		// Invalid value token.
+		assert(false);
+	}
+	return(false);
 }
 
 std::optional<PropTree> PropParser::ParseTokens(std::vector<UDFToken>& tokens)
@@ -370,8 +407,7 @@ std::optional<PropTree> PropParser::ParseTokens(std::vector<UDFToken>& tokens)
 				}
 
 				auto& topLeaves = propTreeStack.top();
-				PropTreeLeaf leaf(std::move(valueTokens));
-				topLeaves->leaves.insert(std::pair<std::string, PropTreeLeaf>(key, leaf));
+				ParseValueTokens(*topLeaves, key, valueTokens);
 			}
 			else if(tokens[i+1].type == ParsedTokenType::LCURLY)
 			{

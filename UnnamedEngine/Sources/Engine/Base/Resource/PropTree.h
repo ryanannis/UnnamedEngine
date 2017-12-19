@@ -48,43 +48,48 @@ enum class ValueType
 	Vector3
 };
 
-// A container for value tokens parsed by the PropParser
-// Our language is looser than something eg. JSON
-// so the token type cannot be determined strictly from
-// the language itself, and is contextually dependent.
-struct PropTreeLeaf
-{
+// A simple wrapper
+class PropTreeLeafBase {
 public:
-	std::string GetAsString() const;
-	std::optional<float> GetAsFloat() const;
-	std::optional<uint32_t> GetAsInt() const;
-	std::optional<URI> GetAsURI() const;
-	std::optional<Vector3f> GetAsVector() const;
+	PropTreeLeafBase() {};
+	virtual ~PropTreeLeafBase() {};
+};
 
+template <typename T>
+class PropTreeLeaf : public PropTreeLeafBase {
+public:
+	PropTreeLeaf(const T& t) : object(t) {};
+	const T& Get() const { return(object); };
 private:
-	ValueType mType;
-	void* mData;
-	
-	explicit PropTreeLeaf(std::vector<UDFToken>&& tokens);
-	friend PropParser;
-	friend Serializer;
+	T object;
 };
 
 class ModelResource;
 class MaterialResource;
 
-void operator<<(ResourceType<ModelResource>& res, const PropTreeLeaf& p);
-void operator<<(ResourceType<MaterialResource>& res, const PropTreeLeaf& p);
-void operator<<(std::string& val, const PropTreeLeaf& p);
-void operator<<(float& val, const PropTreeLeaf& p);
-void operator<<(int& val, const PropTreeLeaf& p);
-void operator<<(URI& val, const PropTreeLeaf& p);
-void operator<<(Vector3f& val, const PropTreeLeaf& p);
-
 struct PropTree
 {
 public:
 	PropTree() {}
+	~PropTree() {}
 	std::unordered_map<std::string, PropTree> components;
-	std::unordered_map<std::string, PropTreeLeaf> leaves;
+	std::unordered_map<std::string, PropTreeLeafBase*> leaves;
+
+	template <typename T>
+	PropTreeLeaf<T>* GetLeaf(std::string s) const
+	{
+		auto leaf = leaves.find(s);
+		assert(leaf != leaves.end());
+		return(dynamic_cast<PropTreeLeaf<T>*>(leaf->second));
+	}
+
+	void AddLeaf(std::string name, const std::string& leaf);
+	void AddLeaf(std::string name, float leaf);
+	void AddLeaf(std::string name, int leaf);
+	void AddLeaf(std::string name, const URI& leaf);
+	void AddLeaf(std::string name, const Vector3f& leaf);
+
+private:
+	PropTree & operator=(const PropTree&) = delete;
+	PropTree(const PropTree&) = delete;
 };

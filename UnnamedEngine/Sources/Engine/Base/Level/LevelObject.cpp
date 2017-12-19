@@ -4,22 +4,22 @@
 LevelObject::LevelObject(const PropTree& tree)
 {
 	// Initialize
-	auto file = tree.leaves.find("Resource");
-	auto position = tree.leaves.find("Position");
-	auto rotation = tree.leaves.find("Rotation");
+	auto file = tree.GetLeaf<URI>("Resource");
+	auto position = tree.GetLeaf<Vector3f>("Position");
+	auto rotation = tree.GetLeaf<Vector3f>("Rotation");
 
-	assert(file != tree.leaves.end());
-	assert(position != tree.leaves.end());
-	assert(rotation != tree.leaves.end());
+	assert(file);
+	assert(position);
+	assert(rotation);
 
-	auto parsedFile = file->second.GetAsURI();
-	auto parsedPosition = position->second.GetAsVector();
-	auto parsedRotation = rotation->second.GetAsVector();
+	auto parsedFile = file->Get();
+	auto parsedPosition = position->Get();
+	auto parsedRotation = rotation->Get();
 
 	//todo : Have ResourceType return a URI
-	mResource = ResourceType<EntityResource>(*parsedFile);
-	mPosition = *parsedPosition;
-	parsedRotation = *parsedRotation;
+	mResource = ResourceType<EntityResource>(parsedFile);
+	mPosition = parsedPosition;
+	parsedRotation = parsedRotation;
 }
 
 const ResourceType<EntityResource>& LevelObject::GetResource() const

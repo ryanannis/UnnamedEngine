@@ -1,6 +1,6 @@
 #include "VulkanExtensionDefs.h"
 
-void DestroyDebugReportCallbackEXT(
+VkResult DestroyDebugReportCallbackEXT(
 	VkInstance instance, 
 	VkDebugReportCallbackEXT callback, 
 	const VkAllocationCallbacks* pAllocator
@@ -10,6 +10,10 @@ void DestroyDebugReportCallbackEXT(
 	if(func != nullptr)
 	{
 		func(instance, callback, pAllocator);
+	}
+	else
+	{
+		return(VK_ERROR_EXTENSION_NOT_PRESENT);
 	}
 }
 
@@ -27,6 +31,6 @@ VkResult CreateDebugReportCallbackEXT(
 	}
 	else
 	{
-		return VK_ERROR_EXTENSION_NOT_PRESENT;
+		return(VK_ERROR_EXTENSION_NOT_PRESENT);
 	}
 }

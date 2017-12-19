@@ -42,7 +42,7 @@ public:
 	template <typename T>
 	Serializer& Serialize(std::string tag, ResourceType<T>& res)
 	{
-		mSerializationTree.leaves.emplace(tag, CreateLeaf(Serialize(res)));
+		mSerializationTree.AddLeaf(tag, res.GetURI());
 		return(*this);
 	}
 	
@@ -52,13 +52,17 @@ public:
 		auto leaf = mSerializationTree.leaves.find(name);
 		if(leaf != mSerializationTree.leaves.end())
 		{
-			ref << leaf->second;
+			auto typedLeaf = dynamic_cast<PropTreeLeaf<T>*>(leaf->second);
+			if(typedLeaf)
+			{
+				ref = typedLeaf->Get();
+			}
 		}
 		// otherwise, the component doesn't exist - this is ok, just means we use default
 	}
 
 private:
-	Serializer(PropTree t, SerializationState s = SerializationState::SERIALIZING);
+	Serializer(PropTree&& tree, SerializationState s = SerializationState::SERIALIZING);
 
 	std::string Serialize(std::string s) const;
 	std::string Serialize(int i) const;
@@ -68,9 +72,6 @@ private:
 	{
 		return(res.mURI.GetSerialized());
 	}
-
-	PropTreeLeaf CreateLeaf(std::string s) const;
-	PropTreeLeaf CreateLeaf(const Vector3f& vec) const;
 	
 	PropTree mSerializationTree;
 	SerializationState mSerializationState;

@@ -6,99 +6,47 @@
 
 #include <sstream>
 
-PropTreeLeaf::PropTreeLeaf(std::vector<UDFToken>&& tokens) :
-	mTokens{tokens}
-{}
-
-std::string PropTreeLeaf::GetAsString() const
+void PropTree::AddLeaf(std::string name, const std::string& leaf)
 {
-	std::stringstream s;
-	
-	for(UDFToken token : mTokens)
-	{
-		s << token.value;
-	}
-
-	return(s.str());
-}
-
-std::optional<float> PropTreeLeaf::GetAsFloat() const
-{
-	// there is room for improvement here
-	std::stringstream ss(GetAsString());
-	float fl;
-	ss >> fl;
-	return(fl); // todo error handling
-}
-
-std::optional<uint32_t> PropTreeLeaf::GetAsInt() const
-{
-	std::stringstream ss(GetAsString());
-	int i;
-	ss >> i;
-	return(i); // todo error handling
-}
-
-std::optional<URI> PropTreeLeaf::GetAsURI() const
-{
-	std::stringstream ss(GetAsString());
-	return(URI(ss.str())); // todo error handling
-}
-
-std::optional<Vector3f> PropTreeLeaf::GetAsVector() const
-{
-	assert(mTokens.size() == 7);
-	assert(mTokens[0].type == ParsedTokenType::LSQUARE);
-	// the parser recognizes a float as filepath (eg. folder/12321.23232 is valid)
-	// as we aren't a context free grammar and have no string delimeters...  yeaaahhhh
-	assert(mTokens[1].type == ParsedTokenType::FILEPATH || mTokens[1].type == ParsedTokenType::ALPHANUM);
-	assert(mTokens[2].type == ParsedTokenType::COMMA);
-	assert(mTokens[3].type == ParsedTokenType::FILEPATH || mTokens[3].type == ParsedTokenType::ALPHANUM);
-	assert(mTokens[4].type == ParsedTokenType::COMMA);
-	assert(mTokens[5].type == ParsedTokenType::FILEPATH || mTokens[5].type == ParsedTokenType::ALPHANUM);
-	assert(mTokens[6].type == ParsedTokenType::RSQUARE);
-
-
-	return(
-		Vector3f(
-			std::stof(mTokens[1].value),
-			std::stof(mTokens[3].value),
-			std::stof(mTokens[5].value)
-		)
+	assert(leaves.find(name) == leaves.end());
+	leaves.emplace(
+		name, 
+		static_cast<PropTreeLeafBase*>(new PropTreeLeaf<std::string>(leaf))
 	);
 }
 
-void operator<<(std::string& val, const PropTreeLeaf& p)
+void PropTree::AddLeaf(std::string name, float leaf)
 {
-	val = p.GetAsString();
+	assert(leaves.find(name) == leaves.end());
+	leaves.emplace(
+		name,
+		static_cast<PropTreeLeafBase*>(new PropTreeLeaf<float>(leaf))
+	);
 }
 
-void operator<<(float& val, const PropTreeLeaf& p)
+void PropTree::AddLeaf(std::string name, int leaf)
 {
-	val = *p.GetAsFloat();
+	assert(leaves.find(name) == leaves.end());
+	leaves.emplace(
+		name,
+		static_cast<PropTreeLeafBase*>(new PropTreeLeaf<int>(leaf))
+	);
 }
 
-void operator<<(int& val, const PropTreeLeaf& p)
+void PropTree::AddLeaf(std::string name, const URI& leaf)
 {
-	val = *p.GetAsInt();
+	assert(leaves.find(name) == leaves.end());
+	leaves.emplace(
+		name,
+		static_cast<PropTreeLeafBase*>(new PropTreeLeaf<URI>(leaf))
+	);
 }
 
-void operator<<(URI& val, const PropTreeLeaf& p)
+void PropTree::AddLeaf(std::string name, const Vector3f& leaf)
 {
-	val = *p.GetAsURI();
-}
-
-void operator<<(Vector3f& val, const PropTreeLeaf& p)
-{
-	val = *p.GetAsVector();
-}
-
-void operator<<(ResourceType<ModelResource>& res, const PropTreeLeaf& p)
-{
-	res = ResourceType<ModelResource>(*p.GetAsURI());
-}
-
-void operator<<(ResourceType<MaterialResource>& res, const PropTreeLeaf& p)
-{
-	res = ResourceType<MaterialResource>(*p.GetAsURI());
+	assert(leaves.find(name) == leaves.end());
+	leaves.emplace(
+		name,
+		static_cast<PropTreeLeafBase*>(new PropTreeLeaf<Vector3f>(leaf))
+	);
 }
