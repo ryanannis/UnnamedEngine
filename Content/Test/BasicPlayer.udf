@@ -4,6 +4,6 @@ TestPlayer {
         StartingHealth = 500;
     }
     IdentityComponent {
-        Name = Ryan;
+        Name = "Ryan";
     }
 }

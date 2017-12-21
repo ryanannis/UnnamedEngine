@@ -7,6 +7,6 @@ TestEntity {
         StartingHealth = 500;
     }
     IdentityComponent {
-        Name = TestName;
+        Name = "TestName";
     }
 }

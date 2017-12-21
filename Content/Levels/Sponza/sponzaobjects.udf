@@ -1,5 +1,5 @@
 SponzaLevel {
     RenderComponent {
-        Mesh = Levels/Sponza/sponza.obj;
+        Mesh = /Levels/Sponza/sponza.obj;
     }
 }
