@@ -339,7 +339,7 @@ bool PropParser::ParseValueTokens(PropTree& tree, const std::string& identifier,
 	assert(valueTokens.size() > 0);
 	if(valueTokens[0].type == ParsedTokenType::STRING)
 	{
-		assert(valueTokens.size() == 0);
+		assert(valueTokens.size() == 1);
 		tree.AddLeaf(identifier, valueTokens[0].value);
 	}
 	else if(valueTokens[0].type == ParsedTokenType::LSQUARE)
@@ -372,13 +372,8 @@ bool PropParser::ParseValueTokens(PropTree& tree, const std::string& identifier,
 	}
 	else if(valueTokens[0].type == ParsedTokenType::FILEPATH)
 	{
-		assert(valueTokens.size() > 1);
-		std::stringstream s;
-		for(auto token : valueTokens)
-		{
-			s << token.value;
-		}
-		tree.AddLeaf(identifier, URI(s.str()));
+		assert(valueTokens.size() == 1);
+		tree.AddLeaf(identifier, URI(valueTokens[0].value));
 	}
 	else
 	{
@@ -468,6 +463,7 @@ PropTree PropParser::ParseTokens(std::vector<UDFToken>& tokens)
 	// Error handle parsing fail
 	{
 		FAIL:
+		assert(false);
 		return {};
 	}
 }

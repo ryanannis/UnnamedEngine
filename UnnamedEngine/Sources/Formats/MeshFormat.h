@@ -2,20 +2,24 @@
 
 struct SubmeshData
 {
-	char* materialRef;
-	bool hasUVs;
-	// Empty bit
+	bool hasMaterial;
+	bool hasNormals;
 	// Empty bit
 	// Empty bit
 	uint32_t numVertices;
+	uint32_t numUVs;
 	uint32_t numIndices;
-	uint32_t* vertices;
+	float* interleavedData;
 	uint32_t* indices;
-	uint32_t* uvs;
+	char* materialRef;
+
+	void Release();
 };
 
 struct MeshData
 {
 	uint32_t numSubmeshes;
 	SubmeshData* submeshes;
+
+	void Release();
 };

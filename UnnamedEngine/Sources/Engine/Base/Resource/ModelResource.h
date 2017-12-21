@@ -6,13 +6,6 @@
 #include <vector>
 #include <map>
 
-struct aiMesh;
-struct aiNode;
-struct aiScene;
-struct aiMaterial;
-enum aiTextureType;
-class MaterialResource;
-
 struct Mesh
 {
 	std::vector<uint32_t> mIndices;
@@ -31,9 +24,6 @@ public:
 	const std::vector<Mesh>& GetMeshes() const;
 
 private:
-	void ProcessAssimpNode(Ptr<ResourceManager> manager, const aiNode* node, const aiScene* scene);
-	void Parse(Ptr<ResourceManager> manager, aiMesh const* mesh, const aiScene* scene);
-	std::vector<ResourceType<MaterialResource>> LoadMaterials(Ptr<ResourceManager> manager, aiMaterial const* material, aiTextureType type);
 
 	std::vector<Mesh> mMeshes;
 	bool mReady;
