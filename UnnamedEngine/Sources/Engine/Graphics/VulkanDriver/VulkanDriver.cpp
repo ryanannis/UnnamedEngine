@@ -12,7 +12,8 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL ValidationCallback
 	int32_t code,
 	const char* layerPrefix,
 	const char* msg,
-	void* userData)
+	void* userData
+)
 {
 	SingletonLogger::Log(GFX_DRIVER_LOG, LogType::ERROR).Log(msg);
 
@@ -38,6 +39,8 @@ void VulkanDriver::Initialize(const DriverSettings& driverSettings)
 	{
 		SetupValidationLayers();
 	}
+	SetupPhysicalDevice();
+	SetupLogicalDevice();
 }
 
 void VulkanDriver::SetupVulkanInstance()
@@ -89,6 +92,129 @@ void VulkanDriver::SetupVulkanInstance()
 	}
 }
 
+/*
+* A return code of 0 means the device is unsuitable.
+*/
+size_t VulkanDriver::RatePhysicalDevice(VkPhysicalDevice device)
+{
+	// todo:  interface for this to be selected in non-graphics code
+	size_t score = 0;
+
+	// Check device features and properties
+	VkPhysicalDeviceProperties  deviceProperties;
+	VkPhysicalDeviceFeatures	deviceFeatures;
+
+	vkGetPhysicalDeviceProperties(device, &deviceProperties);
+	vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+
+	if(!deviceFeatures.geometryShader)
+	{
+		return(0);
+	}
+
+	// Ensure the card has a graphics queue
+	QueueFamilyIndices queueIndices = GetQueueFamilyIndices(device);
+	if(queueIndices.graphicsFamily == INVALID_INDEX)
+	{
+		return(0);
+	}
+
+	// Always pick a discrete GPU over integrated
+	if(deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+	{
+		score += 1000000;
+	}
+
+	// Secondarily, pick the one with the max texture size
+	score += deviceProperties.limits.maxImageDimension2D;
+
+	return(score);
+}
+
+QueueFamilyIndices VulkanDriver::GetQueueFamilyIndices(VkPhysicalDevice device)
+{
+	uint32_t queueFamilyCount = 0;
+	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+
+	std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+
+	QueueFamilyIndices queueIndices;
+
+	for(size_t i = 0; i < queueFamilies.size(); i++)
+	{
+		const auto& queueFamily = queueFamilies[i];
+		if(queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+		{
+			queueIndices.graphicsFamily = i;
+		}
+	}
+
+	return(queueIndices);
+}
+
+void VulkanDriver::SetupLogicalDevice()
+{
+	auto indices = GetQueueFamilyIndices(mPhysicalDevice);
+
+	const float queuePriority = 1.f;
+
+	VkDeviceQueueCreateInfo queueCreateInfo = {};
+	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+	queueCreateInfo.queueFamilyIndex = indices.graphicsFamily;
+	queueCreateInfo.queueCount = 1;
+	queueCreateInfo.pQueuePriorities = &queuePriority;
+
+	VkPhysicalDeviceFeatures deviceFeatures = {};
+
+	VkDeviceCreateInfo createInfo = {};
+	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	createInfo.pQueueCreateInfos = &queueCreateInfo;
+	createInfo.queueCreateInfoCount = 1;
+	createInfo.pEnabledFeatures = &deviceFeatures;
+
+	if(mDriverSettings.useValidationLayers)
+	{
+		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+		createInfo.ppEnabledLayerNames = validationLayers.data();
+	}
+	else
+	{
+		createInfo.enabledLayerCount = 0;
+	}
+
+	assert(vkCreateDevice(mPhysicalDevice, &createInfo, nullptr, &mLogicalDevice) == VK_SUCCESS);
+
+	vkGetDeviceQueue(mLogicalDevice, indices.graphicsFamily, 0, &mGraphicsQueue);
+}
+
+void VulkanDriver::SetupPhysicalDevice()
+{
+	uint32_t deviceCount = 0;
+	vkEnumeratePhysicalDevices(mInstance, &deviceCount, nullptr);
+
+	assert(deviceCount > 0); // no device
+
+	std::vector<VkPhysicalDevice> devices(deviceCount);
+	vkEnumeratePhysicalDevices(mInstance, &deviceCount, devices.data());
+
+	size_t bestScore = 0;
+	VkPhysicalDevice bestDevice;
+
+	for(const auto& device : devices)
+	{
+		const size_t deviceScore = RatePhysicalDevice(device);
+		if(deviceScore >= bestScore)
+		{
+			bestDevice = device;
+			bestScore = deviceScore;
+		}
+	}
+
+	assert(bestScore > 0); // no compatible physical device
+	mPhysicalDevice = bestDevice;
+}
+
 void VulkanDriver::SetupValidationLayers()
 {
 	/// Setup validation layer callback
@@ -137,4 +263,5 @@ bool VulkanDriver::CheckValidationLayerSupport()
 void VulkanDriver::Cleanup()
 {
 	vkDestroyInstance(mInstance, nullptr);
+	vkDestroyDevice(mLogicalDevice, nullptr);
 }

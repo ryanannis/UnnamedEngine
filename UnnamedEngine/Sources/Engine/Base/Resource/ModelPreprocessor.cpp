@@ -1,11 +1,27 @@
 #include "ModelPreprocessor.h"
 
+#include <fstream>
+
 #include <assimp/importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <assimp/mesh.h>
 
-MeshData MeshPreprocessor::PreprocessMesh(URI i)
+void MeshPreprocessor::PreprocessMesh(URI i)
+{
+	MeshData m = ParseMesh(i);
+
+	std::string filename = "Test.b";
+	{
+		std::ofstream ostrm(filename, std::ios::binary);
+		double d = 3.14;
+		ostrm.write(reinterpret_cast<char*>(&d), sizeof d); // binary output
+		ostrm << 123 << "abc" << '\n';                      // text output
+	}
+	m.Release();
+}
+
+MeshData MeshPreprocessor::ParseMesh(URI i)
 {
 	Assimp::Importer loader;
 	aiScene const *scene = loader.ReadFile(
@@ -15,7 +31,7 @@ MeshData MeshPreprocessor::PreprocessMesh(URI i)
 		aiProcess_OptimizeMeshes
 	);
 
-	if(!scene)
+	if (!scene)
 	{
 		fprintf(stderr, "%s\n", loader.GetErrorString());
 		assert(false);
@@ -29,6 +45,7 @@ MeshData MeshPreprocessor::PreprocessMesh(URI i)
 	MeshData m;
 	m.numSubmeshes = numSubmeshes;
 	m.submeshes = submeshHeapData;
+	return(m);
 }
 
 void MeshPreprocessor::ProcessAssimpNode(const aiNode* node, const aiScene* scene)

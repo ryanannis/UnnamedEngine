@@ -13,9 +13,10 @@ class MaterialResource;
 class MeshPreprocessor
 {
 public:
-	MeshData PreprocessMesh(URI i);
+	void PreprocessMesh(URI i);
 
 private:
+	MeshData ParseMesh(URI i);
 	void ProcessAssimpNode(const aiNode* node, const aiScene* scene);
 	SubmeshData Parse(aiMesh const* mesh, const aiScene* scene);
 	std::vector<SubmeshData> mSubmeshes;

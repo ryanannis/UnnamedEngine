@@ -2,6 +2,8 @@
 #include "Engine/Base/Common/Common.h"
 #include "Engine/Base/Resource/Resource.h"
 #include "Engine/Base/Resource/ResourceType.h"
+#include "Engine/Base/Resource/MaterialResource.h"
+
 
 #include <vector>
 #include <map>
@@ -24,7 +26,6 @@ public:
 	const std::vector<Mesh>& GetMeshes() const;
 
 private:
-
 	std::vector<Mesh> mMeshes;
 	bool mReady;
 };

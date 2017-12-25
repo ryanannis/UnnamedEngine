@@ -11,14 +11,24 @@ struct DriverSettings
 	size_t numExtensions;
 };
 
+struct QueueFamilyIndices
+{
+	size_t graphicsFamily = INVALID_INDEX;
+};
+
 class VulkanDriver
 {
 public:
 	VulkanDriver(Ptr<ResourceManager> resourceManager);
 	void Initialize(const DriverSettings& driverSettings);
 	void Cleanup();
-private:
 
+private:
+	void SetupPhysicalDevice();
+	size_t RatePhysicalDevice(VkPhysicalDevice device);
+	QueueFamilyIndices GetQueueFamilyIndices(VkPhysicalDevice device);
+	void SetupLogicalDevice();
+	
 	void SetupVulkanInstance();
 	void SetupValidationLayers();
 	bool CheckValidationLayerSupport();
@@ -26,6 +36,10 @@ private:
 
 	// Vulkan Resources
 	VkInstance mInstance;
+	VkPhysicalDevice mPhysicalDevice;
+	VkDevice mLogicalDevice;
+	VkQueue mGraphicsQueue;
+
 	DriverSettings mDriverSettings;
 	VkDebugReportCallbackEXT mValidationCallback;
 };
