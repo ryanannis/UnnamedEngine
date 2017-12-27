@@ -52,6 +52,11 @@ void Client::Initialize()
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExtensions;
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+	r.windowManagerSurfaceCreationCallback = 
+	[&](VkInstance instance, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface)
+	{
+		return(glfwCreateWindowSurface(instance, mWindow, allocator, surface));
+	};
 
 	r.numExtensions = glfwExtensionCount;
 	r.windowManagerExtensions = const_cast<char**>(glfwExtensions);

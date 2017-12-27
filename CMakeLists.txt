@@ -63,7 +63,9 @@ include_directories(UnnamedEngine/Sources/
 
 file(GLOB VENDORS_SOURCES UnnamedEngine/Vendor/glad/src/glad.c)
 file(GLOB_RECURSE PROJECT_HEADERS UnnamedEngine/Sources/*.h)
-file(GLOB_RECURSE PROJECT_SOURCES UnnamedEngine/Sources/Engine/*.cpp UnnamedEngine/Sources/Game/*.cpp)
+file(GLOB_RECURSE PROJECT_SOURCES UnnamedEngine/Sources/Engine/*.cpp 
+								  UnnamedEngine/Sources/Game/*.cpp 
+								  UnnamedEngine/Sources/Formats/*.cpp)
 file(GLOB_RECURSE PROJECT_SHADERS UnnamedEngine/Shaders/*.comp
                           UnnamedEngine/Shaders/*.frag
                           UnnamedEngine/Shaders/*.geom

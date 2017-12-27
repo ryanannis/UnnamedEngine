@@ -9,12 +9,14 @@
 #include "Engine/Base/Components/RenderComponent.h"
 #include "Engine/Base/Components/TransformComponent.h"
 #include "Engine/Base/Components/VelocityComponent.h"
-
-// Call a function from the compilation unit of each statically registered component
-// to ensure that it gets statically registered before being used.
+#include "Engine/Base/Utility/SingletonLogger.h"
 
 int StaticRegister()
 {
+	/*
+	 * Call a function from the compilation unit of each statically registered component
+	 * to ensure that it gets statically registered before being used. 
+	 */
 	{ CameraComponent c; }
 	{ HealthComponent c; }
 	{ IdentityComponent c; }
@@ -22,6 +24,13 @@ int StaticRegister()
 	{ TransformComponent c; }
 	{ VelocityComponent c; }
 	{ IdentityComponent c; }
-	int DUMMY = 0;
+
+	/*
+	 * Register logging channels.
+	 */
+	SingletonLogger::RegisterStream("General");
+	SingletonLogger::RegisterStream("Graphics");
+
+	const int DUMMY = 0;
 	return(DUMMY);
 };

@@ -11,14 +11,39 @@ void MeshPreprocessor::PreprocessMesh(URI i)
 {
 	MeshData m = ParseMesh(i);
 
-	std::string filename = "Test.b";
+	std::string filename = CACHE_DIR "/Test.b";
+	
+	// todo:  might need stronger binary serialization abstraction for doing networking
 	{
 		std::ofstream ostrm(filename, std::ios::binary);
-		double d = 3.14;
-		ostrm.write(reinterpret_cast<char*>(&d), sizeof d); // binary output
-		ostrm << 123 << "abc" << '\n';                      // text output
+		const size_t numSubmeshes = m.numSubmeshes;
+		ostrm.write(reinterpret_cast<const char*>(&numSubmeshes), sizeof(numSubmeshes));
+		for(size_t i = 0; i < numSubmeshes; i++)
+		{
+			const SubmeshData& submesh = m.submeshes[i];
+			
+			assert(submesh.indices);
+			assert(submesh.interleavedData);
+
+			ostrm.write(reinterpret_cast<const char*>(&submesh.properties), sizeof(submesh.properties));
+			ostrm.write(reinterpret_cast<const char*>(&submesh.numVertices), sizeof(submesh.numVertices));
+			ostrm.write(reinterpret_cast<const char*>(&submesh.indices), sizeof(submesh.numIndices));
+			ostrm.write(reinterpret_cast<const char*>(&submesh.numUVs), sizeof(submesh.numUVs));
+			
+			const uint32_t interleavedVerticeDataSize = submesh.GetInterleavedSize();
+			
+			const auto fuck = submesh.interleavedData;
+
+			ostrm.write(reinterpret_cast<const char*>(submesh.interleavedData), interleavedVerticeDataSize * submesh.numVertices);
+			ostrm.write(reinterpret_cast<const char*>(submesh.indices), sizeof(uint32_t) * submesh.numIndices);
+			
+			// todo:  write material
+		}
+
+		ostrm.close();
 	}
-	m.Release();
+
+	//m.Release();
 }
 
 MeshData MeshPreprocessor::ParseMesh(URI i)
@@ -31,7 +56,7 @@ MeshData MeshPreprocessor::ParseMesh(URI i)
 		aiProcess_OptimizeMeshes
 	);
 
-	if (!scene)
+	if(!scene)
 	{
 		fprintf(stderr, "%s\n", loader.GetErrorString());
 		assert(false);
@@ -40,7 +65,7 @@ MeshData MeshPreprocessor::ParseMesh(URI i)
 	ProcessAssimpNode(scene->mRootNode, scene);
 	const size_t numSubmeshes = mSubmeshes.size();
 	SubmeshData* submeshHeapData = static_cast<SubmeshData*>(malloc(sizeof(SubmeshData) * numSubmeshes));
-	mSubmeshes.insert(mSubmeshes.end(), &submeshHeapData[0], &submeshHeapData[numSubmeshes]);
+	std::copy(mSubmeshes.begin(), mSubmeshes.end(), &submeshHeapData[0]);
 
 	MeshData m;
 	m.numSubmeshes = numSubmeshes;
@@ -79,8 +104,9 @@ SubmeshData MeshPreprocessor::Parse(aiMesh const* mesh, const aiScene* scene)
 	const auto numUvs = mesh->GetNumUVChannels();
 	const auto hasNormals = true;
 	const auto hasMaterial = false;
+
 	const auto numVertices = mesh->mNumVertices;
-	for (size_t i = 0; i < numVertices; i++)
+	for(size_t i = 0; i < numVertices; i++)
 	{
 		vectors.push_back(mesh->mVertices[i].x);
 		vectors.push_back(mesh->mVertices[i].y);
@@ -110,14 +136,25 @@ SubmeshData MeshPreprocessor::Parse(aiMesh const* mesh, const aiScene* scene)
 	float* heapInterleavedData = static_cast<float*>(malloc(sizeof(float) * numVecs));
 	uint32_t* heapIndiceData = static_cast<uint32_t*>(malloc(sizeof(uint32_t) * numIndices));
 
-	vectors.insert(vectors.end(), &heapInterleavedData[0], &heapInterleavedData[numVecs]);
-	indices.insert(indices.end(), &heapIndiceData[0], &heapIndiceData[numVecs]);
+	std::copy(vectors.begin(), vectors.end(), &heapInterleavedData[0]);
+	std::copy(indices.begin(), indices.end(), &heapIndiceData[0]);
 
 	SubmeshData m;
-	m.hasMaterial = hasMaterial;
-	m.hasNormals = hasNormals;
+	if(hasMaterial)
+	{
+		m.properties |= HAS_MATERIAL_BYTE_OFFSET;
+	}
+
+	if(hasNormals)
+	{
+		m.properties |= HAS_NORMALS_BYTE_OFFSET;
+	}
+
+	m.interleavedData = heapInterleavedData;
+	m.indices = heapIndiceData;
 	m.numVertices = numVertices;
-	m.interleavedData = vectors.data();
+	m.numIndices = numIndices;
+	m.numUVs = numUvs;
 
 	for(size_t i = 0; i < mesh->mNumFaces; i++)
 	{

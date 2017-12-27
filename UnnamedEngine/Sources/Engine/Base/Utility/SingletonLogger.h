@@ -22,7 +22,7 @@ class SingletonLogger : public NonCopyable
 public:
 	SingletonLogger() = default;
 	static Logger& Log(std::string channel, LogType type);
-	static void RegisterStream(std::string channel);
+	static void RegisterStream(std::string channel); // todo: is requiring stream registration actually a good idea?
 
 private:
 	Logger& GetStreamSingleton(std::string channel, LogType type);
