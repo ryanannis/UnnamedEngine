@@ -1,4 +1,5 @@
-#version 330 core
+#version 450
+#extension GL_ARB_separate_shader_objects : enables
 uniform sampler2D DiffuseSampler;
 uniform sampler2D SpecularSampler;
 
