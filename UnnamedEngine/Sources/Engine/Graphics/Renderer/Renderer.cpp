@@ -28,6 +28,7 @@ void Renderer::Initialize(const RendererSettings& c)
 	DriverSettings settings;
 	settings.windowManagerExtensions = c.windowManagerExtensions;
 	settings.numExtensions = c.numExtensions;
+	settings.windowManagerSurfaceCreationCallback = c.windowManagerSurfaceCreationCallback;
 
 #ifdef NDEBUG
 	settings.useValidationLayers = false;

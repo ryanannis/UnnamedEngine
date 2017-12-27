@@ -1,4 +1,6 @@
 #pragma once
+#include <functional>
+
 #include "Engine/Base/Common/Common.h"
 #include "Engine/Graphics/Renderer/GraphicsHandle.h"
 #include "Engine/Graphics/Renderer/RenderSettings.h"
@@ -13,6 +15,7 @@ class Context;
 struct RendererSettings
 {
 	char** windowManagerExtensions;
+	std::function<VkResult(VkInstance instance, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface)> windowManagerSurfaceCreationCallback;
 	size_t numExtensions;
 };
 

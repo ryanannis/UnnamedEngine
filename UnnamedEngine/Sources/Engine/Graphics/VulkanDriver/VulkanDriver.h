@@ -1,19 +1,35 @@
 #pragma once
 #include "Engine/Base/Common/Common.h"
+
+#include <functional>
+
 #include <vulkan\vulkan.h>
 
 class ResourceManager;
 struct DriverSettings
 {
+	size_t renderWidth;
+	size_t renderHeight;
+
 	bool useValidationLayers;
 	// Interfacing between WM and Vulkan Driver
 	char** windowManagerExtensions;
+	std::function<VkResult(VkInstance instance, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface)> windowManagerSurfaceCreationCallback;
+
 	size_t numExtensions;
 };
 
 struct QueueFamilyIndices
 {
 	size_t graphicsFamily = INVALID_INDEX;
+	size_t presentFamily = INVALID_INDEX;
+};
+
+struct SwapChainSupportDetails
+{
+	VkSurfaceCapabilitiesKHR capabilities;
+	std::vector<VkSurfaceFormatKHR> formats;
+	std::vector<VkPresentModeKHR> presentModes;
 };
 
 class VulkanDriver
@@ -28,16 +44,40 @@ private:
 	size_t RatePhysicalDevice(VkPhysicalDevice device);
 	QueueFamilyIndices GetQueueFamilyIndices(VkPhysicalDevice device);
 	void SetupLogicalDevice();
+	void SetupSurface();
+	void SetupImageViews();
+	void CreatePipeline();
 	
 	void SetupVulkanInstance();
 	void SetupValidationLayers();
 	bool CheckValidationLayerSupport();
+	bool CheckExtensionSupport(VkPhysicalDevice device);
+	
+	SwapChainSupportDetails CheckSwapChainSupport(VkPhysicalDevice device);
+
+	VkPresentModeKHR SelectSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes);
+	VkSurfaceFormatKHR SelectSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+	VkExtent2D SelectSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+
+	void SetupDefaultSwapchain();
+
+	std::vector<char*> GetRequiredInstanceExtensions();
+	std::vector<char*> GetRequiredDeviceExtensions();
+
 	Ptr<ResourceManager> mResourceManager;
 
 	// Vulkan Resources
 	VkInstance mInstance;
 	VkPhysicalDevice mPhysicalDevice;
 	VkDevice mLogicalDevice;
+	VkSurfaceKHR mSurface;
+	VkSwapchainKHR mDefaultSwapchain;
+	VkFormat mDefaultSwapchainFormat;
+	VkExtent2D mDefaultSwapchainExtent;
+
+	std::vector<VkImage> mSwapChainImages;
+	std::vector<VkImageView> mSwapchainImageViews;
+
 	VkQueue mGraphicsQueue;
 
 	DriverSettings mDriverSettings;
