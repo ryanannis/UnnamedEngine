@@ -3,6 +3,7 @@
 
 const static size_t HAS_MATERIAL_BYTE_OFFSET = 0;
 const static size_t HAS_NORMALS_BYTE_OFFSET = 1;
+const static uint32_t MESH_FORMAT_HEADER = 10000;
 
 struct SubmeshData
 {

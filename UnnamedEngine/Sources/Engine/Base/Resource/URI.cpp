@@ -72,6 +72,11 @@ std::string URI::GetFilePath() const
 	return(CONTENT_DIR + path + file + "." + ext);
 }
 
+std::string URI::GetCachePath() const
+{
+	return(CONTENT_DIR + path + file + "." + ext + ".uchc");
+}
+
 std::string URI::GetPathFromRoot() const
 {
 	return(path);

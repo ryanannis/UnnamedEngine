@@ -9,6 +9,7 @@ public:
 	URI() = default;
 	URI(const std::string strURI);
 	std::string GetFilePath() const;
+	std::string GetCachePath() const;
 	std::string GetPathFromRoot() const;
 	std::string GetComponent() const;
 	std::string GetExtension() const;

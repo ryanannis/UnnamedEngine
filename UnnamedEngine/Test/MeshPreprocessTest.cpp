@@ -1,9 +1,12 @@
 #include <Catch.h>
-#include "Engine/Base/Resource/ModelPreprocessor.h"
+#include "Formats/ModelPreprocessor.h"
+#include "Formats/ModelLoader.h"
 #include <iostream>
 
 TEST_CASE("Proprocessing creates a file", "[Preprocesss]")
 {
 	MeshPreprocessor m;
-	m.PreprocessMesh(URI("/Levels/Sponza/sponza.obj"));
+	URI meshUri("/Levels/Sponza/sponza.obj");
+	m.PreprocessMesh(meshUri);
+	MeshData d = ModelLoader::LoadModel(meshUri);
 }
