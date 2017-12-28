@@ -2,7 +2,7 @@
 #include "Engine/Base/Common/Common.h"
 #include "Formats/MeshFormat.h"
 
-class URI;
+struct URI;
 
 namespace ModelLoader
 {

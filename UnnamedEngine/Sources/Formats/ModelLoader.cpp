@@ -4,7 +4,11 @@
 #include <fstream>
 #include <streambuf>
 
-const MeshData ModelLoader::LoadModel(URI uri)
+#ifdef _DEBUG
+#include "Formats/ModelPreprocessor.h"
+#endif
+
+const MeshData PrivateLoadModel(URI uri)
 {
 	// todo:  this has... questionable... performance
 	const auto fileUrl = uri.GetCachePath();
@@ -22,7 +26,7 @@ const MeshData ModelLoader::LoadModel(URI uri)
 	SubmeshData* submeshData = static_cast<SubmeshData*>(malloc(d.numSubmeshes * sizeof(SubmeshData)));
 	d.submeshes = submeshData;
 
-	for(size_t i = 0; i < d.numSubmeshes; i++)
+	for (size_t i = 0; i < d.numSubmeshes; i++)
 	{
 		SubmeshData& currentSubmesh = submeshData[i];
 		t.read(reinterpret_cast<char*>(&submeshData->properties), sizeof(uint32_t));
@@ -34,13 +38,13 @@ const MeshData ModelLoader::LoadModel(URI uri)
 
 		float* interleavedData = static_cast<float*>(malloc(interleavedDataSize));
 		uint32_t* indiceData = static_cast<uint32_t*>(malloc(indiceDataSize));
-		
+
 		// Possible to be 0
-		if(interleavedData)
+		if (interleavedData)
 		{
 			t.read(reinterpret_cast<char*>(interleavedData), interleavedDataSize);
 		}
-		if(indiceData)
+		if (indiceData)
 		{
 			t.read(reinterpret_cast<char*>(indiceData), indiceDataSize);
 		}
@@ -50,4 +54,23 @@ const MeshData ModelLoader::LoadModel(URI uri)
 	}
 
 	return(d);
+}
+
+const bool DoesFileExist(URI uri)
+{
+	auto stream = std::ifstream(uri.GetCachePath());
+	return(stream.good());
+}
+
+const MeshData ModelLoader::LoadModel(URI uri)
+{
+	const auto fileExists = DoesFileExist(uri);
+#ifdef _DEBUG
+	if(!fileExists)
+	{
+		MeshPreprocessor p;
+		p.PreprocessMesh(uri);
+	}
+#endif // DEBUG
+	return(PrivateLoadModel(uri));
 }

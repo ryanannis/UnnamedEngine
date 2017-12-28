@@ -29,6 +29,7 @@ int StaticRegister()
 	 * Register logging channels.
 	 */
 	SingletonLogger::RegisterStream("General");
+	SingletonLogger::RegisterStream("Loader");
 	SingletonLogger::RegisterStream("Graphics");
 
 	const int DUMMY = 0;

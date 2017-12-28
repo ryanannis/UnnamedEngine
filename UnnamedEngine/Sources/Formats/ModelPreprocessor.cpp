@@ -7,8 +7,12 @@
 #include <assimp/scene.h>
 #include <assimp/mesh.h>
 
+#include "Engine/Base/Utility/SingletonLogger.h"
+
 void MeshPreprocessor::PreprocessMesh(URI i)
 {
+	SingletonLogger::Log("Loader", LogType::GENERAL).Log("Preprocessing mesh: " + i.GetFilePath());
+
 	MeshData m = ParseMesh(i);
 
 	std::string filename = i.GetCachePath();

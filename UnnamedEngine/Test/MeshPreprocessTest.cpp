@@ -2,6 +2,8 @@
 #include "Formats/ModelPreprocessor.h"
 #include "Formats/ModelLoader.h"
 #include <iostream>
+#include <chrono>
+
 
 TEST_CASE("Proprocessing creates a file", "[Preprocesss]")
 {
@@ -9,4 +11,6 @@ TEST_CASE("Proprocessing creates a file", "[Preprocesss]")
 	URI meshUri("/Levels/Sponza/sponza.obj");
 	m.PreprocessMesh(meshUri);
 	MeshData d = ModelLoader::LoadModel(meshUri);
+
+
 }

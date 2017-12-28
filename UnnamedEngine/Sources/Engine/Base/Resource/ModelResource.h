@@ -4,18 +4,9 @@
 #include "Engine/Base/Resource/ResourceType.h"
 #include "Engine/Base/Resource/MaterialResource.h"
 
-
 #include <vector>
 #include <map>
-
-struct Mesh
-{
-	std::vector<uint32_t> mIndices;
-	// format vvvnnnuu
-	std::vector<float> mVectors;
-	std::vector<ResourceType<MaterialResource>> mDiffuseTextures;
-	std::vector<ResourceType<MaterialResource>> mSpecularTextures;
-};
+#include "Formats/MeshFormat.h"
 
 class ModelResource : public Resource
 {
@@ -23,9 +14,9 @@ public:
 	ModelResource(URI URI);
 	virtual bool IsReady() const override;
 	virtual void Load(Ptr<ResourceManager> manager) override;
-	const std::vector<Mesh>& GetMeshes() const;
+	const MeshData& GetMeshes() const;
 
 private:
-	std::vector<Mesh> mMeshes;
+	MeshData mData;
 	bool mReady;
 };

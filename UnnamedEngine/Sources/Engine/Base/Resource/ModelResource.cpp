@@ -1,10 +1,8 @@
 #include "ModelResource.h"
 
-#include <assimp/importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
-#include <assimp/mesh.h>
 #include <glm/glm.hpp>
+
+#include "Formats/ModelLoader.h"
 #include "Engine/Base/Resource/MaterialResource.h"
 #include "Engine/Base/Resource/ResourceType.h"
 #include "Engine/Base/Resource/ResourceManager.h"
@@ -21,11 +19,13 @@ bool ModelResource::IsReady() const
 	return(mReady);
 }
 
-const std::vector<Mesh>& ModelResource::GetMeshes() const
+const MeshData& ModelResource::GetMeshes() const
 {
-	return(mMeshes);
+	return(mData);
 }
 
 void ModelResource::Load(Ptr<ResourceManager> manager)
 {
+	const auto model = ModelLoader::LoadModel(GetURI());
 }
+
