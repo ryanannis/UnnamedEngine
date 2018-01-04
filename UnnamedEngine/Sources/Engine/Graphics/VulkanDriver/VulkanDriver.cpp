@@ -2,10 +2,11 @@
 #include "Engine/Base/Utility/SingletonLogger.h"
 
 #include <GLFW/glfw3.h>
-
 #include <set>
-
 #include "Engine/Graphics/VulkanDriver/VulkanExtensionDefs.h"
+
+#define VMA_IMPLEMENTATION
+#include "vk_mem_alloc.h"
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL ValidationCallback
 (
@@ -247,6 +248,38 @@ void VulkanDriver::SetupImageViews()
 
 		assert(vkCreateImageView(mLogicalDevice, &createInfo, nullptr, &mSwapchainImageViews[i]) == VK_SUCCESS);
 	}
+}
+
+void VulkanDriver::SetupMemoryPools()
+{
+	VmaAllocatorCreateInfo allocatorInfo = {};
+	allocatorInfo.physicalDevice = mPhysicalDevice;
+	allocatorInfo.device = mLogicalDevice;
+
+	vmaCreateAllocator(&allocatorInfo, &mAllocator);
+}
+
+VulkanVertexBuffer VulkanDriver::CreateVertexBuffer(VkDeviceSize size)
+{
+	VkBufferCreateInfo bufferInfo = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
+	bufferInfo.size = size;
+	bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+	
+	VmaAllocationCreateInfo allocInfo = {};
+	allocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+	
+	VulkanVertexBuffer vertexBuffer;
+
+	vmaCreateBuffer(
+		mAllocator, 
+		&bufferInfo, 
+		&allocInfo, 
+		&vertexBuffer.buffer, 
+		&vertexBuffer.allocation, 
+		nullptr
+	);
+	
+	return(vertexBuffer);
 }
 
 void VulkanDriver::CreatePipeline()
@@ -508,6 +541,7 @@ void VulkanDriver::Cleanup()
 	for(auto imageView : mSwapchainImageViews) {
 		vkDestroyImageView(mLogicalDevice, imageView, nullptr);
 	}
+
 	vkDestroySurfaceKHR(mInstance, mSurface, nullptr);
 	vkDestroySwapchainKHR(mLogicalDevice, mDefaultSwapchain, nullptr);
 	vkDestroyDevice(mLogicalDevice, nullptr);

@@ -5,6 +5,8 @@
 
 #include <vulkan\vulkan.h>
 
+#include "vk_mem_alloc.h"
+
 class ResourceManager;
 struct DriverSettings
 {
@@ -32,6 +34,12 @@ struct SwapChainSupportDetails
 	std::vector<VkPresentModeKHR> presentModes;
 };
 
+struct VulkanVertexBuffer
+{
+	VmaAllocation allocation;
+	VkBuffer buffer;
+};
+
 class VulkanDriver
 {
 public:
@@ -47,6 +55,8 @@ private:
 	void SetupSurface();
 	void SetupImageViews();
 	void CreatePipeline();
+	void SetupMemoryPools();
+	VulkanVertexBuffer CreateVertexBuffer(VkDeviceSize size);
 	
 	void SetupVulkanInstance();
 	void SetupValidationLayers();
@@ -74,6 +84,7 @@ private:
 	VkSwapchainKHR mDefaultSwapchain;
 	VkFormat mDefaultSwapchainFormat;
 	VkExtent2D mDefaultSwapchainExtent;
+	VmaAllocator mAllocator;
 
 	std::vector<VkImage> mSwapChainImages;
 	std::vector<VkImageView> mSwapchainImageViews;
