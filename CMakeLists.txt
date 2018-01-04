@@ -59,6 +59,7 @@ include_directories(UnnamedEngine/Sources/
 					${Vulkan_INCLUDE_DIRS}
                     UnnamedEngine/Vendor/glm/
                     UnnamedEngine/Vendor/stb/
+					UnnamedEngine/Vendor/VulkanMemoryAllocator/
 					UnnamedEngine/Vendor/freetype/include/)
 
 file(GLOB VENDORS_SOURCES UnnamedEngine/Vendor/glad/src/glad.c)
