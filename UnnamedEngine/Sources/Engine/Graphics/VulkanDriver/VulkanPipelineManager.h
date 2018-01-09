@@ -5,5 +5,7 @@
 class VulkanPipelineManager
 {
 public:
+	
 private:
+
 };

@@ -25,12 +25,12 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL ValidationCallback
 	return(VK_FALSE);
 }
 
-const std::vector<const char*> validationLayers =
+const std::vector<const char*> VALIDATION_LAYERS =
 {
 	"VK_LAYER_LUNARG_standard_validation"
 };
 
-const std::vector<char*> requiredDeviceExtensions =
+const std::vector<char*> REQUIRED_DEVICE_EXTENSIONS =
 {
 	VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
@@ -53,12 +53,13 @@ void VulkanDriver::Initialize(const DriverSettings& driverSettings)
 	SetupPhysicalDevice();
 	SetupLogicalDevice();
 	SetupDefaultSwapchain();
+	SetupCommandBuffers();
+	SetupImageViews();
 }
 
 void VulkanDriver::SetupVulkanInstance()
 {
 	// End test
-	
 	VkApplicationInfo appInfo = {};
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	appInfo.pApplicationName = "UnnnamedEngine";
@@ -83,8 +84,8 @@ void VulkanDriver::SetupVulkanInstance()
 
 	if(mDriverSettings.useValidationLayers)
 	{
-		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		createInfo.ppEnabledLayerNames = validationLayers.data();
+		createInfo.enabledLayerCount = static_cast<uint32_t>(VALIDATION_LAYERS.size());
+		createInfo.ppEnabledLayerNames = VALIDATION_LAYERS.data();
 	}
 	else
 	{
@@ -120,12 +121,14 @@ size_t VulkanDriver::RatePhysicalDevice(VkPhysicalDevice device)
 		return(0);
 	}
 
-	// Ensure the card has a graphics queue
+	// Ensure the physical device has a presentation queue
 	QueueFamilyIndices queueIndices = GetQueueFamilyIndices(device);
 	if(queueIndices.graphicsFamily == INVALID_INDEX)
 	{
 		return(0);
 	}
+
+	// Ensure the physical device has a presentation queue
 	if(queueIndices.presentFamily == INVALID_INDEX)
 	{
 		return(0);
@@ -181,13 +184,14 @@ QueueFamilyIndices VulkanDriver::GetQueueFamilyIndices(VkPhysicalDevice device)
 void VulkanDriver::SetupLogicalDevice()
 {
 	auto indices = GetQueueFamilyIndices(mPhysicalDevice);
+	mQueueIndices = indices;
 
 	const float queuePriority = 1.f;
 
 	VkDeviceQueueCreateInfo queueCreateInfo = {};
 	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 	queueCreateInfo.queueFamilyIndex = indices.graphicsFamily;
-	queueCreateInfo.queueCount = 1;
+	queueCreateInfo.queueCount = 1; //todo: multiple graphics queues
 	queueCreateInfo.pQueuePriorities = &queuePriority;
 
 	VkPhysicalDeviceFeatures deviceFeatures = {};
@@ -205,8 +209,8 @@ void VulkanDriver::SetupLogicalDevice()
 
 	if(mDriverSettings.useValidationLayers)
 	{
-		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		createInfo.ppEnabledLayerNames = validationLayers.data();
+		createInfo.enabledLayerCount = static_cast<uint32_t>(VALIDATION_LAYERS.size());
+		createInfo.ppEnabledLayerNames = VALIDATION_LAYERS.data();
 	}
 	else
 	{
@@ -216,6 +220,7 @@ void VulkanDriver::SetupLogicalDevice()
 	assert(vkCreateDevice(mPhysicalDevice, &createInfo, nullptr, &mLogicalDevice) == VK_SUCCESS);
 
 	vkGetDeviceQueue(mLogicalDevice, indices.graphicsFamily, 0, &mGraphicsQueue);
+	vkGetDeviceQueue(mLogicalDevice, indices.presentFamily, 0, &mPresentQueue);
 }
 
 void VulkanDriver::SetupSurface()
@@ -257,6 +262,44 @@ void VulkanDriver::SetupMemoryPools()
 	allocatorInfo.device = mLogicalDevice;
 
 	vmaCreateAllocator(&allocatorInfo, &mAllocator);
+}
+
+void VulkanDriver::SetupCommandBuffers()
+{
+	VkCommandPoolCreateInfo commandPoolCreateInfo;
+	commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+	commandPoolCreateInfo.queueFamilyIndex = mQueueIndices.presentFamily;
+
+	assert(vkCreateCommandPool(mLogicalDevice, &commandPoolCreateInfo, nullptr, &mPresentCommandPool) == VK_SUCCESS);
+	
+	const uint32_t numImages = mSwapChainImages.size();
+	mPresentationCommandBuffers.resize(numImages);
+
+	VkCommandBufferAllocateInfo commandBufferAllocateInfo = {};
+	commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	commandBufferAllocateInfo.commandPool = mPresentCommandPool;
+	commandBufferAllocateInfo.commandPool = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	commandBufferAllocateInfo.commandBufferCount = numImages;
+
+	assert(vkAllocateCommandBuffers(mLogicalDevice, &commandBufferAllocateInfo, mPresentationCommandBuffers.data()) == VK_SUCCESS);
+
+	RecordCommandBuffers();
+}
+
+void VulkanDriver::RecordCommandBuffers()
+{
+	VkCommandBufferBeginInfo commandBufferBeginInfo = {};
+	commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	commandBufferBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+
+	VkClearColorValue clearColor = { 1.0f, 0.0f, 0.0f, 0.0f };
+	
+	VkImageSubresourceRange imageSubresourceRange;
+	imageSubresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	imageSubresourceRange.baseMipLevel = 0;
+	imageSubresourceRange.levelCount = 1;
+	imageSubresourceRange.baseArrayLayer = 0;
+	imageSubresourceRange.layerCount = 1;
 }
 
 VulkanVertexBuffer VulkanDriver::CreateVertexBuffer(VkDeviceSize size)
@@ -336,7 +379,7 @@ bool VulkanDriver::CheckValidationLayerSupport()
 	std::vector<VkLayerProperties> availableLayers(layerCount);
 	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
-	for(const char* layerName : validationLayers)
+	for(const char* layerName : VALIDATION_LAYERS)
 	{
 		bool layerFound = false;
 
@@ -404,7 +447,21 @@ SwapChainSupportDetails VulkanDriver::CheckSwapChainSupport(VkPhysicalDevice dev
 VkPresentModeKHR VulkanDriver::SelectSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes)
 {
 	//todo:  vsync mDriverSettings options
-	return(VK_PRESENT_MODE_FIFO_KHR);
+	if(mDriverSettings.vSync)
+	{
+		if(std::find(availablePresentModes.begin(), availablePresentModes.end(), VK_PRESENT_MODE_FIFO_KHR) == availablePresentModes.end())
+		{
+			SingletonLogger::Log(GFX_DRIVER_LOG, LogType::ERROR).Log(
+				"Attempted to use VSync but device does not support double buffering!  Defaulting to immediate mode."
+			);
+			return(VK_PRESENT_MODE_IMMEDIATE_KHR);
+		}
+		return(VK_PRESENT_MODE_FIFO_KHR);
+	}
+	else
+	{
+		return(VK_PRESENT_MODE_IMMEDIATE_KHR);
+	}
 }
 
 VkSurfaceFormatKHR VulkanDriver::SelectSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
@@ -416,7 +473,11 @@ VkSurfaceFormatKHR VulkanDriver::SelectSwapSurfaceFormat(const std::vector<VkSur
 
 	for(const auto& availableFormat : availableFormats)
 	{
-		if(availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+		if
+		(
+			availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM && 
+			availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR
+		)
 		{
 			return(availableFormat);
 		}
@@ -433,7 +494,7 @@ VkExtent2D VulkanDriver::SelectSwapExtent(const VkSurfaceCapabilitiesKHR& capabi
 		return(capabilities.currentExtent);
 	}
 	else
-	{		
+	{
 		VkExtent2D actualExtent = VkExtent2D({mDriverSettings.renderWidth, mDriverSettings.renderHeight});
 
 		actualExtent.width = std::max(
@@ -464,6 +525,13 @@ void VulkanDriver::SetupDefaultSwapchain()
 		imageCount = 1;
 	}
 
+	VkSemaphoreCreateInfo semaphoreCreateInfo = {};
+	semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+	semaphoreCreateInfo.flags = 0;
+	semaphoreCreateInfo.pNext = nullptr;
+	assert(vkCreateSemaphore(mLogicalDevice, &semaphoreCreateInfo, nullptr, &mImageAvailableSemaphore) == VK_SUCCESS);
+	assert(vkCreateSemaphore(mLogicalDevice, &semaphoreCreateInfo, nullptr, &mFinishedRenderingSemaphore) == VK_SUCCESS);
+
 	VkSwapchainCreateInfoKHR createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 	createInfo.surface = mSurface;
@@ -479,7 +547,7 @@ void VulkanDriver::SetupDefaultSwapchain()
 
 	if(indices.graphicsFamily != indices.presentFamily)
 	{
-		//todo:  explicit ownership transfer
+		//todo:  explicit ownership transfer for doing MT
 		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
 		createInfo.queueFamilyIndexCount = 2;
 		createInfo.pQueueFamilyIndices = queueFamilyIndices;
@@ -487,8 +555,6 @@ void VulkanDriver::SetupDefaultSwapchain()
 	else
 	{
 		createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		createInfo.queueFamilyIndexCount = 0; // Optional
-		createInfo.pQueueFamilyIndices = nullptr; // Optional
 	}
 
 	createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
@@ -528,9 +594,9 @@ std::vector<char*> VulkanDriver::GetRequiredInstanceExtensions()
 std::vector<char*> VulkanDriver::GetRequiredDeviceExtensions()
 {
 	std::vector<char*> extensions;
-	for(size_t i = 0; i < requiredDeviceExtensions.size(); i++)
+	for(size_t i = 0; i < REQUIRED_DEVICE_EXTENSIONS.size(); i++)
 	{
-		extensions.push_back(requiredDeviceExtensions[i]);
+		extensions.push_back(REQUIRED_DEVICE_EXTENSIONS[i]);
 	}
 
 	return(extensions);
@@ -546,4 +612,35 @@ void VulkanDriver::Cleanup()
 	vkDestroySwapchainKHR(mLogicalDevice, mDefaultSwapchain, nullptr);
 	vkDestroyDevice(mLogicalDevice, nullptr);
 	vkDestroyInstance(mInstance, nullptr);
+}
+
+void VulkanDriver::DrawFrame()
+{
+	// Acquire image
+	uint32_t imageIndex;
+    VkResult result = vkAcquireNextImageKHR(
+		mLogicalDevice, 
+		mDefaultSwapchain, 
+		std::numeric_limits<uint64_t>::max(), // todo: potentially blocking thread forever is a bit...
+		mImageAvailableSemaphore, 
+		VK_NULL_HANDLE, 
+		&imageIndex
+	);
+
+    if(result == VK_ERROR_OUT_OF_DATE_KHR){
+		assert(false); // todo:  recreate swapchain
+        return;
+    }
+	else if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+	{
+		assert(false);
+    }
+
+	VkPipelineStageFlags waitFlags = VK_PIPELINE_STAGE_TRANSFER_BIT;
+	VkSubmitInfo submitInfo;
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.waitSemaphoreCount = 1;
+	submitInfo.pWaitSemaphores = &mImageAvailableSemaphore;
+	submitInfo.pWaitDstStageMask = &waitFlags;
+	submitInfo.commandBufferCount = 1;
 }

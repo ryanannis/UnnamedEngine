@@ -13,6 +13,8 @@ struct DriverSettings
 	size_t renderWidth;
 	size_t renderHeight;
 
+	bool vSync;
+
 	bool useValidationLayers;
 	// Interfacing between WM and Vulkan Driver
 	char** windowManagerExtensions;
@@ -46,6 +48,7 @@ public:
 	VulkanDriver(Ptr<ResourceManager> resourceManager);
 	void Initialize(const DriverSettings& driverSettings);
 	void Cleanup();
+	void DrawFrame();
 
 private:
 	void SetupPhysicalDevice();
@@ -55,9 +58,12 @@ private:
 	void SetupSurface();
 	void SetupImageViews();
 	void CreatePipeline();
+	void SetupCommandBuffers();
+	void RecordCommandBuffers();
 	void SetupMemoryPools();
-	VulkanVertexBuffer CreateVertexBuffer(VkDeviceSize size);
 	
+	VulkanVertexBuffer CreateVertexBuffer(VkDeviceSize size);
+
 	void SetupVulkanInstance();
 	void SetupValidationLayers();
 	bool CheckValidationLayerSupport();
@@ -81,15 +87,24 @@ private:
 	VkPhysicalDevice mPhysicalDevice;
 	VkDevice mLogicalDevice;
 	VkSurfaceKHR mSurface;
+
+	VkSemaphore mImageAvailableSemaphore;
+	VkSemaphore mFinishedRenderingSemaphore;
+
 	VkSwapchainKHR mDefaultSwapchain;
 	VkFormat mDefaultSwapchainFormat;
 	VkExtent2D mDefaultSwapchainExtent;
 	VmaAllocator mAllocator;
-
 	std::vector<VkImage> mSwapChainImages;
 	std::vector<VkImageView> mSwapchainImageViews;
 
+
+	VkCommandPool mPresentCommandPool;
+
+	std::vector<VkCommandBuffer> mPresentationCommandBuffers;
+	QueueFamilyIndices mQueueIndices;
 	VkQueue mGraphicsQueue;
+	VkQueue mPresentQueue;
 
 	DriverSettings mDriverSettings;
 	VkDebugReportCallbackEXT mValidationCallback;
