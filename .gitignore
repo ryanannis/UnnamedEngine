@@ -308,3 +308,5 @@ OpenCover/
 
 # Custom
 VulkanSDK/
+
+*.uchc
