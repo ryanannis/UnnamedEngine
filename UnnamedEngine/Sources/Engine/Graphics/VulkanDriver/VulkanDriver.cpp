@@ -643,4 +643,18 @@ void VulkanDriver::DrawFrame()
 	submitInfo.pWaitSemaphores = &mImageAvailableSemaphore;
 	submitInfo.pWaitDstStageMask = &waitFlags;
 	submitInfo.commandBufferCount = 1;
+	submitInfo.signalSemaphoreCount = 1;
+	submitInfo.pSignalSemaphores = &mFinishedRenderingSemaphore;
+
+	assert(vkQueueSubmit(mPresentQueue, 1, &submitInfo, VK_NULL_HANDLE) == VK_SUCCESS);
+
+	VkPresentInfoKHR presentInfo = {};
+	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	presentInfo.waitSemaphoreCount = 1;
+	presentInfo.pWaitSemaphores = &mFinishedRenderingSemaphore;
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = &mDefaultSwapchain;
+	presentInfo.pImageIndices = &imageIndex;
+
+	assert(vkQueuePresentKHR(mPresentQueue, &presentInfo));
 }
