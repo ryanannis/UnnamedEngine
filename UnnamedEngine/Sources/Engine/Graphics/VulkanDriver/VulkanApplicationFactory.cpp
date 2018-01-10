@@ -7,6 +7,7 @@
 #include "Engine/Graphics/VulkanDriver/VulkanDriver.h"
 #include "Engine/Graphics/VulkanDriver/VulkanExtensionDefs.h"
 
+#include "vk_mem_alloc.h"
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL ValidationCallback
 (
@@ -44,6 +45,7 @@ VulkanApplication VulkanApplicationFactory::CreateApplication()
 	VulkanApplication application;
 	mApplication = &application;
 	SetupVulkanInstance();
+	return(application);
 }
 
 void VulkanApplicationFactory::SetupVulkanInstance()

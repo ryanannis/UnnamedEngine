@@ -10,6 +10,7 @@ VkResult DestroyDebugReportCallbackEXT(
 	if(func != nullptr)
 	{
 		func(instance, callback, pAllocator);
+		return(VK_SUCCESS);
 	}
 	else
 	{
@@ -27,7 +28,7 @@ VkResult CreateDebugReportCallbackEXT(
 	static const auto func = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT");
 	if(func != nullptr)
 	{
-		return func(instance, pCreateInfo, pAllocator, pCallback);
+		return(func(instance, pCreateInfo, pAllocator, pCallback));
 	}
 	else
 	{

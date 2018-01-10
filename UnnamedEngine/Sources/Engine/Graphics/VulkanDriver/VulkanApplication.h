@@ -1,7 +1,9 @@
 #pragma once
 #include "Engine/Base/Common/Common.h"
 #include <vulkan\vulkan.h>
-#include "vk_mem_alloc.h"
+
+VK_DEFINE_HANDLE(VmaAllocator);
+VK_DEFINE_HANDLE(VmaAllocation);
 
 class ResourceManager;
 
