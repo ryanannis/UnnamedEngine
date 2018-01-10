@@ -25,7 +25,7 @@ private:
 	void SetupCommandBuffers();
 	void RecordCommandBuffers();
 	void SetupMemoryPools();
-	void SetupImageViews();
+	void SetupSwapchainImageViews();
 
 	VulkanVertexBuffer CreateVertexBuffer(VkDeviceSize size);
 

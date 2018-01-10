@@ -4,6 +4,8 @@ project(UnnamedEngine)
 # Compile a lib with everything EXCEPT main.cpp
 # and an executable containing everything else
 
+option(BuildMT "BuildMT" ON)
+
 option(GLFW_BUILD_DOCS OFF)
 option(GLFW_BUILD_EXAMPLES OFF)
 option(GLFW_BUILD_TESTS OFF)
@@ -85,7 +87,13 @@ source_group("Vendors" FILES ${VENDORS_SOURCES})
 add_definitions(-DGLFW_INCLUDE_NONE
 				"-DCACHE_DIR=\"${PROJECT_SOURCE_DIR}/Cache/\""
                 "-DPROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\""
-				"-DCONTENT_DIR=\"${PROJECT_SOURCE_DIR}/Content/\"")
+				"-DCONTENT_DIR=\"${PROJECT_SOURCE_DIR}/Content/\""
+				""
+				)
+
+if(BuildMT)
+	add_definitions(-DBUILD_MT)
+ENDIF()
 
 add_library(ProjectLib ${PROJECT_SOURCES} ${PROJECT_HEADERS}
 										  ${PROJECT_SHADERS} 

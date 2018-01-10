@@ -223,7 +223,7 @@ void VulkanApplicationFactory::SetupSurface()
 	assert(retCode == VK_SUCCESS);
 }
 
-void VulkanApplicationFactory::SetupImageViews()
+void VulkanApplicationFactory::SetupSwapchainImageViews()
 {
 	mApplication->swapchainImageViews.resize(mApplication->swapChainImages.size());
 	for(size_t i = 0; i < mApplication->swapChainImages.size(); i++)
