@@ -1,6 +1,7 @@
 #include "ShaderResource.h"
 
 #include "Engine/Base/Resource/URI.h"
+#include "Engine/Base/Resource/ResourceUtil.h"
 
 #include <iostream>
 #include <fstream>
@@ -42,17 +43,16 @@ void ShaderResource::Load(Ptr<ResourceManager> manager)
 	}
 
 	std::string fullURL = shaderURI.GetFilePath();
-	std::ifstream f(fullURL);
-	std::stringstream buffer;
-	buffer << f.rdbuf();
-	mShaderText = buffer.str();
+	fullURL = fullURL + ".spv";
+
+	ResourceUtil::LoadBinaryFile(fullURL);
 
 	mReady = true;
 }
 
-const std::string& ShaderResource::GetShaderText() const
+const std::vector<char>& ShaderResource::GetShaderText() const
 {
-	return(mShaderText);
+	return(mShaderBinary);
 }
 
 ShaderType ShaderResource::GetShaderType() const

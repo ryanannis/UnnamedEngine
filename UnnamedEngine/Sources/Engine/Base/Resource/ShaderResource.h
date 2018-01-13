@@ -16,11 +16,11 @@ public:
 	ShaderResource(URI uri);
 	virtual bool IsReady() const override;
 	virtual void Load(Ptr<ResourceManager> manager) override;
-	const std::string& GetShaderText() const;
+	const std::vector<char>& ShaderResource::GetShaderBinary() const;
 	ShaderType GetShaderType() const;
 
 private:
-	std::string mShaderText;
+	std::vector<char> mShaderBinary;
 	ShaderType mShaderType;
 	bool mReady;
 };

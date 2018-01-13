@@ -36,6 +36,8 @@ endif()
 
 # Vulkan setup
 
+
+
 # https://cmake.org/cmake/help/v3.7/module/FindVulkan.html
 if (NOT CMAKE_VERSION VERSION_LESS 3.7.0)
 	message(STATUS "Using module to find Vulkan")
@@ -84,10 +86,17 @@ source_group("Shaders" FILES ${PROJECT_SHADERS})
 source_group("Sources" FILES ${PROJECT_SOURCES})
 source_group("Vendors" FILES ${VENDORS_SOURCES})
 
+if (${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "AMD64")
+  set(GLSL_VALIDATOR "$ENV{VULKAN_SDK}/Bin/glslangValidator.exe")
+else()
+  set(GLSL_VALIDATOR "$ENV{VULKAN_SDK}/Bin32/glslangValidator.exe")
+endif()
+
 add_definitions(-DGLFW_INCLUDE_NONE
 				"-DCACHE_DIR=\"${PROJECT_SOURCE_DIR}/Cache/\""
                 "-DPROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\""
 				"-DCONTENT_DIR=\"${PROJECT_SOURCE_DIR}/Content/\""
+				"-DGLSL_EVALUATOR_BINARY=\"${GLSL_VALIDATOR}\""
 				""
 				)
 

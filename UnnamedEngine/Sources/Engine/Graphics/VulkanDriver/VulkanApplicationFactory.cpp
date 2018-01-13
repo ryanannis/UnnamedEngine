@@ -245,7 +245,12 @@ void VulkanApplicationFactory::SetupSwapchainImageViews()
 		createInfo.subresourceRange.baseArrayLayer = 0;
 		createInfo.subresourceRange.layerCount = 1;
 
-		if(vkCreateImageView(mApplication->logicalDevice, &createInfo, nullptr, &mApplication->swapchainImageViews[i]) != VK_SUCCESS)
+		if(
+			vkCreateImageView(
+				mApplication->logicalDevice,
+				&createInfo, nullptr,
+				&mApplication->swapchainImageViews[i]
+			) != VK_SUCCESS)
 		{
 			assert(false);
 		}

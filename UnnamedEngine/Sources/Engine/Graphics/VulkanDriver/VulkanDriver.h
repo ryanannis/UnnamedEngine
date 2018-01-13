@@ -31,8 +31,20 @@ public:
 	void Cleanup();
 	void DrawFrame();
 
+	// Temp 
+	void CreatePipeline();
+	void CreateShaderModules();
+	void CreateFramebuffers();
+	void CreateRenderPass();
+
+
 private:
 	VulkanApplication mApplication;
 	Ptr<ResourceManager> mResourceManager;
 	DriverSettings mDriverSettings;
+
+	VkShaderModule mVertexShader;
+	VkShaderModule mFragmentShader;
+	std::vector<VkFramebuffer> mSwapchainFramebuffers;
+	VkRenderPass mTempRenderPass;
 };
