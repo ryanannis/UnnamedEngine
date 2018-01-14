@@ -44,7 +44,7 @@ VulkanApplication VulkanApplicationFactory::CreateApplication()
 {
 	VulkanApplication application;
 	mApplication = &application;
-	SetupVulkanInstance();
+	InitializeApplication();
 	return(application);
 }
 
@@ -257,6 +257,10 @@ void VulkanApplicationFactory::SetupSwapchainImageViews()
 	}
 }
 
+void VulkanApplicationFactory::SetupViewport()
+{
+}
+
 void VulkanApplicationFactory::SetupMemoryPools()
 {
 	VmaAllocatorCreateInfo allocatorInfo = {};
@@ -290,8 +294,6 @@ void VulkanApplicationFactory::SetupCommandBuffers()
 	{
 		assert(false);
 	}
-
-	RecordCommandBuffers();
 }
 
 void VulkanApplicationFactory::RecordCommandBuffers()
@@ -333,8 +335,17 @@ VulkanVertexBuffer VulkanApplicationFactory::CreateVertexBuffer(VkDeviceSize siz
 	return(vertexBuffer);
 }
 
-void VulkanApplicationFactory::CreatePipeline()
+void VulkanApplicationFactory::InitializeApplication()
 {
+	SetupSurface();
+	SetupPhysicalDevice();
+	SetupLogicalDevice();
+	SetupDefaultSwapchain();
+	SetupCommandBuffers();
+	RecordCommandBuffers();
+	SetupViewport();
+
+	SetupSwapchainImageViews();
 }
 
 void VulkanApplicationFactory::SetupPhysicalDevice()

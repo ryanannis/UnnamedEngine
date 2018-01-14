@@ -32,8 +32,9 @@ public:
 	void DrawFrame();
 
 	// Temp 
+	VkPipelineLayout CreatePipelineLayout();
 	void CreatePipeline();
-	void CreateShaderModules();
+	VkShaderModule CreateShaderModule(std::string shader);
 	void CreateFramebuffers();
 	void CreateRenderPass();
 
@@ -43,8 +44,7 @@ private:
 	Ptr<ResourceManager> mResourceManager;
 	DriverSettings mDriverSettings;
 
-	VkShaderModule mVertexShader;
-	VkShaderModule mFragmentShader;
 	std::vector<VkFramebuffer> mSwapchainFramebuffers;
 	VkRenderPass mTempRenderPass;
+	VkPipeline mTempGraphicsPipeline;
 };

@@ -50,6 +50,9 @@ struct VulkanApplication
 	QueueFamilyIndices queueIndices;
 	VkQueue graphicsQueue;
 	VkQueue presentQueue;
+	
+	VkViewport viewport;
+	VkRect2D viewportScissor;
 
 	VkDebugReportCallbackEXT validationCallback;
 };

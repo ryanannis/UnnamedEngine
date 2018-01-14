@@ -1,6 +1,6 @@
 #include "VulkanUtils.h"
 
-VkVertexInputBindingDescription VulkanUtils::Mesh::ComputeSubmeshBindingDescription(SubmeshData* submesh)
+VulkanUtils::Mesh::SubmeshBindingDescription VulkanUtils::Mesh::ComputeSubmeshBindingDescription(SubmeshData* submesh)
 {
 	VkVertexInputBindingDescription vertexBindingDescription;
 	vertexBindingDescription.binding = 0;

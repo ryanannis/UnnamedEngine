@@ -62,8 +62,6 @@ void VulkanDriver::CreateRenderPass()
 	renderPassCreateInfo.dependencyCount = 0;
 	renderPassCreateInfo.pDependencies = nullptr;
 
-
-
 	if(
 		vkCreateRenderPass(
 			mApplication.logicalDevice,
@@ -76,46 +74,194 @@ void VulkanDriver::CreateRenderPass()
 		assert(false);
 	}
 
-		
+	}
+
+VkPipelineLayout VulkanDriver::CreatePipelineLayout()
+{	
+	VkPipelineLayoutCreateInfo layoutCreateInfo;
+	layoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	layoutCreateInfo.setLayoutCount = 0;
+	layoutCreateInfo.pSetLayouts = nullptr;
+	layoutCreateInfo.pushConstantRangeCount = 0;
+	layoutCreateInfo.pPushConstantRanges = nullptr;
+
+	VkPipelineLayout pipelineLayout;
+
+	// todo:  WILL LEAK!
+	if(vkCreatePipelineLayout(
+		mApplication.logicalDevice,
+		&layoutCreateInfo, 
+		nullptr, 
+		&pipelineLayout
+	) != VK_SUCCESS)
+	{
+		assert(false);
+	}
+
+	return(pipelineLayout);
 }
 
 void VulkanDriver::CreatePipeline()
 {
+	auto pipelineLayout = CreatePipelineLayout();
 
+	const static std::string basicVertexShader("Engine/Basic.vert");
+	const static std::string basicFragmentShader("Engine/Basic.frag");
+
+	VkShaderModule vertShader = CreateShaderModule(basicVertexShader);
+	VkShaderModule fragShader = CreateShaderModule(basicFragmentShader);
+
+	VkPipelineShaderStageCreateInfo vertStage;
+	vertStage.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	vertStage.stage = VK_SHADER_STAGE_VERTEX_BIT;
+	vertStage.module = vertShader;
+	vertStage.pName = "main";
+	vertStage.pSpecializationInfo = nullptr;
+
+	VkPipelineShaderStageCreateInfo fragStage;
+	vertStage.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	vertStage.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+	vertStage.module = fragShader;
+	vertStage.pName = "main";
+	vertStage.pSpecializationInfo = nullptr;
+
+	VkPipelineShaderStageCreateInfo shaderStages[2] = {
+		vertStage,
+		fragStage
+	};
+
+	// "null" vertexInputStateCreateInfo
+	VkPipelineVertexInputStateCreateInfo vertexInputStateCreateInfo;
+	vertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+	vertexInputStateCreateInfo.vertexBindingDescriptionCount = 0;
+	vertexInputStateCreateInfo.pVertexAttributeDescriptions = nullptr;
+
+	VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateCreateInfo;
+	inputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+	inputAssemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+	inputAssemblyStateCreateInfo.primitiveRestartEnable = VK_FALSE;
+
+	VkViewport viewport;
+	viewport.x = 0.f;
+	viewport.y = 0.f;
+	viewport.width = GetDriverSettings().renderWidth;
+	viewport.height = GetDriverSettings().renderHeight;
+	viewport.minDepth = 0.f;
+	viewport.maxDepth = 1.0f;
+
+	VkRect2D viewportScissor;
+	viewportScissor.offset = VkOffset2D{0,0};
+	viewportScissor.extent = VkExtent2D{
+		GetDriverSettings().renderWidth, 
+		GetDriverSettings().renderHeight
+	};
+
+	VkPipelineViewportStateCreateInfo viewportStateCreateInfo;
+	viewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+	viewportStateCreateInfo.viewportCount = 1;
+	viewportStateCreateInfo.pViewports = &viewport;
+	viewportStateCreateInfo.scissorCount = 1;
+	viewportStateCreateInfo.pScissors = &viewportScissor;
+
+	VkPipelineRasterizationStateCreateInfo rasterizationStateCreateInfo;
+	rasterizationStateCreateInfo.depthClampEnable = VK_FALSE;
+	rasterizationStateCreateInfo.rasterizerDiscardEnable = VK_FALSE;
+	rasterizationStateCreateInfo.polygonMode = VK_POLYGON_MODE_FILL;
+	rasterizationStateCreateInfo.cullMode = VK_CULL_MODE_BACK_BIT;
+	rasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+	rasterizationStateCreateInfo.depthBiasEnable = VK_FALSE;
+	rasterizationStateCreateInfo.depthBiasConstantFactor = 0.f;
+	rasterizationStateCreateInfo.depthBiasClamp = 0.f;
+	rasterizationStateCreateInfo.depthBiasSlopeFactor = 0.f;
+	rasterizationStateCreateInfo.lineWidth = 1.f;
+
+	VkPipelineMultisampleStateCreateInfo multisamplingStateCreateInfo;
+	multisamplingStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+	multisamplingStateCreateInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+	multisamplingStateCreateInfo.sampleShadingEnable = VK_FALSE;
+	multisamplingStateCreateInfo.minSampleShading = 1.f;
+	multisamplingStateCreateInfo.pSampleMask = nullptr;
+	multisamplingStateCreateInfo.alphaToCoverageEnable = VK_FALSE;
+	multisamplingStateCreateInfo.alphaToOneEnable = VK_FALSE;
+
+	VkPipelineColorBlendAttachmentState colorBlendAttachmentState;
+	colorBlendAttachmentState.blendEnable = VK_FALSE;
+	colorBlendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
+	colorBlendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;
+	colorBlendAttachmentState.colorBlendOp = VK_BLEND_OP_ADD;
+	colorBlendAttachmentState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+	colorBlendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+	colorBlendAttachmentState.alphaBlendOp = VK_BLEND_OP_ADD;
+	colorBlendAttachmentState.colorWriteMask =
+		VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+		VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+
+	VkPipelineColorBlendStateCreateInfo colorBlendStateCreateInfo;
+	colorBlendStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+	colorBlendStateCreateInfo.logicOpEnable = VK_FALSE;
+	colorBlendStateCreateInfo.logicOp = VK_LOGIC_OP_COPY;
+	colorBlendStateCreateInfo.attachmentCount = 1;
+	colorBlendStateCreateInfo.pAttachments = &colorBlendAttachmentState;
+	colorBlendStateCreateInfo.blendConstants[0] = 0.f;
+	colorBlendStateCreateInfo.blendConstants[1] = 0.f;
+	colorBlendStateCreateInfo.blendConstants[2] = 0.f;
+	colorBlendStateCreateInfo.blendConstants[3] = 0.f;
+
+	VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo;
+	graphicsPipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+	graphicsPipelineCreateInfo.stageCount = 2;
+	graphicsPipelineCreateInfo.pStages = &shaderStages[0];
+	graphicsPipelineCreateInfo.pVertexInputState = &vertexInputStateCreateInfo;
+	graphicsPipelineCreateInfo.pInputAssemblyState = &inputAssemblyStateCreateInfo;
+	graphicsPipelineCreateInfo.pTessellationState = nullptr;
+	graphicsPipelineCreateInfo.pViewportState = &viewportStateCreateInfo;
+	graphicsPipelineCreateInfo.pRasterizationState = &rasterizationStateCreateInfo;
+	graphicsPipelineCreateInfo.pMultisampleState = &multisamplingStateCreateInfo;
+	graphicsPipelineCreateInfo.pDepthStencilState = nullptr;
+	graphicsPipelineCreateInfo.pColorBlendState = &colorBlendStateCreateInfo;
+	graphicsPipelineCreateInfo.pDynamicState = nullptr;
+	graphicsPipelineCreateInfo.layout = pipelineLayout;
+	graphicsPipelineCreateInfo.renderPass = mTempRenderPass;
+	graphicsPipelineCreateInfo.subpass = 0;
+	graphicsPipelineCreateInfo.basePipelineHandle = 0;
+	graphicsPipelineCreateInfo.basePipelineIndex = -1;
+
+	// todo: will leak
+	if(vkCreateGraphicsPipelines(
+		mApplication.logicalDevice,
+		VK_NULL_HANDLE,
+		1,
+		&graphicsPipelineCreateInfo,
+		nullptr,
+		&mTempGraphicsPipeline
+	) != VK_SUCCESS)
+	{
+		assert(false);
+	}
 }
 
-void VulkanDriver::CreateShaderModules()
+VkShaderModule VulkanDriver::CreateShaderModule(std::string shader)
 {
-	const static ResourceType<ShaderResource> basicVertexShader("Engine/Basic.vert");
-	const static ResourceType<ShaderResource> basicFragmentShader("Engine/Basic.frag");
-	const auto vertCode = mResourceManager->LoadResource(basicVertexShader)->GetShaderBinary();
-	const auto fragCode = mResourceManager->LoadResource(basicFragmentShader)->GetShaderBinary();
+	const auto bytecode = mResourceManager->LoadResource(ResourceType<ShaderResource>(shader))->GetShaderBinary();
+	
+	VkShaderModule module;
 
-	VkShaderModuleCreateInfo vertShaderModule;
-	vertShaderModule.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	vertShaderModule.codeSize = vertCode.size();
-	vertShaderModule.pCode = reinterpret_cast<const uint32_t*>(vertCode.data());
-
-	if(vkCreateShaderModule(
-		mApplication.logicalDevice,
-		&vertShaderModule,
-		nullptr,
-		&mVertexShader
-	));
-
-	VkShaderModuleCreateInfo fragShaderModule;
-	fragShaderModule.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	fragShaderModule.codeSize = fragCode.size();
-	fragShaderModule.pCode = reinterpret_cast<const uint32_t*>(fragCode.data());
-
-	VkShaderModule shaderModule;
+	VkShaderModuleCreateInfo shaderModule;
+	shaderModule.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	shaderModule.codeSize = bytecode.size();
+	shaderModule.pCode = reinterpret_cast<const uint32_t*>(bytecode.data());
 
 	if(vkCreateShaderModule(
 		mApplication.logicalDevice,
-		&fragShaderModule,
+		&shaderModule,
 		nullptr,
-		&mFragmentShader
-	));
+		&module
+	) != VK_SUCCESS)
+	{
+		assert(false);
+	}
+
+	return(module);
 }
 
 void VulkanDriver::CreateFramebuffers()

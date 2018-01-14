@@ -16,16 +16,17 @@ private:
 	VulkanDriver* mDriver;
 	VulkanApplication* mApplication;  // This is set everytime CreateApplication is called.  Dirty hack to reduce the number of method args.
 
+	void InitializeApplication();
 	void SetupPhysicalDevice();
 	size_t RatePhysicalDevice(VkPhysicalDevice device);
 	QueueFamilyIndices GetQueueFamilyIndices(VkPhysicalDevice device);
 	void SetupLogicalDevice();
 	void SetupSurface();
-	void CreatePipeline();
 	void SetupCommandBuffers();
 	void RecordCommandBuffers();
 	void SetupMemoryPools();
 	void SetupSwapchainImageViews();
+	void SetupViewport();
 
 	VulkanVertexBuffer CreateVertexBuffer(VkDeviceSize size);
 
