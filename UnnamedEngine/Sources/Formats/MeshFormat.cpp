@@ -27,6 +27,23 @@ void MeshData::Release()
 	free(submeshes);
 }
 
+uint32_t SubmeshData::GetNumberLocations() const
+{
+	uint32_t locations = 0;
+	
+	locations += 1;			// Vertex data
+
+	// Normal data
+	if(properties & HAS_MATERIAL_BYTE_OFFSET)
+	{
+		locations += 1;
+	}
+
+	locations += numUVs;
+
+	return(locations);
+}
+
 uint32_t SubmeshData::GetInterleavedSize() const
 {
 	uint32_t interleavedVerticeDataSize = 0;

@@ -26,7 +26,7 @@ const MeshData PrivateLoadModel(URI uri)
 	SubmeshData* submeshData = static_cast<SubmeshData*>(malloc(d.numSubmeshes * sizeof(SubmeshData)));
 	d.submeshes = submeshData;
 
-	for (size_t i = 0; i < d.numSubmeshes; i++)
+	for(size_t i = 0; i < d.numSubmeshes; i++)
 	{
 		SubmeshData& currentSubmesh = submeshData[i];
 		t.read(reinterpret_cast<char*>(&submeshData->properties), sizeof(uint32_t));
