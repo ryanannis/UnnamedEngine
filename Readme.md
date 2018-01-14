@@ -35,18 +35,18 @@ It is a personal project of Ryan Annis, but hopefully can implement some novel f
 - Network and seperation of server/client duties
 - Scripting
 
-### Contribution Warning
-
-This project is being actively worked on, but is currently highly unstable and is subject to change at anytime.
-
-Anyone is welcome to work on it, look at implementation details, or use it as a base.  However it may be unwise to build a game on it or build features to contribute back.
-
 ### "Sometime"
 
 - Custom state based scripting language
 - ECS paralellization
 - Predictive network sync (?)
 - Unique NPR styles
+
+### Contribution Warning
+
+This project is being actively worked on, but is currently highly unstable and is subject to change at anytime.
+
+Anyone is welcome to work on it, look at implementation details, or use it as a base.  However it may be unwise to build a game on it or build features to contribute back.
 
 ## License
 

@@ -96,7 +96,7 @@ add_definitions(-DGLFW_INCLUDE_NONE
 				"-DCACHE_DIR=\"${PROJECT_SOURCE_DIR}/Cache/\""
                 "-DPROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\""
 				"-DCONTENT_DIR=\"${PROJECT_SOURCE_DIR}/Content/\""
-				"-DGLSL_EVALUATOR_BINARY=\"${GLSL_VALIDATOR}\""
+				"-DGLSL_EVALUATOR_BINARY=\"${GLSL_VALIDATOR}/\""
 				""
 				)
 

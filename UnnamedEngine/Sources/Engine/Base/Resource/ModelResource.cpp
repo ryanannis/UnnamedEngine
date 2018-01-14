@@ -26,6 +26,6 @@ const MeshData& ModelResource::GetMeshes() const
 
 void ModelResource::Load(Ptr<ResourceManager> manager)
 {
-	const auto model = ModelLoader::LoadModel(GetURI());
+	mData = ModelLoader::LoadModel(GetURI());
 }
 

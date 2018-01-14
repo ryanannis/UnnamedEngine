@@ -50,7 +50,7 @@ void ShaderResource::Load(Ptr<ResourceManager> manager)
 	mReady = true;
 }
 
-const std::vector<char>& ShaderResource::GetShaderText() const
+const std::vector<char>& ShaderResource::GetShaderBinary() const
 {
 	return(mShaderBinary);
 }
