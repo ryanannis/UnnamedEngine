@@ -257,13 +257,23 @@ void VulkanApplicationFactory::SetupSwapchainImageViews()
 	}
 }
 
-void VulkanApplicationFactory::SetupViewport()
+void VulkanApplicationFactory::SetupCommandPools()
 {
+	// At present graphics is not multithreaded so there is only a single non-locked command pool sitting on the main thread...
+	VkCommandPoolCreateInfo commandPoolCreateInfo;
+	commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+	commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT | VK_COMMAND_POOL_CREATE_TRANSIENT_BIT;
+	commandPoolCreateInfo.queueFamilyIndex = mApplication->queueIndices.presentFamily;
+
+	if(vkCreateCommandPool(mApplication->logicalDevice, &commandPoolCreateInfo, nullptr, &mApplication->presentCommandPool) != VK_SUCCESS)
+	{
+		assert(false);
+	}
 }
 
 void VulkanApplicationFactory::SetupMemoryPools()
 {
-	VmaAllocatorCreateInfo allocatorInfo = {};
+	VmaAllocatorCreateInfo allocatorInfo;
 	allocatorInfo.physicalDevice = mApplication->physicalDevice;
 	allocatorInfo.device = mApplication->logicalDevice;
 
@@ -272,15 +282,6 @@ void VulkanApplicationFactory::SetupMemoryPools()
 
 void VulkanApplicationFactory::SetupCommandBuffers()
 {
-	VkCommandPoolCreateInfo commandPoolCreateInfo;
-	commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	commandPoolCreateInfo.queueFamilyIndex = mApplication->queueIndices.presentFamily;
-
-	if(vkCreateCommandPool(mApplication->logicalDevice, &commandPoolCreateInfo, nullptr, &mApplication->presentCommandPool) != VK_SUCCESS)
-	{
-		assert(false);
-	}
-	
 	const uint32_t numImages = mApplication->swapChainImages.size();
 	mApplication->presentationCommandBuffers.resize(numImages);
 
@@ -294,22 +295,6 @@ void VulkanApplicationFactory::SetupCommandBuffers()
 	{
 		assert(false);
 	}
-}
-
-void VulkanApplicationFactory::RecordCommandBuffers()
-{
-	VkCommandBufferBeginInfo commandBufferBeginInfo = {};
-	commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	commandBufferBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-
-	VkClearColorValue clearColor = { 1.0f, 0.0f, 0.0f, 0.0f };
-	
-	VkImageSubresourceRange imageSubresourceRange;
-	imageSubresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	imageSubresourceRange.baseMipLevel = 0;
-	imageSubresourceRange.levelCount = 1;
-	imageSubresourceRange.baseArrayLayer = 0;
-	imageSubresourceRange.layerCount = 1;
 }
 
 VulkanVertexBuffer VulkanApplicationFactory::CreateVertexBuffer(VkDeviceSize size)
@@ -342,10 +327,9 @@ void VulkanApplicationFactory::InitializeApplication()
 	SetupLogicalDevice();
 	SetupDefaultSwapchain();
 	SetupCommandBuffers();
-	RecordCommandBuffers();
-	SetupViewport();
-
 	SetupSwapchainImageViews();
+	SetupMemoryPools();
+	SetupCommandPools();
 }
 
 void VulkanApplicationFactory::SetupPhysicalDevice()

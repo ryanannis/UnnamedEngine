@@ -7,6 +7,7 @@
 #include <vulkan\vulkan.h>
 
 class ResourceManager;
+
 struct DriverSettings
 {
 	size_t renderWidth;
@@ -29,6 +30,7 @@ public:
 	void Initialize(const DriverSettings& driverSettings);
 	const DriverSettings& GetDriverSettings();
 	void Cleanup();
+	void PrepareFrame(VkCommandBuffer commandBuffer, VkImage image, VkImageView imageView, VkFramebuffer framebuffer);
 	void DrawFrame();
 
 	// Temp 
@@ -36,6 +38,7 @@ public:
 	void CreatePipeline();
 	VkShaderModule CreateShaderModule(std::string shader);
 	void CreateFramebuffers();
+	VkFramebuffer CreateFramebuffer(VkImageView image_view);
 	void CreateRenderPass();
 
 

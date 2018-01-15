@@ -7,6 +7,15 @@ VK_DEFINE_HANDLE(VmaAllocation);
 
 class ResourceManager;
 
+struct RenderingResources
+{
+    VkFramebuffer framebuffer;
+    VkCommandBuffer commandbuffer;
+    VkSemaphore imageAvailableSemaphore;
+    VkSemaphore finishedRenderingSemaphore;
+    VkFence fence;
+};
+
 struct QueueFamilyIndices
 {
 	size_t graphicsFamily = INVALID_INDEX;

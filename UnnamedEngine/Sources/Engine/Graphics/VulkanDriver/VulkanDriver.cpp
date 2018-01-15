@@ -3,6 +3,7 @@
 #include "Engine/Graphics/VulkanDriver/VulkanApplicationFactory.h"
 #include "Engine/Base/Resource/ResourceManager.h"
 #include "Engine/Base/Resource/ShaderResource.h"
+#include "Engine/Graphics/VulkanDriver/VulkanUtils.h"
 
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
@@ -53,14 +54,38 @@ void VulkanDriver::CreateRenderPass()
 	subpass.preserveAttachmentCount = 0;
 	subpass.pPreserveAttachments = nullptr;
 
+	VkSubpassDependency preRenderPassColorAttachmentDependency;
+	preRenderPassColorAttachmentDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+	preRenderPassColorAttachmentDependency.dstSubpass = 0;
+	preRenderPassColorAttachmentDependency.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+	preRenderPassColorAttachmentDependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	preRenderPassColorAttachmentDependency.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+	preRenderPassColorAttachmentDependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	preRenderPassColorAttachmentDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+	VkSubpassDependency postRenderPassColorAttachmentDependency;
+	postRenderPassColorAttachmentDependency.srcSubpass = 0;
+	postRenderPassColorAttachmentDependency.dstSubpass = VK_SUBPASS_EXTERNAL;
+	postRenderPassColorAttachmentDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	postRenderPassColorAttachmentDependency.dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+	postRenderPassColorAttachmentDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	postRenderPassColorAttachmentDependency.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+	postRenderPassColorAttachmentDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+	const uint32_t numSubpassDependencies = 2;
+	VkSubpassDependency subpassDependencies[2] = {
+		preRenderPassColorAttachmentDependency,
+		postRenderPassColorAttachmentDependency
+	};
+
 	VkRenderPassCreateInfo renderPassCreateInfo;
 	renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	renderPassCreateInfo.attachmentCount = 1;
 	renderPassCreateInfo.pAttachments = &attachmentDescription;
 	renderPassCreateInfo.subpassCount = 1;
 	renderPassCreateInfo.pSubpasses = &subpass;
-	renderPassCreateInfo.dependencyCount = 0;
-	renderPassCreateInfo.pDependencies = nullptr;
+	renderPassCreateInfo.dependencyCount = numSubpassDependencies;
+	renderPassCreateInfo.pDependencies = &subpassDependencies[0];
 
 	if(
 		vkCreateRenderPass(
@@ -107,6 +132,7 @@ void VulkanDriver::CreatePipeline()
 
 	const static std::string basicVertexShader("Engine/Basic.vert");
 	const static std::string basicFragmentShader("Engine/Basic.frag");
+	SubmeshData* submesh = nullptr;
 
 	VkShaderModule vertShader = CreateShaderModule(basicVertexShader);
 	VkShaderModule fragShader = CreateShaderModule(basicFragmentShader);
@@ -130,11 +156,14 @@ void VulkanDriver::CreatePipeline()
 		fragStage
 	};
 
-	// "null" vertexInputStateCreateInfo
+	const auto submeshAttributes = VulkanUtils::Mesh::ComputeSubmeshBindingDescription(submesh);
+	
 	VkPipelineVertexInputStateCreateInfo vertexInputStateCreateInfo;
 	vertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	vertexInputStateCreateInfo.vertexBindingDescriptionCount = 0;
-	vertexInputStateCreateInfo.pVertexAttributeDescriptions = nullptr;
+	vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
+	vertexInputStateCreateInfo.pVertexBindingDescriptions = &submeshAttributes.vertexBinding;
+	vertexInputStateCreateInfo.vertexAttributeDescriptionCount = submeshAttributes.attributeBindings.size();
+	vertexInputStateCreateInfo.pVertexAttributeDescriptions = &submeshAttributes.attributeBindings[0];
 
 	VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateCreateInfo;
 	inputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -207,6 +236,11 @@ void VulkanDriver::CreatePipeline()
 	colorBlendStateCreateInfo.blendConstants[2] = 0.f;
 	colorBlendStateCreateInfo.blendConstants[3] = 0.f;
 
+	VkPipelineDynamicStateCreateInfo dynamicStateCreateInfo;
+	dynamicStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+	dynamicStateCreateInfo.flags = 0;
+	
+
 	VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo;
 	graphicsPipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	graphicsPipelineCreateInfo.stageCount = 2;
@@ -266,27 +300,39 @@ VkShaderModule VulkanDriver::CreateShaderModule(std::string shader)
 
 void VulkanDriver::CreateFramebuffers()
 {
-	mSwapchainFramebuffers.resize(mApplication.swapchainImageViews.size());
+	// Create a framebuffer for each swap hcain image
+	const auto& swapchainImagesViews = mApplication.swapchainImageViews;
+
+	mSwapchainFramebuffers.resize(swapchainImagesViews.size());
 	for(uint32_t i = 0; i < mApplication.swapchainImageViews.size(); i++)
 	{
-		VkFramebufferCreateInfo framebufferCreateInfo;
-		framebufferCreateInfo.renderPass = mTempRenderPass;
-		framebufferCreateInfo.attachmentCount = 1;
-		framebufferCreateInfo.pAttachments = &mApplication.swapchainImageViews[i];
-		framebufferCreateInfo.width = GetDriverSettings().renderWidth;
-		framebufferCreateInfo.height = GetDriverSettings().renderHeight;
-		framebufferCreateInfo.layers = 1;
-		
-		if(vkCreateFramebuffer(
-				mApplication.logicalDevice,
-				&framebufferCreateInfo,
-				nullptr,
-				&mSwapchainFramebuffers[i]
-			) != VK_SUCCESS)
-		{
-			assert(false);
-		}
+		const auto& imageView = swapchainImagesViews[i];
+		mSwapchainFramebuffers[i] = CreateFramebuffer(imageView);
 	}
+}
+
+VkFramebuffer VulkanDriver::CreateFramebuffer(VkImageView imageView)
+{
+	VkFramebufferCreateInfo framebufferCreateInfo;
+	framebufferCreateInfo.renderPass = mTempRenderPass;
+	framebufferCreateInfo.attachmentCount = 1;
+	framebufferCreateInfo.pAttachments = &imageView;
+	framebufferCreateInfo.width = GetDriverSettings().renderWidth;
+	framebufferCreateInfo.height = GetDriverSettings().renderHeight;
+	framebufferCreateInfo.layers = 1;
+	
+	VkFramebuffer framebuffer;
+	if(vkCreateFramebuffer(
+			mApplication.logicalDevice,
+			&framebufferCreateInfo,
+			nullptr,
+			&framebuffer
+		) != VK_SUCCESS)
+	{
+		assert(false);
+	}
+
+	return(framebuffer);
 }
 
 void VulkanDriver::Cleanup()
@@ -299,6 +345,145 @@ void VulkanDriver::Cleanup()
 	vkDestroySwapchainKHR(mApplication.logicalDevice, mApplication.defaultSwapchain, nullptr);
 	vkDestroyDevice(mApplication.logicalDevice, nullptr);
 	vkDestroyInstance(mApplication.instance, nullptr);
+}
+
+void VulkanDriver::PrepareFrame(VkCommandBuffer commandBuffer, VkImage image, VkImageView imageView, VkFramebuffer framebuffer)
+{
+	VkCommandBufferBeginInfo commandBufferBeginInfo;
+	commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	commandBufferBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+	commandBufferBeginInfo.pInheritanceInfo = nullptr;
+
+	//------------------ BEGIN COMMAND BUFFER RECORDING -----------------------------------//
+
+	vkBeginCommandBuffer(commandBuffer, &commandBufferBeginInfo);
+
+	VkImageSubresourceRange imageSubresourceRange;
+	imageSubresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	imageSubresourceRange.baseMipLevel = 0;
+	imageSubresourceRange.levelCount = 1;
+	imageSubresourceRange.baseArrayLayer = 0;
+	imageSubresourceRange.layerCount = 1;
+
+	VkImageMemoryBarrier presentDrawbarrier;
+	presentDrawbarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	presentDrawbarrier.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+	presentDrawbarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	presentDrawbarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	presentDrawbarrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	presentDrawbarrier.srcQueueFamilyIndex = mApplication.queueIndices.graphicsFamily;
+	presentDrawbarrier.dstQueueFamilyIndex = mApplication.queueIndices.presentFamily;
+	presentDrawbarrier.image = image;
+	presentDrawbarrier.subresourceRange = imageSubresourceRange;
+
+	vkCmdPipelineBarrier(
+		commandBuffer,
+		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+		0,
+		0,
+		nullptr,
+		0,
+		nullptr,
+		1,
+		&presentDrawbarrier
+	);
+
+	if(mApplication.presentQueue != mApplication.graphicsQueue)
+	{
+		VkImageMemoryBarrier presentBarrier;
+		presentBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+		presentBarrier.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+		presentBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+		presentBarrier.oldLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		presentBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		presentBarrier.srcQueueFamilyIndex = mApplication.queueIndices.presentFamily;
+		presentBarrier.dstQueueFamilyIndex = mApplication.queueIndices.graphicsFamily;
+		presentBarrier.image = image;
+		presentBarrier.subresourceRange = imageSubresourceRange;
+
+		vkCmdPipelineBarrier(
+			commandBuffer,
+			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+			0,
+			0,
+			nullptr,
+			0, nullptr,
+			1,
+			&presentBarrier
+		);
+	}
+
+	// Clear the scren
+	VkClearValue clearValue = {
+		{1.f, 0.f, 0.f, 1.0f },
+	};
+
+	VkRenderPassBeginInfo renderPassBeginInfo;
+	renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassBeginInfo.renderPass = mTempRenderPass;
+	renderPassBeginInfo.framebuffer = framebuffer;
+	renderPassBeginInfo.renderArea = VkRect2D{
+		VkOffset2D{0,0},
+		VkExtent2D{mDriverSettings.renderWidth, mDriverSettings.renderHeight}
+	};
+	renderPassBeginInfo.clearValueCount = 1;
+	renderPassBeginInfo.pClearValues = &clearValue;
+
+	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, mTempGraphicsPipeline);
+
+	VkViewport viewport;
+	viewport.x = 0.f;
+	viewport.y = 0.f;
+	viewport.width = GetDriverSettings().renderWidth;
+	viewport.height = GetDriverSettings().renderHeight;
+	viewport.minDepth = 0.f;
+	viewport.maxDepth = 1.0f;
+
+	VkRect2D viewportScissor;
+	viewportScissor.offset = VkOffset2D{0,0};
+	viewportScissor.extent = VkExtent2D{
+		GetDriverSettings().renderWidth, 
+		GetDriverSettings().renderHeight
+	};
+
+	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+	vkCmdSetScissor(commandBuffer, 0, 1, &viewportScissor);
+
+	VkDeviceSize offset = 0;
+	//vkCmdBindVertexBuffers(commandBuffer, 0, 1, todo: handle, &offset );
+	//vkCmdDraw(commandBuffer, 4, 1, 0, 0 );
+	vkCmdEndRenderPass(commandBuffer);
+
+	if(mApplication.presentQueue != mApplication.graphicsQueue)
+	{
+		VkImageMemoryBarrier drawPresentbarrier;
+		drawPresentbarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+		drawPresentbarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		drawPresentbarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+		drawPresentbarrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		drawPresentbarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		drawPresentbarrier.srcQueueFamilyIndex = mApplication.queueIndices.presentFamily;
+		drawPresentbarrier.dstQueueFamilyIndex = mApplication.queueIndices.graphicsFamily;
+		drawPresentbarrier.image = image;
+		drawPresentbarrier.subresourceRange = imageSubresourceRange;
+
+		vkCmdPipelineBarrier(
+			commandBuffer,
+			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+			0,
+			0,
+			nullptr,
+			0, nullptr,
+			1,
+			&drawPresentbarrier
+		);
+	}
+
+
 }
 
 void VulkanDriver::DrawFrame()

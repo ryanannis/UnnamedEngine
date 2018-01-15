@@ -22,11 +22,10 @@ private:
 	QueueFamilyIndices GetQueueFamilyIndices(VkPhysicalDevice device);
 	void SetupLogicalDevice();
 	void SetupSurface();
+	void SetupCommandPools();
 	void SetupCommandBuffers();
-	void RecordCommandBuffers();
 	void SetupMemoryPools();
 	void SetupSwapchainImageViews();
-	void SetupViewport();
 
 	VulkanVertexBuffer CreateVertexBuffer(VkDeviceSize size);
 
