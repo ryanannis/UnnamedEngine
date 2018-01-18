@@ -264,7 +264,7 @@ VkShaderModule VulkanDriver::CreateShaderModule(std::string shader)
 
 void VulkanDriver::CreateFramebuffers()
 {
-	// Create a framebuffer for each swap hcain image
+	// Create a framebuffer for each swap chain image
 	const auto& swapchainImagesViews = mApplication.swapchainImageViews;
 
 	mSwapchainFramebuffers.resize(swapchainImagesViews.size());
@@ -313,10 +313,8 @@ void VulkanDriver::Cleanup()
 
 void VulkanDriver::PrepareFrame(VkCommandBuffer commandBuffer, VkImage image, VkImageView imageView, VkFramebuffer framebuffer)
 {
-	VkCommandBufferBeginInfo commandBufferBeginInfo;
-	commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	commandBufferBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-	commandBufferBeginInfo.pInheritanceInfo = nullptr;
+	VkCommandBufferBeginInfo commandBufferBeginInfo = 
+		VulkanInitalizers::vkCommandBufferBeginInfo(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 	//------------------ BEGIN COMMAND BUFFER RECORDING -----------------------------------//
 

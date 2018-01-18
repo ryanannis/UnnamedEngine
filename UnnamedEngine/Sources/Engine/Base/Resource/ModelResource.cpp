@@ -14,6 +14,14 @@ ModelResource::ModelResource(URI uri) :
 {
 }
 
+ModelResource::~ModelResource()
+{
+	if(IsReady())
+	{
+		mData.Release();
+	}
+}
+
 bool ModelResource::IsReady() const
 {
 	return(mReady);

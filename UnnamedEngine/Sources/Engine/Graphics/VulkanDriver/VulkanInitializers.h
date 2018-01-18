@@ -140,4 +140,16 @@ namespace VulkanInitalizers
 		
 		return(pipelineVertexInputStateCreateInfo);
 	}
+
+	inline VkCommandBufferBeginInfo vkCommandBufferBeginInfo(
+		VkCommandBufferUsageFlags flags = 0
+	)
+	{
+		VkCommandBufferBeginInfo commandBufferBeginInfo = {};
+
+		commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		commandBufferBeginInfo.flags = flags;
+
+		return(commandBufferBeginInfo);
+	}
 }

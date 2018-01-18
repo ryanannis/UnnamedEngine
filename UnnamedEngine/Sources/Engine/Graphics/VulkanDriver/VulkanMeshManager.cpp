@@ -1,36 +1,61 @@
-#include  "VulkanMeshManager.h"
+#include "VulkanMeshManager.h"
 
-VkVertexInputBindingDescription VulkanMeshManager::GetBindingDescriptionForMesh(SubmeshData* data)
+#include "Engine/Base/Resource/ResourceManager.h"
+
+VulkanMeshManager::VulkanMeshManager(Ptr<ResourceManager> resManager) :
+	mResourceManager(resManager)
+{}
+
+MeshHandle VulkanMeshManager::CreateMesh(URI resourceLocation)
 {
-	VkVertexInputBindingDescription bindingDescription = {};
-	bindingDescription.binding = 0;
-	bindingDescription.stride = data->GetInterleavedSize();
-	bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-	return(bindingDescription);
+	return(CreateMesh(resourceLocation));
 }
 
-std::array<VkVertexInputAttributeDescription, 2> VulkanMeshManager::GetAttributeDescriptions()
+MeshHandle VulkanMeshManager::CreateMesh(ResourceType<ModelResource> res)
 {
-	//todo: find good way enumerate different formats at runtime without mallocing every time
-	std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions = {};
+	auto existingResource = mHandleMap.find(res.GetURI().GetHash());
+	if(existingResource != mHandleMap.end())
+	{
+		return(existingResource->second);
+	}
 
-	// Position
-	attributeDescriptions[0].binding = 0;
-	attributeDescriptions[0].location = 0;
-	attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-	attributeDescriptions[0].offset = 0;
+	auto meshResource = mResourceManager->LoadResource(res);
+	if(!meshResource)
+	{
+		// Failed to load shader!
+		assert(false);
+	}
+	
+	auto modelData = meshResource->GetMeshes();
 
-	// Normals
-	attributeDescriptions[1].binding = 0;
-	attributeDescriptions[1].location = 1;
-	attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-	attributeDescriptions[1].offset = sizeof(Vector3f);
+	auto nextHandle = GetFreeHandle();
+	mHandleMap.insert(std::make_pair(res.GetURI().GetHash(), nextHandle));
 
-	return(attributeDescriptions);
+	// Actually create the shader
+
+	return(nextHandle);
+
+	// Let the mesh fall out of scope from the regular resource manager.
+	// todo:  This is technically a waste of a smart ptr copy and alloc
 }
 
-uint32_t VulkanMeshManager::GetVertexBuffer(uint32_t numBytes)
+MeshInfo VulkanMeshManager::GetMeshInfo(MeshHandle h)
 {
-	return uint32_t();
+	assert(h < mShaders.size());
+	return(mShaders[h]);
+}
+
+MeshHandle VulkanMeshManager::GetFreeHandle()
+{
+	if(mFreedHandles.size() != 0)
+	{
+		auto nextHandle = mFreedHandles.top();
+		mFreedHandles.pop();
+		return(nextHandle);
+	}
+
+	MeshHandle nextNewHandle = mShaders.size();
+	mShaders.resize(nextNewHandle + 1);
+
+	return(nextNewHandle);
 }

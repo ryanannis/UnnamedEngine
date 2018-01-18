@@ -290,7 +290,11 @@ void VulkanApplicationFactory::SetupCommandBuffers()
 	commandBufferAllocateInfo.commandPool = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	commandBufferAllocateInfo.commandBufferCount = numImages;
 
-	if(vkAllocateCommandBuffers(mApplication->logicalDevice, &commandBufferAllocateInfo, mApplication->presentationCommandBuffers.data()) != VK_SUCCESS)
+	if(vkAllocateCommandBuffers(
+		mApplication->logicalDevice, 
+		&commandBufferAllocateInfo, 
+		mApplication->presentationCommandBuffers.data()
+	) != VK_SUCCESS)
 	{
 		assert(false);
 	}

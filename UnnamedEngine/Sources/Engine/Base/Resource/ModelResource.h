@@ -12,6 +12,7 @@ class ModelResource : public Resource
 {
 public:
 	ModelResource(URI URI);
+	virtual ~ModelResource();
 	virtual bool IsReady() const override;
 	virtual void Load(Ptr<ResourceManager> manager) override;
 	const MeshData& GetMeshes() const;
