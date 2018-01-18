@@ -63,12 +63,6 @@ ShaderHandle VulkanShaderManager::GetShaderModule(ShaderHandle h)
 	return(mShaders[h].module);
 }
 
-/*
-void VulkanShaderManager::DeleteShaderModule(ShaderHandle h)
-{
-}
-*/
-
 VkPipelineShaderStageCreateInfo VulkanShaderManager::GetShaderPipelineInfo(ShaderHandle h)
 {
 	VkPipelineShaderStageCreateInfo shaderStage;

@@ -138,131 +138,91 @@ void VulkanDriver::CreatePipeline()
 	
 	SubmeshData* submesh = nullptr;
 
-	VkShaderModule vertShader = CreateShaderModule(VulkanEngineResources::basicVertexShader);
-	VkShaderModule fragShader = CreateShaderModule(VulkanEngineResources::basicFragmentShader);
-
-	VkPipelineShaderStageCreateInfo vertStage;
-	vertStage.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	vertStage.stage = VK_SHADER_STAGE_VERTEX_BIT;
-	vertStage.module = vertShader;
-	vertStage.pName = "main";
-	vertStage.pSpecializationInfo = nullptr;
-
-	VkPipelineShaderStageCreateInfo fragStage;
-	vertStage.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	vertStage.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-	vertStage.module = fragShader;
-	vertStage.pName = "main";
-	vertStage.pSpecializationInfo = nullptr;
+	ShaderHandle vertShader = mApplication.mShaderManager->CreateShaderModule(VulkanEngineResources::basicVertexShader);
+	ShaderHandle fragShader = mApplication.mShaderManager->CreateShaderModule(VulkanEngineResources::basicFragmentShader);
 
 	VkPipelineShaderStageCreateInfo shaderStages[2] = {
-		vertStage,
-		fragStage
+		mApplication.mShaderManager->GetShaderPipelineInfo(vertShader),
+		mApplication.mShaderManager->GetShaderPipelineInfo(fragShader)
 	};
 
 	const auto submeshAttributes = VulkanUtils::Mesh::ComputeSubmeshBindingDescription(submesh);
 	
-	VkPipelineVertexInputStateCreateInfo vertexInputStateCreateInfo;
-	vertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+	VkPipelineVertexInputStateCreateInfo vertexInputStateCreateInfo = 
+		VulkanInitalizers::vkPipelineVertexInputStateCreateInfo();
 	vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
 	vertexInputStateCreateInfo.pVertexBindingDescriptions = &submeshAttributes.vertexBinding;
 	vertexInputStateCreateInfo.vertexAttributeDescriptionCount = submeshAttributes.attributeBindings.size();
 	vertexInputStateCreateInfo.pVertexAttributeDescriptions = &submeshAttributes.attributeBindings[0];
 
-	VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateCreateInfo;
-	inputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-	inputAssemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-	inputAssemblyStateCreateInfo.primitiveRestartEnable = VK_FALSE;
+	VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateCreateInfo = 
+		VulkanInitalizers::vkPipelineInputAssemblyStateCreateInfo(
+			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+			VK_FALSE,
+			0
+		);
 
-	VkViewport viewport;
-	viewport.x = 0.f;
-	viewport.y = 0.f;
-	viewport.width = GetDriverSettings().renderWidth;
-	viewport.height = GetDriverSettings().renderHeight;
-	viewport.minDepth = 0.f;
-	viewport.maxDepth = 1.0f;
-
-	VkRect2D viewportScissor;
-	viewportScissor.offset = VkOffset2D{0,0};
-	viewportScissor.extent = VkExtent2D{
-		GetDriverSettings().renderWidth, 
+	VkViewport viewport = VulkanInitalizers::vkViewport(
+		GetDriverSettings().renderWidth,
 		GetDriverSettings().renderHeight
+	);
+	
+	VkRect2D viewportScissor
+	{
+		VkOffset2D{0,0},
+		VkExtent2D{
+			GetDriverSettings().renderWidth, 
+			GetDriverSettings().renderHeight
+		}
 	};
 
-	VkPipelineViewportStateCreateInfo viewportStateCreateInfo;
-	viewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-	viewportStateCreateInfo.viewportCount = 1;
+	VkPipelineViewportStateCreateInfo viewportStateCreateInfo = 
+		VulkanInitalizers::vkPipelineViewportStateCreateInfo(1);
+	
 	viewportStateCreateInfo.pViewports = &viewport;
-	viewportStateCreateInfo.scissorCount = 1;
 	viewportStateCreateInfo.pScissors = &viewportScissor;
 
-	VkPipelineRasterizationStateCreateInfo rasterizationStateCreateInfo;
-	rasterizationStateCreateInfo.depthClampEnable = VK_FALSE;
-	rasterizationStateCreateInfo.rasterizerDiscardEnable = VK_FALSE;
-	rasterizationStateCreateInfo.polygonMode = VK_POLYGON_MODE_FILL;
-	rasterizationStateCreateInfo.cullMode = VK_CULL_MODE_BACK_BIT;
-	rasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-	rasterizationStateCreateInfo.depthBiasEnable = VK_FALSE;
-	rasterizationStateCreateInfo.depthBiasConstantFactor = 0.f;
-	rasterizationStateCreateInfo.depthBiasClamp = 0.f;
-	rasterizationStateCreateInfo.depthBiasSlopeFactor = 0.f;
-	rasterizationStateCreateInfo.lineWidth = 1.f;
+	VkPipelineRasterizationStateCreateInfo rasterizationStateCreateInfo = 
+		VulkanInitalizers::vkPipelineRasterizationStateCreateInfo(
+			VK_POLYGON_MODE_FILL,
+			VK_CULL_MODE_BACK_BIT,
+			VK_FRONT_FACE_COUNTER_CLOCKWISE
+		);
 
-	VkPipelineMultisampleStateCreateInfo multisamplingStateCreateInfo;
-	multisamplingStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-	multisamplingStateCreateInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-	multisamplingStateCreateInfo.sampleShadingEnable = VK_FALSE;
+	VkPipelineMultisampleStateCreateInfo multisamplingStateCreateInfo =
+		VulkanInitalizers::vkPipelineMultisampleStateCreateInfo(VK_SAMPLE_COUNT_1_BIT);
 	multisamplingStateCreateInfo.minSampleShading = 1.f;
-	multisamplingStateCreateInfo.pSampleMask = nullptr;
-	multisamplingStateCreateInfo.alphaToCoverageEnable = VK_FALSE;
-	multisamplingStateCreateInfo.alphaToOneEnable = VK_FALSE;
 
-	VkPipelineColorBlendAttachmentState colorBlendAttachmentState;
-	colorBlendAttachmentState.blendEnable = VK_FALSE;
-	colorBlendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
-	colorBlendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;
-	colorBlendAttachmentState.colorBlendOp = VK_BLEND_OP_ADD;
-	colorBlendAttachmentState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-	colorBlendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-	colorBlendAttachmentState.alphaBlendOp = VK_BLEND_OP_ADD;
-	colorBlendAttachmentState.colorWriteMask =
-		VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-		VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+	VkPipelineColorBlendAttachmentState colorBlendAttachmentState =
+		VulkanInitalizers::vkPipelineColorBlendAttachmentState(
+			false,
+			VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+			VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
+		);
 
-	VkPipelineColorBlendStateCreateInfo colorBlendStateCreateInfo;
-	colorBlendStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-	colorBlendStateCreateInfo.logicOpEnable = VK_FALSE;
-	colorBlendStateCreateInfo.logicOp = VK_LOGIC_OP_COPY;
+	VkPipelineColorBlendStateCreateInfo colorBlendStateCreateInfo =
+		VulkanInitalizers::vkPipelineColorBlendStateCreateInfo();
 	colorBlendStateCreateInfo.attachmentCount = 1;
 	colorBlendStateCreateInfo.pAttachments = &colorBlendAttachmentState;
-	colorBlendStateCreateInfo.blendConstants[0] = 0.f;
-	colorBlendStateCreateInfo.blendConstants[1] = 0.f;
+	colorBlendStateCreateInfo.blendConstants[0] = colorBlendStateCreateInfo.blendConstants[1] = 0.f;
 	colorBlendStateCreateInfo.blendConstants[2] = 0.f;
 	colorBlendStateCreateInfo.blendConstants[3] = 0.f;
 
-	VkPipelineDynamicStateCreateInfo dynamicStateCreateInfo;
-	dynamicStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-	dynamicStateCreateInfo.flags = 0;
-	
+	VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo =
+		VulkanInitalizers::vkGraphicsPipelineCreateInfo(
+			pipelineLayout,
+			mTempRenderPass
+		);
 
-	VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo;
 	graphicsPipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	graphicsPipelineCreateInfo.stageCount = 2;
 	graphicsPipelineCreateInfo.pStages = &shaderStages[0];
 	graphicsPipelineCreateInfo.pVertexInputState = &vertexInputStateCreateInfo;
 	graphicsPipelineCreateInfo.pInputAssemblyState = &inputAssemblyStateCreateInfo;
-	graphicsPipelineCreateInfo.pTessellationState = nullptr;
 	graphicsPipelineCreateInfo.pViewportState = &viewportStateCreateInfo;
 	graphicsPipelineCreateInfo.pRasterizationState = &rasterizationStateCreateInfo;
 	graphicsPipelineCreateInfo.pMultisampleState = &multisamplingStateCreateInfo;
-	graphicsPipelineCreateInfo.pDepthStencilState = nullptr;
 	graphicsPipelineCreateInfo.pColorBlendState = &colorBlendStateCreateInfo;
-	graphicsPipelineCreateInfo.pDynamicState = nullptr;
-	graphicsPipelineCreateInfo.layout = pipelineLayout;
-	graphicsPipelineCreateInfo.renderPass = mTempRenderPass;
-	graphicsPipelineCreateInfo.subpass = 0;
-	graphicsPipelineCreateInfo.basePipelineHandle = 0;
-	graphicsPipelineCreateInfo.basePipelineIndex = -1;
 
 	// todo: will leak
 	if(vkCreateGraphicsPipelines(
