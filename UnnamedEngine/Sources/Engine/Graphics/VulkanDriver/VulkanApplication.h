@@ -53,7 +53,7 @@ struct VulkanApplication
 	std::vector<VkImage> swapChainImages;
 	std::vector<VkImageView> swapchainImageViews;
 
-	VkCommandPool presentCommandPool;
+	VkCommandPool presentCommandPool;	
 
 	std::vector<VkCommandBuffer> presentationCommandBuffers;
 	QueueFamilyIndices queueIndices;

@@ -5,7 +5,8 @@
 class VulkanPipelineManager
 {
 public:
-	
-private:
+	VulkanPipelineManager();
+	void CreatePipeline();
 
+private:
 };

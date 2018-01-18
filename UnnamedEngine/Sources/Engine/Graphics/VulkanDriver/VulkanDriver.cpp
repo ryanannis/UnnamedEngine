@@ -488,6 +488,7 @@ void VulkanDriver::PrepareFrame(VkCommandBuffer commandBuffer, VkImage image, Vk
 
 void VulkanDriver::DrawFrame()
 {
+	PrepareFrame();
 	// Acquire image
 	uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(
@@ -523,7 +524,7 @@ void VulkanDriver::DrawFrame()
 		assert(false);
 	}
 
-	VkPresentInfoKHR presentInfo = {};
+	VkPresentInfoKHR presentInfo;
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 	presentInfo.waitSemaphoreCount = 1;
 	presentInfo.pWaitSemaphores = &mApplication.finishedRenderingSemaphore;

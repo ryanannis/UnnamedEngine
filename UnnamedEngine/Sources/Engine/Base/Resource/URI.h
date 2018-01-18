@@ -1,6 +1,8 @@
 #pragma once
 #include "Engine/Base/Common/Common.h"
 
+typedef std::string URIHashType;
+
 // Handles both file references (eg. /Content/Test/Bunny.udf)
 // and data deferences (eg. /Content/Test/TestFile/TestEntity -> /Content/Test/TestFile : Entity)
 struct URI
