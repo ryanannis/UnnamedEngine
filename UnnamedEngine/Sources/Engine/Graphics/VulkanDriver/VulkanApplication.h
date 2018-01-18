@@ -1,6 +1,11 @@
 #pragma once
 #include "Engine/Base/Common/Common.h"
+
+#include <memory>
+
 #include <vulkan\vulkan.h>
+
+#include "Engine/Graphics/VulkanDriver/VulkanShaderManager.h"
 
 VK_DEFINE_HANDLE(VmaAllocator);
 VK_DEFINE_HANDLE(VmaAllocation);
@@ -37,6 +42,9 @@ struct VulkanVertexBuffer
 
 struct VulkanApplication
 {
+	// Managers
+	std::unique_ptr<VulkanShaderManager> mShaderManager;
+
 	// Vulkan Resources
 	VkInstance instance;
 	VkPhysicalDevice physicalDevice;

@@ -4,6 +4,7 @@
 #include "Engine/Base/Resource/ResourceManager.h"
 #include "Engine/Base/Resource/ShaderResource.h"
 #include "Engine/Graphics/VulkanDriver/VulkanUtils.h"
+#include "Engine/Graphics/VulkanDriver/VulkanInitializers.h"
 
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
@@ -16,6 +17,11 @@ VulkanDriver::VulkanDriver(Ptr<ResourceManager> resourceManager) :
 const DriverSettings& VulkanDriver::GetDriverSettings()
 {
 	return(mDriverSettings);
+}
+
+Ptr<ResourceManager> VulkanDriver::GetResourceManager()
+{
+	return(mResourceManager);
 }
 
 void VulkanDriver::Initialize(const DriverSettings& driverSettings)
@@ -98,13 +104,11 @@ void VulkanDriver::CreateRenderPass()
 	{
 		assert(false);
 	}
-
-	}
+}
 
 VkPipelineLayout VulkanDriver::CreatePipelineLayout()
 {	
-	VkPipelineLayoutCreateInfo layoutCreateInfo;
-	layoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	VkPipelineLayoutCreateInfo layoutCreateInfo = VulkanInitalizers::vkPipelineLayoutCreateInfo();
 	layoutCreateInfo.setLayoutCount = 0;
 	layoutCreateInfo.pSetLayouts = nullptr;
 	layoutCreateInfo.pushConstantRangeCount = 0;
@@ -536,4 +540,8 @@ void VulkanDriver::DrawFrame()
 	{
 		assert(false);
 	}
+}
+
+void VulkanDriver::RenderGeometry()
+{
 }

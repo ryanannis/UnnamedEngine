@@ -66,7 +66,6 @@ void VulkanApplicationFactory::SetupVulkanInstance()
 
 	const auto extensions = GetRequiredInstanceExtensions();
 	createInfo.enabledExtensionCount = extensions.size();
-	createInfo.ppEnabledExtensionNames = extensions.data();
 	
 	if(mDriver->GetDriverSettings().useValidationLayers && !CheckValidationLayerSupport())
 	{
@@ -322,6 +321,7 @@ VulkanVertexBuffer VulkanApplicationFactory::CreateVertexBuffer(VkDeviceSize siz
 
 void VulkanApplicationFactory::InitializeApplication()
 {
+	InitializeManagers();
 	SetupSurface();
 	SetupPhysicalDevice();
 	SetupLogicalDevice();
@@ -330,6 +330,11 @@ void VulkanApplicationFactory::InitializeApplication()
 	SetupSwapchainImageViews();
 	SetupMemoryPools();
 	SetupCommandPools();
+}
+
+void VulkanApplicationFactory::InitializeManagers()
+{
+	mApplication->mShaderManager = std::make_unique<VulkanShaderManager>(mDriver, mDriver->GetResourceManager());
 }
 
 void VulkanApplicationFactory::SetupPhysicalDevice()

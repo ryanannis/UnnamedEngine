@@ -29,9 +29,12 @@ public:
 	VulkanDriver(Ptr<ResourceManager> resourceManager);
 	void Initialize(const DriverSettings& driverSettings);
 	const DriverSettings& GetDriverSettings();
+	Ptr<ResourceManager> GetResourceManager();
+
 	void Cleanup();
 	void PrepareFrame(VkCommandBuffer commandBuffer, VkImage image, VkImageView imageView, VkFramebuffer framebuffer);
 	void DrawFrame();
+	void RenderGeometry();
 
 	// Temp 
 	VkPipelineLayout CreatePipelineLayout();

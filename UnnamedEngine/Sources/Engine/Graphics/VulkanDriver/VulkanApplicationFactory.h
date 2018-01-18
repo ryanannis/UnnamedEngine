@@ -2,6 +2,7 @@
 #include "Engine/Base/Common/Common.h"
 
 #include "Engine/Graphics/VulkanDriver/VulkanApplication.h"
+
 class VulkanDriver;
 
 // This class has the intent of keeping the Vulkan initialization boilerplate
@@ -17,6 +18,8 @@ private:
 	VulkanApplication* mApplication;  // This is set everytime CreateApplication is called.  Dirty hack to reduce the number of method args.
 
 	void InitializeApplication();
+	void InitializeManagers();
+	
 	void SetupPhysicalDevice();
 	size_t RatePhysicalDevice(VkPhysicalDevice device);
 	QueueFamilyIndices GetQueueFamilyIndices(VkPhysicalDevice device);
