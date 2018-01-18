@@ -5,6 +5,7 @@
 #include "Engine/Base/Resource/ShaderResource.h"
 #include "Engine/Graphics/VulkanDriver/VulkanUtils.h"
 #include "Engine/Graphics/VulkanDriver/VulkanInitializers.h"
+#include "Engine/Graphics/VulkanDriver/VulkanEngineResources.h"
 
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
@@ -115,7 +116,6 @@ VkPipelineLayout VulkanDriver::CreatePipelineLayout()
 	layoutCreateInfo.pPushConstantRanges = nullptr;
 
 	VkPipelineLayout pipelineLayout;
-
 	// todo:  WILL LEAK!
 	if(vkCreatePipelineLayout(
 		mApplication.logicalDevice,
@@ -134,12 +134,12 @@ void VulkanDriver::CreatePipeline()
 {
 	auto pipelineLayout = CreatePipelineLayout();
 
-	const static std::string basicVertexShader("Engine/Basic.vert");
-	const static std::string basicFragmentShader("Engine/Basic.frag");
+	// Prepare shaders
+	
 	SubmeshData* submesh = nullptr;
 
-	VkShaderModule vertShader = CreateShaderModule(basicVertexShader);
-	VkShaderModule fragShader = CreateShaderModule(basicFragmentShader);
+	VkShaderModule vertShader = CreateShaderModule(VulkanEngineResources::basicVertexShader);
+	VkShaderModule fragShader = CreateShaderModule(VulkanEngineResources::basicFragmentShader);
 
 	VkPipelineShaderStageCreateInfo vertStage;
 	vertStage.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
