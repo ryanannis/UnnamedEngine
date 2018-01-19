@@ -66,6 +66,8 @@ void VulkanMeshManager::FlushLoadQueue(VkCommandBuffer commandBuffer)
 		std::vector<SubmeshAllocation> submeshAllocations;
 		for(uint32_t i = 0; i < modelData.numSubmeshes; i++)
 		{
+			SubmeshAllocation submeshAllocation = {};
+
 			const SubmeshData& submesh = modelData.submeshes[i];
 			const uint32_t bufferSize = submesh.GetTotalBufferSize();
 
@@ -99,9 +101,10 @@ void VulkanMeshManager::FlushLoadQueue(VkCommandBuffer commandBuffer)
 				allocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
 				VkBuffer destinationBuffer;
-				VmaAllocation allocation;
-				vmaCreateBuffer(mApplication->allocator, &bufferInfo, &allocInfo, &destinationBuffer, &allocation, nullptr);
-
+				VmaAllocation destinationAllocation;
+				vmaCreateBuffer(mApplication->allocator, &bufferInfo, &allocInfo, &destinationBuffer, &destinationAllocation, nullptr);
+				
+				// todo: put in a fence to delete the staging buffers after the copy is performed, this currently LEAKS
 				SubmeshAllocation s;
 				submeshAllocations.push_back(s);
 
@@ -115,6 +118,9 @@ void VulkanMeshManager::FlushLoadQueue(VkCommandBuffer commandBuffer)
 					1,
 					&copyRegion
 				);
+
+				submeshAllocation.buffer = destinationBuffer;
+				submeshAllocation.allocation = destinationAllocation;
 			}
 		}
 

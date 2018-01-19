@@ -19,7 +19,7 @@ typedef uint64_t MeshHandle;
 
 struct QueuedMeshLoad
 {
-	MeshHandle m;
+	MeshHandle handle;
 	std::shared_ptr<ModelResource> model;
 };
 

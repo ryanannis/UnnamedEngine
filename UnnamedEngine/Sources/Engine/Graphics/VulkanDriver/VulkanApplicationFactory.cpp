@@ -338,7 +338,8 @@ void VulkanApplicationFactory::InitializeApplication()
 
 void VulkanApplicationFactory::InitializeManagers()
 {
-	mApplication->mShaderManager = std::make_unique<VulkanShaderManager>(mDriver, mDriver->GetResourceManager());
+	mApplication->shaderManager = std::make_unique<VulkanShaderManager>(mDriver, mDriver->GetResourceManager());
+	mApplication->meshManager = std::make_unique<VulkanMeshManager>(mDriver, mDriver->GetResourceManager());
 }
 
 void VulkanApplicationFactory::SetupPhysicalDevice()

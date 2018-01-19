@@ -138,12 +138,12 @@ void VulkanDriver::CreatePipeline()
 	
 	SubmeshData* submesh = nullptr;
 
-	ShaderHandle vertShader = mApplication.mShaderManager->CreateShaderModule(VulkanEngineResources::basicVertexShader);
-	ShaderHandle fragShader = mApplication.mShaderManager->CreateShaderModule(VulkanEngineResources::basicFragmentShader);
+	ShaderHandle vertShader = mApplication.shaderManager->CreateShaderModule(VulkanEngineResources::basicVertexShader);
+	ShaderHandle fragShader = mApplication.shaderManager->CreateShaderModule(VulkanEngineResources::basicFragmentShader);
 
 	VkPipelineShaderStageCreateInfo shaderStages[2] = {
-		mApplication.mShaderManager->GetShaderPipelineInfo(vertShader),
-		mApplication.mShaderManager->GetShaderPipelineInfo(fragShader)
+		mApplication.shaderManager->GetShaderPipelineInfo(vertShader),
+		mApplication.shaderManager->GetShaderPipelineInfo(fragShader)
 	};
 
 	const auto submeshAttributes = VulkanUtils::Mesh::ComputeSubmeshBindingDescription(submesh);
@@ -167,14 +167,10 @@ void VulkanDriver::CreatePipeline()
 		GetDriverSettings().renderHeight
 	);
 	
-	VkRect2D viewportScissor
-	{
-		VkOffset2D{0,0},
-		VkExtent2D{
-			GetDriverSettings().renderWidth, 
-			GetDriverSettings().renderHeight
-		}
-	};
+	VkRect2D viewportScissor = VulkanInitalizers::vkRect2DScissor(
+		GetDriverSettings().renderWidth,
+		GetDriverSettings().renderHeight
+	);
 
 	VkPipelineViewportStateCreateInfo viewportStateCreateInfo = 
 		VulkanInitalizers::vkPipelineViewportStateCreateInfo(1);
@@ -238,30 +234,6 @@ void VulkanDriver::CreatePipeline()
 	}
 }
 
-VkShaderModule VulkanDriver::CreateShaderModule(std::string shader)
-{
-	const auto bytecode = mResourceManager->LoadResource(ResourceType<ShaderResource>(shader))->GetShaderBinary();
-	
-	VkShaderModule module;
-
-	VkShaderModuleCreateInfo shaderModule;
-	shaderModule.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	shaderModule.codeSize = bytecode.size();
-	shaderModule.pCode = reinterpret_cast<const uint32_t*>(bytecode.data());
-
-	if(vkCreateShaderModule(
-		mApplication.logicalDevice,
-		&shaderModule,
-		nullptr,
-		&module
-	) != VK_SUCCESS)
-	{
-		assert(false);
-	}
-
-	return(module);
-}
-
 void VulkanDriver::CreateFramebuffers()
 {
 	// Create a framebuffer for each swap chain image
@@ -277,13 +249,14 @@ void VulkanDriver::CreateFramebuffers()
 
 VkFramebuffer VulkanDriver::CreateFramebuffer(VkImageView imageView)
 {
-	VkFramebufferCreateInfo framebufferCreateInfo;
-	framebufferCreateInfo.renderPass = mTempRenderPass;
-	framebufferCreateInfo.attachmentCount = 1;
-	framebufferCreateInfo.pAttachments = &imageView;
-	framebufferCreateInfo.width = GetDriverSettings().renderWidth;
-	framebufferCreateInfo.height = GetDriverSettings().renderHeight;
-	framebufferCreateInfo.layers = 1;
+	VkFramebufferCreateInfo framebufferCreateInfo =
+		VulkanInitalizers::vkFramebufferCreateInfo(
+			mTempRenderPass,
+			1,
+			&imageView,
+			GetDriverSettings().renderWidth,
+			GetDriverSettings().renderHeight
+		);
 	
 	VkFramebuffer framebuffer;
 	if(vkCreateFramebuffer(
@@ -316,59 +289,57 @@ void VulkanDriver::PrepareFrame(VkCommandBuffer commandBuffer, VkImage image, Vk
 	VkCommandBufferBeginInfo commandBufferBeginInfo = 
 		VulkanInitalizers::vkCommandBufferBeginInfo(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
-	//------------------ BEGIN COMMAND BUFFER RECORDING -----------------------------------//
-
 	vkBeginCommandBuffer(commandBuffer, &commandBufferBeginInfo);
 
-	VkImageSubresourceRange imageSubresourceRange;
-	imageSubresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	imageSubresourceRange.baseMipLevel = 0;
-	imageSubresourceRange.levelCount = 1;
-	imageSubresourceRange.baseArrayLayer = 0;
-	imageSubresourceRange.layerCount = 1;
+	VkImageSubresourceRange imageSubresourceRange = 
+		VulkanInitalizers::vkImageSubresourceRange(
+			VK_IMAGE_ASPECT_COLOR_BIT
+		);
 
-	VkImageMemoryBarrier presentDrawbarrier;
-	presentDrawbarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	presentDrawbarrier.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-	presentDrawbarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	presentDrawbarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	presentDrawbarrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	presentDrawbarrier.srcQueueFamilyIndex = mApplication.queueIndices.graphicsFamily;
-	presentDrawbarrier.dstQueueFamilyIndex = mApplication.queueIndices.presentFamily;
-	presentDrawbarrier.image = image;
-	presentDrawbarrier.subresourceRange = imageSubresourceRange;
+	VkImageMemoryBarrier presentDrawBarrier =
+		VulkanInitalizers::vkImageMemoryBarrier(
+			VK_ACCESS_MEMORY_READ_BIT,
+			VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+			VK_IMAGE_LAYOUT_UNDEFINED,
+			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+			mApplication.queueIndices.graphicsFamily,
+			mApplication.queueIndices.presentFamily,
+			image,
+			imageSubresourceRange
+		);
 
 	vkCmdPipelineBarrier(
 		commandBuffer,
 		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-		0,
+		NO_FLAGS,
 		0,
 		nullptr,
 		0,
 		nullptr,
 		1,
-		&presentDrawbarrier
+		&presentDrawBarrier
 	);
 
 	if(mApplication.presentQueue != mApplication.graphicsQueue)
 	{
-		VkImageMemoryBarrier presentBarrier;
-		presentBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		presentBarrier.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-		presentBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-		presentBarrier.oldLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		presentBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		presentBarrier.srcQueueFamilyIndex = mApplication.queueIndices.presentFamily;
-		presentBarrier.dstQueueFamilyIndex = mApplication.queueIndices.graphicsFamily;
-		presentBarrier.image = image;
-		presentBarrier.subresourceRange = imageSubresourceRange;
+		VkImageMemoryBarrier presentBarrier =
+		VulkanInitalizers::vkImageMemoryBarrier(
+			VK_ACCESS_MEMORY_READ_BIT,
+			VK_ACCESS_MEMORY_READ_BIT,
+			VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+			VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+			mApplication.queueIndices.presentFamily,
+			mApplication.queueIndices.graphicsFamily,
+			image,
+			imageSubresourceRange
+		);
 
 		vkCmdPipelineBarrier(
 			commandBuffer,
 			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-			0,
+			NO_FLAGS,
 			0,
 			nullptr,
 			0, nullptr,
@@ -382,55 +353,49 @@ void VulkanDriver::PrepareFrame(VkCommandBuffer commandBuffer, VkImage image, Vk
 		{1.f, 0.f, 0.f, 1.0f },
 	};
 
-	VkRenderPassBeginInfo renderPassBeginInfo;
-	renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassBeginInfo.renderPass = mTempRenderPass;
-	renderPassBeginInfo.framebuffer = framebuffer;
-	renderPassBeginInfo.renderArea = VkRect2D{
-		VkOffset2D{0,0},
-		VkExtent2D{mDriverSettings.renderWidth, mDriverSettings.renderHeight}
-	};
-	renderPassBeginInfo.clearValueCount = 1;
-	renderPassBeginInfo.pClearValues = &clearValue;
+	VkRenderPassBeginInfo renderPassBeginInfo = VulkanInitalizers::vkRenderPassBeginInfo(
+		mTempRenderPass,
+		framebuffer,
+		VulkanInitalizers::vkRect2DScissor(mDriverSettings.renderWidth, mDriverSettings.renderHeight),
+		1,
+		&clearValue
+	);
 
 	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, mTempGraphicsPipeline);
 
-	VkViewport viewport;
-	viewport.x = 0.f;
-	viewport.y = 0.f;
-	viewport.width = GetDriverSettings().renderWidth;
-	viewport.height = GetDriverSettings().renderHeight;
-	viewport.minDepth = 0.f;
-	viewport.maxDepth = 1.0f;
-
-	VkRect2D viewportScissor;
-	viewportScissor.offset = VkOffset2D{0,0};
-	viewportScissor.extent = VkExtent2D{
-		GetDriverSettings().renderWidth, 
+	VkViewport viewport = VulkanInitalizers::vkViewport(
+		GetDriverSettings().renderWidth,
 		GetDriverSettings().renderHeight
-	};
+	);
+
+	VkRect2D viewportScissor = VulkanInitalizers::vkRect2DScissor(
+		GetDriverSettings().renderWidth,
+		GetDriverSettings().renderHeight
+	);
 
 	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 	vkCmdSetScissor(commandBuffer, 0, 1, &viewportScissor);
 
 	VkDeviceSize offset = 0;
+
 	//vkCmdBindVertexBuffers(commandBuffer, 0, 1, todo: handle, &offset );
 	//vkCmdDraw(commandBuffer, 4, 1, 0, 0 );
+
 	vkCmdEndRenderPass(commandBuffer);
 
 	if(mApplication.presentQueue != mApplication.graphicsQueue)
 	{
-		VkImageMemoryBarrier drawPresentbarrier;
-		drawPresentbarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		drawPresentbarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		drawPresentbarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-		drawPresentbarrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		drawPresentbarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		drawPresentbarrier.srcQueueFamilyIndex = mApplication.queueIndices.presentFamily;
-		drawPresentbarrier.dstQueueFamilyIndex = mApplication.queueIndices.graphicsFamily;
-		drawPresentbarrier.image = image;
-		drawPresentbarrier.subresourceRange = imageSubresourceRange;
+		VkImageMemoryBarrier drawPresentbarrier = VulkanInitalizers::vkImageMemoryBarrier(
+			VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+			VK_ACCESS_MEMORY_READ_BIT,
+			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+			VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+			mApplication.queueIndices.presentFamily,
+			mApplication.queueIndices.graphicsFamily,
+			image,
+			imageSubresourceRange
+		);
 
 		vkCmdPipelineBarrier(
 			commandBuffer,
@@ -444,13 +409,12 @@ void VulkanDriver::PrepareFrame(VkCommandBuffer commandBuffer, VkImage image, Vk
 			&drawPresentbarrier
 		);
 	}
-
-
 }
 
 void VulkanDriver::DrawFrame()
 {
 	PrepareFrame();
+
 	// Acquire image
 	uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(

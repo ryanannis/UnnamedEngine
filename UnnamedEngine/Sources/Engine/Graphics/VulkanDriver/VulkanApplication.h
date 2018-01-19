@@ -6,6 +6,7 @@
 #include <vulkan\vulkan.h>
 
 #include "Engine/Graphics/VulkanDriver/VulkanShaderManager.h"
+#include "Engine/Graphics/VulkanDriver/VulkanMeshManager.h"
 
 VK_DEFINE_HANDLE(VmaAllocator);
 VK_DEFINE_HANDLE(VmaAllocation);
@@ -43,7 +44,8 @@ struct VulkanVertexBuffer
 struct VulkanApplication
 {
 	// Managers
-	std::unique_ptr<VulkanShaderManager> mShaderManager;
+	std::unique_ptr<VulkanMeshManager> meshManager;
+	std::unique_ptr<VulkanShaderManager> shaderManager;
 
 	// Vulkan Resources
 	VkInstance instance;
