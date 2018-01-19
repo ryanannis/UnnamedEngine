@@ -260,4 +260,25 @@ namespace VulkanInitalizers
 
 		return(framebufferCreateinfo);
 	}
+
+	inline VkSubmitInfo vkSubmitInfo(
+		uint32_t commandBufferCount,
+		const VkCommandBuffer* pCommandBuffers
+	)
+	{
+		VkSubmitInfo submitInfo = {};
+
+		submitInfo.commandBufferCount = commandBufferCount;
+		submitInfo.pCommandBuffers = pCommandBuffers;
+	}
+
+	inline VkFenceCreateInfo vkFenceCreateInfo(VkFenceCreateFlags flags = 0)
+	{
+		VkFenceCreateInfo fenceCreateInfo = {};
+
+		fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+		fenceCreateInfo.flags = flags;
+
+		return(fenceCreateInfo);
+	}
 }

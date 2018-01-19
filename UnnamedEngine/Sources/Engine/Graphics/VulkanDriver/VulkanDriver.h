@@ -39,7 +39,6 @@ public:
 	// Temp 
 	VkPipelineLayout CreatePipelineLayout();
 	void CreatePipeline();
-	VkShaderModule CreateShaderModule(std::string shader);
 	void CreateFramebuffers();
 	VkFramebuffer CreateFramebuffer(VkImageView image_view);
 	void CreateRenderPass();

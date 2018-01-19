@@ -43,11 +43,6 @@ struct VulkanVertexBuffer
 
 struct VulkanApplication
 {
-	inline VkCommandPool GetGraphicsCommandPool()
-	{
-		return(graphicsCommandPool);
-	}
-
 	// Managers
 	std::unique_ptr<VulkanMeshManager> meshManager;
 	std::unique_ptr<VulkanShaderManager> shaderManager;
@@ -68,8 +63,7 @@ struct VulkanApplication
 	std::vector<VkImage> swapChainImages;
 	std::vector<VkImageView> swapchainImageViews;
 
-	VkCommandPool graphicsCommandPool;
-	VkCommandPool presentCommandPool;
+	VkCommandPool presentCommandPool;	
 
 	std::vector<VkCommandBuffer> presentationCommandBuffers;
 	QueueFamilyIndices queueIndices;
