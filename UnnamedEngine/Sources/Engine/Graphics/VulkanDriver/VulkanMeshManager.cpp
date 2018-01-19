@@ -36,32 +36,9 @@ MeshHandle VulkanMeshManager::CreateMesh(ResourceType<ModelResource> res)
 	auto nextHandle = GetFreeHandle();
 	mHandleMap.insert(std::make_pair(res.GetURI().GetHash(), nextHandle));
 
-	// Allocate buffers for submeshes
-
-	std::vector<SubmeshAllocation> submeshAllocations;
-	for(uint32_t i = 0; i < modelData.numSubmeshes; i++)
-	{
-		const SubmeshData& submesh = modelData.submeshes[i];
-		const uint32_t bufferSize = submesh.GetTotalBufferSize();
-
-		// Use simple heap allocation via AMD VMA for Buffers
-		VkBufferCreateInfo bufferInfo = VulkanInitalizers::vkBufferCreateInfo();
-		bufferInfo.size = bufferSize;
-		bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-
-		VmaAllocationCreateInfo allocInfo = {};
-		allocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
-
-		VkBuffer buffer;
-		VmaAllocation allocation;
-		vmaCreateBuffer(mApplication->allocator, &bufferInfo, &allocInfo, &buffer, &allocation, nullptr);
-
-		SubmeshAllocation s;
-		submeshAllocations.push_back(s);
-	}
-
 	MeshInfo& meshInfo = mModels[nextHandle];
-	meshInfo.submeshAllocations = submeshAllocations;
+	meshInfo.handle = NULL_MESH_HANDLE;
+	meshInfo.submeshAllocations = std::vector<SubmeshAllocation>();
 
 	return(nextHandle);
 
@@ -73,6 +50,76 @@ MeshInfo VulkanMeshManager::GetMeshInfo(MeshHandle h)
 {
 	assert(h < mModels.size());
 	return(mModels[h]);
+}
+
+void VulkanMeshManager::FlushLoadQueue(VkCommandBuffer commandBuffer)
+{
+	while(!mLoadQueue.empty())
+	{
+		// todo:  could we do this deffered and make a bigass buffer for all ready meshes
+		const QueuedMeshLoad& meshLoad = mLoadQueue.top();
+		
+		assert(meshLoad.model->IsReady());
+
+		MeshData modelData = meshLoad.model->GetMeshes();
+
+		std::vector<SubmeshAllocation> submeshAllocations;
+		for(uint32_t i = 0; i < modelData.numSubmeshes; i++)
+		{
+			const SubmeshData& submesh = modelData.submeshes[i];
+			const uint32_t bufferSize = submesh.GetTotalBufferSize();
+
+			// For static models without animation we use device-local memory
+			if(meshLoad.model->IsStaticMesh())
+			{
+				// Create CPU-visible staging buffer
+				VkBuffer stagingBuffer;
+				VmaAllocation stagingAllocation;
+				VkBufferCreateInfo bufferInfo = VulkanInitalizers::vkBufferCreateInfo();
+				bufferInfo.size = bufferSize;
+				bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+
+				VmaAllocationCreateInfo allocInfo = {};
+				allocInfo.usage = VMA_MEMORY_USAGE_CPU_ONLY;
+
+				vmaCreateBuffer(mApplication->allocator, &bufferInfo, &allocInfo, &stagingBuffer, &stagingAllocation, nullptr);
+
+				// Copy mesh data to CPU-mapped staging buffer
+				void* cpuMappedData;
+				vmaMapMemory(mApplication->allocator, stagingAllocation, &cpuMappedData);
+				memcpy(cpuMappedData, submesh.interleavedData,  bufferSize);
+				vmaUnmapMemory(mApplication->allocator, stagingAllocation);
+
+				/* Create GPU-local buffer*/
+				VkBufferCreateInfo stagingBufferInfo = VulkanInitalizers::vkBufferCreateInfo();
+				stagingBufferInfo.size = bufferSize;
+				stagingBufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+
+				VmaAllocationCreateInfo allocInfo = {};
+				allocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+
+				VkBuffer destinationBuffer;
+				VmaAllocation allocation;
+				vmaCreateBuffer(mApplication->allocator, &bufferInfo, &allocInfo, &destinationBuffer, &allocation, nullptr);
+
+				SubmeshAllocation s;
+				submeshAllocations.push_back(s);
+
+				VkBufferCopy copyRegion = {};
+				copyRegion.size = bufferSize;
+
+				vkCmdCopyBuffer(
+					commandBuffer,
+					stagingBuffer,
+					destinationBuffer,
+					1,
+					&copyRegion
+				);
+			}
+		}
+
+		mLoadQueue.pop();
+	}
 }
 
 MeshHandle VulkanMeshManager::GetFreeHandle()
