@@ -15,6 +15,8 @@ public:
 	virtual ~ModelResource();
 	virtual bool IsReady() const override;
 	virtual void Load(Ptr<ResourceManager> manager) override;
+
+	const bool IsStaticMesh() const;
 	const MeshData& GetMeshes() const;
 
 private:

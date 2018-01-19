@@ -27,6 +27,12 @@ bool ModelResource::IsReady() const
 	return(mReady);
 }
 
+const bool ModelResource::IsStaticMesh() const
+{
+	// todo:  no animation support
+	return(true);
+}
+
 const MeshData& ModelResource::GetMeshes() const
 {
 	return(mData);

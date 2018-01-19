@@ -152,4 +152,11 @@ namespace VulkanInitalizers
 
 		return(commandBufferBeginInfo);
 	}
+
+	inline VkBufferCreateInfo vkBufferCreateInfo()
+	{
+		VkBufferCreateInfo bufferCreateInfo = {};
+		bufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		return(bufferCreateInfo);
+	}
 }

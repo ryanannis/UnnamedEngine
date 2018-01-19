@@ -47,6 +47,7 @@ struct SubmeshData
 
 	uint32_t GetNumberLocations() const;
 	uint32_t GetInterleavedSize() const;
+	uint32_t GetTotalBufferSize() const;
 };
 
 /*

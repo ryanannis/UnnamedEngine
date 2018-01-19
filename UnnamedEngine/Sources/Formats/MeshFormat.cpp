@@ -27,11 +27,15 @@ void MeshData::Release()
 	free(submeshes);
 }
 
+/*
+ * Returns the number of 'locations' in the Submesh where a location is defined by a distinct
+ * element (a UV coordinate, a normal, etc.)
+ */
 uint32_t SubmeshData::GetNumberLocations() const
 {
 	uint32_t locations = 0;
 	
-	locations += 1;			// Vertex data
+	locations += 1; // Vertex data
 
 	// Normal data
 	if(properties & HAS_MATERIAL_BYTE_OFFSET)
@@ -59,4 +63,9 @@ uint32_t SubmeshData::GetInterleavedSize() const
 	interleavedVerticeDataSize += 2 * sizeof(float) * numUVs;
 
 	return(interleavedVerticeDataSize);
+}
+
+uint32_t SubmeshData::GetTotalBufferSize() const
+{
+	return(GetInterleavedSize() * numVertices);
 }

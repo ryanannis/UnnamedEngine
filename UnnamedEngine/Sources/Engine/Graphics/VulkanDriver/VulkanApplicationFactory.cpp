@@ -272,7 +272,7 @@ void VulkanApplicationFactory::SetupCommandPools()
 
 void VulkanApplicationFactory::SetupMemoryPools()
 {
-	VmaAllocatorCreateInfo allocatorInfo;
+	VmaAllocatorCreateInfo allocatorInfo = {};
 	allocatorInfo.physicalDevice = mApplication->physicalDevice;
 	allocatorInfo.device = mApplication->logicalDevice;
 

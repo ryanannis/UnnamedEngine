@@ -15,15 +15,22 @@
 // todo: implement generational ids here
 typedef uint64_t MeshHandle;
 
+struct SubmeshAllocation
+{
+	VmaAllocation allocation;
+	VkBuffer buffer;
+};
+
 struct MeshInfo
 {
+	std::vector<SubmeshAllocation> submeshAllocations;
 };
 
 // Note:  
 class VulkanMeshManager
 {
 public:
-	VulkanMeshManager(Ptr<ResourceManager> resManager);
+	VulkanMeshManager(Ptr<ResourceManager> resManager, VulkanApplication* application);
 	MeshHandle CreateMesh(URI resourceLocation);
 	MeshHandle CreateMesh(ResourceType<ModelResource> res);
 	MeshInfo GetMeshInfo(MeshHandle h);
@@ -35,7 +42,7 @@ private:
 	VulkanApplication* mApplication;
 
 	std::unordered_map<URIHashType, MeshHandle> mHandleMap;
-	std::vector<MeshInfo> mShaders;
+	std::vector<MeshInfo> mModels;
 
 	// todo:  do we even need handles?
 	std::stack<MeshHandle> mFreedHandles;
