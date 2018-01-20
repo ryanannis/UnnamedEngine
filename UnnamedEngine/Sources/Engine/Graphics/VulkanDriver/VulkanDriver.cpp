@@ -1,4 +1,7 @@
 #include "VulkanDriver.h"
+
+#include <memory>
+
 #include "Engine/Base/Utility/SingletonLogger.h"
 #include "Engine/Graphics/VulkanDriver/VulkanApplicationFactory.h"
 #include "Engine/Base/Resource/ResourceManager.h"
@@ -31,11 +34,19 @@ void VulkanDriver::Initialize(const DriverSettings& driverSettings)
 
 	VulkanApplicationFactory applicationFactory(this);
 	mApplication = std::move(applicationFactory.CreateApplication());
+	mApplication.shaderManager = std::make_unique<VulkanShaderManager>(mResourceManager, &mApplication);
+	mApplication.meshManager = std::make_unique<VulkanMeshManager>(mResourceManager, &mApplication);
+	
+	VulkanUtils::Mesh::SubmeshBindingDescription bindingDescription;
+	bindingDescription.vertexBinding = {};
+	
+	CreateRenderPass();
+	CreatePipeline(bindingDescription);
 }
 
 void VulkanDriver::CreateRenderPass()
 {
-	VkAttachmentDescription attachmentDescription;
+	VkAttachmentDescription attachmentDescription = {};
 	attachmentDescription.flags = 0;
 	attachmentDescription.format = mApplication.defaultSwapchainFormat;
 	attachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -46,11 +57,11 @@ void VulkanDriver::CreateRenderPass()
 	attachmentDescription.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 	attachmentDescription.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-	VkAttachmentReference colorAttachments;
+	VkAttachmentReference colorAttachments = {};
 	colorAttachments.attachment = 0;
 	colorAttachments.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-	VkSubpassDescription subpass;
+	VkSubpassDescription subpass = {};
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	subpass.inputAttachmentCount = 0;
 	subpass.pInputAttachments = nullptr;
@@ -61,23 +72,26 @@ void VulkanDriver::CreateRenderPass()
 	subpass.preserveAttachmentCount = 0;
 	subpass.pPreserveAttachments = nullptr;
 
-	VkSubpassDependency preRenderPassColorAttachmentDependency;
-	preRenderPassColorAttachmentDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-	preRenderPassColorAttachmentDependency.dstSubpass = 0;
-	preRenderPassColorAttachmentDependency.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-	preRenderPassColorAttachmentDependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	preRenderPassColorAttachmentDependency.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-	preRenderPassColorAttachmentDependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	preRenderPassColorAttachmentDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+	VkSubpassDependency preRenderPassColorAttachmentDependency =
+		VulkanInitalizers::vkSubpassDependency(
+			VK_SUBPASS_EXTERNAL,
+			0,
+			VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+			VK_ACCESS_MEMORY_READ_BIT,
+			VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+			VK_DEPENDENCY_BY_REGION_BIT);
 
-	VkSubpassDependency postRenderPassColorAttachmentDependency;
-	postRenderPassColorAttachmentDependency.srcSubpass = 0;
-	postRenderPassColorAttachmentDependency.dstSubpass = VK_SUBPASS_EXTERNAL;
-	postRenderPassColorAttachmentDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	postRenderPassColorAttachmentDependency.dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-	postRenderPassColorAttachmentDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	postRenderPassColorAttachmentDependency.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-	postRenderPassColorAttachmentDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+	VkSubpassDependency postRenderPassColorAttachmentDependency =
+		VulkanInitalizers::vkSubpassDependency(
+			0,
+			VK_SUBPASS_EXTERNAL,
+			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+			VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+			VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+			VK_ACCESS_MEMORY_READ_BIT,
+			VK_DEPENDENCY_BY_REGION_BIT
+		);
 
 	const uint32_t numSubpassDependencies = 2;
 	VkSubpassDependency subpassDependencies[2] = {
@@ -85,7 +99,7 @@ void VulkanDriver::CreateRenderPass()
 		postRenderPassColorAttachmentDependency
 	};
 
-	VkRenderPassCreateInfo renderPassCreateInfo;
+	VkRenderPassCreateInfo renderPassCreateInfo = {};
 	renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	renderPassCreateInfo.attachmentCount = 1;
 	renderPassCreateInfo.pAttachments = &attachmentDescription;
@@ -130,13 +144,9 @@ VkPipelineLayout VulkanDriver::CreatePipelineLayout()
 	return(pipelineLayout);
 }
 
-void VulkanDriver::CreatePipeline()
+void VulkanDriver::CreatePipeline(VulkanUtils::Mesh::SubmeshBindingDescription bindingDescription)
 {
 	auto pipelineLayout = CreatePipelineLayout();
-
-	// Prepare shaders
-	
-	SubmeshData* submesh = nullptr;
 
 	ShaderHandle vertShader = mApplication.shaderManager->CreateShaderModule(VulkanEngineResources::basicVertexShader);
 	ShaderHandle fragShader = mApplication.shaderManager->CreateShaderModule(VulkanEngineResources::basicFragmentShader);
@@ -145,15 +155,14 @@ void VulkanDriver::CreatePipeline()
 		mApplication.shaderManager->GetShaderPipelineInfo(vertShader),
 		mApplication.shaderManager->GetShaderPipelineInfo(fragShader)
 	};
-
-	const auto submeshAttributes = VulkanUtils::Mesh::ComputeSubmeshBindingDescription(submesh);
 	
 	VkPipelineVertexInputStateCreateInfo vertexInputStateCreateInfo = 
 		VulkanInitalizers::vkPipelineVertexInputStateCreateInfo();
+
 	vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
-	vertexInputStateCreateInfo.pVertexBindingDescriptions = &submeshAttributes.vertexBinding;
-	vertexInputStateCreateInfo.vertexAttributeDescriptionCount = submeshAttributes.attributeBindings.size();
-	vertexInputStateCreateInfo.pVertexAttributeDescriptions = &submeshAttributes.attributeBindings[0];
+	vertexInputStateCreateInfo.pVertexBindingDescriptions = &bindingDescription.vertexBinding;
+	vertexInputStateCreateInfo.vertexAttributeDescriptionCount = bindingDescription.attributeBindings.size();
+	vertexInputStateCreateInfo.pVertexAttributeDescriptions = bindingDescription.attributeBindings.data();
 
 	VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateCreateInfo = 
 		VulkanInitalizers::vkPipelineInputAssemblyStateCreateInfo(
@@ -163,13 +172,13 @@ void VulkanDriver::CreatePipeline()
 		);
 
 	VkViewport viewport = VulkanInitalizers::vkViewport(
-		GetDriverSettings().renderWidth,
-		GetDriverSettings().renderHeight
+		static_cast<float>(GetDriverSettings().renderWidth),
+		static_cast<float>(GetDriverSettings().renderHeight)
 	);
 	
 	VkRect2D viewportScissor = VulkanInitalizers::vkRect2DScissor(
-		GetDriverSettings().renderWidth,
-		GetDriverSettings().renderHeight
+		static_cast<uint32_t>(GetDriverSettings().renderWidth),
+		static_cast<uint32_t>(GetDriverSettings().renderHeight)
 	);
 
 	VkPipelineViewportStateCreateInfo viewportStateCreateInfo = 
@@ -234,19 +243,6 @@ void VulkanDriver::CreatePipeline()
 	}
 }
 
-void VulkanDriver::CreateFramebuffers()
-{
-	// Create a framebuffer for each swap chain image
-	const auto& swapchainImagesViews = mApplication.swapchainImageViews;
-
-	mSwapchainFramebuffers.resize(swapchainImagesViews.size());
-	for(uint32_t i = 0; i < mApplication.swapchainImageViews.size(); i++)
-	{
-		const auto& imageView = swapchainImagesViews[i];
-		mSwapchainFramebuffers[i] = CreateFramebuffer(imageView);
-	}
-}
-
 VkFramebuffer VulkanDriver::CreateFramebuffer(VkImageView imageView)
 {
 	VkFramebufferCreateInfo framebufferCreateInfo =
@@ -274,17 +270,16 @@ VkFramebuffer VulkanDriver::CreateFramebuffer(VkImageView imageView)
 
 void VulkanDriver::Cleanup()
 {
-	for(auto imageView : mApplication.swapchainImageViews) {
-		vkDestroyImageView(mApplication.logicalDevice, imageView, nullptr);
+	for(SwapChainImageData data : mApplication.swapChainData) {
+		vkDestroyImageView(mApplication.logicalDevice, data.imageView, nullptr);
 	}
-
 	vkDestroySurfaceKHR(mApplication.instance, mApplication.surface, nullptr);
 	vkDestroySwapchainKHR(mApplication.logicalDevice, mApplication.defaultSwapchain, nullptr);
 	vkDestroyDevice(mApplication.logicalDevice, nullptr);
 	vkDestroyInstance(mApplication.instance, nullptr);
 }
 
-RenderData VulkanDriver::BuildRenderData()
+RenderData VulkanDriver::BuildRenderData(uint32_t swapChainIndex)
 {
 	VkCommandBuffer commandBuffer;
 	VkCommandBufferAllocateInfo commandBufferAllocateInfo = VulkanInitalizers::vkCommandBufferAllocateInfo(
@@ -297,19 +292,25 @@ RenderData VulkanDriver::BuildRenderData()
 	VkFence fence;
 	vkCreateFence(mApplication.logicalDevice, &fenceInfo, nullptr, &fence);
 
-	// this will do more when we have multithreaded queue submission       
+	VkFramebuffer framebuffer = CreateFramebuffer(mApplication.swapChainData[swapChainIndex].imageView);
+
 	RenderData renderData = {};
 	renderData.commandBuffer = commandBuffer;
 	renderData.fence = fence;
-	renderData.framebuffer = mApplication
+	renderData.framebuffer = framebuffer;
+	renderData.imageAvailableSemaphore = mApplication.imageAvailableSemaphore;
+	renderData.finishedRenderingSemaphore = mApplication.finishedRenderingSemaphore;
+	renderData.image = mApplication.swapChainData[swapChainIndex].image;
+
+	return(renderData);
 }
 
-void VulkanDriver::PrepareFrame(VkCommandBuffer commandBuffer, VkImage image, VkImageView imageView, VkFramebuffer framebuffer)
+void VulkanDriver::PrepareFrameCommandBuffer(const RenderData& renderData)
 {
 	VkCommandBufferBeginInfo commandBufferBeginInfo = 
 		VulkanInitalizers::vkCommandBufferBeginInfo(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
-	vkBeginCommandBuffer(commandBuffer, &commandBufferBeginInfo);
+	vkBeginCommandBuffer(renderData.commandBuffer, &commandBufferBeginInfo);
 
 	VkImageSubresourceRange imageSubresourceRange = 
 		VulkanInitalizers::vkImageSubresourceRange(
@@ -324,12 +325,12 @@ void VulkanDriver::PrepareFrame(VkCommandBuffer commandBuffer, VkImage image, Vk
 			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 			mApplication.queueIndices.graphicsFamily,
 			mApplication.queueIndices.presentFamily,
-			image,
+			renderData.image,
 			imageSubresourceRange
 		);
 
 	vkCmdPipelineBarrier(
-		commandBuffer,
+		renderData.commandBuffer,
 		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 		NO_FLAGS,
@@ -351,42 +352,41 @@ void VulkanDriver::PrepareFrame(VkCommandBuffer commandBuffer, VkImage image, Vk
 			VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
 			mApplication.queueIndices.presentFamily,
 			mApplication.queueIndices.graphicsFamily,
-			image,
+			renderData.image,
 			imageSubresourceRange
 		);
 
 		vkCmdPipelineBarrier(
-			commandBuffer,
+			renderData.commandBuffer,
 			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 			NO_FLAGS,
 			0,
 			nullptr,
-			0, nullptr,
+			0, 
+			nullptr,
 			1,
 			&presentBarrier
 		);
 	}
 
 	// Clear the scren
-	VkClearValue clearValue = {
-		{1.f, 0.f, 0.f, 1.0f },
-	};
+	VkClearValue clearValue = {{1.f, 0.f, 0.f, 1.0f}};
 
 	VkRenderPassBeginInfo renderPassBeginInfo = VulkanInitalizers::vkRenderPassBeginInfo(
 		mTempRenderPass,
-		framebuffer,
+		renderData.framebuffer,
 		VulkanInitalizers::vkRect2DScissor(mDriverSettings.renderWidth, mDriverSettings.renderHeight),
 		1,
 		&clearValue
 	);
 
-	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, mTempGraphicsPipeline);
+	vkCmdBeginRenderPass(renderData.commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBindPipeline(renderData.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, mTempGraphicsPipeline);
 
 	VkViewport viewport = VulkanInitalizers::vkViewport(
-		GetDriverSettings().renderWidth,
-		GetDriverSettings().renderHeight
+		static_cast<float>(GetDriverSettings().renderWidth),
+		static_cast<float>(GetDriverSettings().renderHeight)
 	);
 
 	VkRect2D viewportScissor = VulkanInitalizers::vkRect2DScissor(
@@ -394,15 +394,15 @@ void VulkanDriver::PrepareFrame(VkCommandBuffer commandBuffer, VkImage image, Vk
 		GetDriverSettings().renderHeight
 	);
 
-	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-	vkCmdSetScissor(commandBuffer, 0, 1, &viewportScissor);
+	vkCmdSetViewport(renderData.commandBuffer, 0, 1, &viewport);
+	vkCmdSetScissor(renderData.commandBuffer, 0, 1, &viewportScissor);
 
 	VkDeviceSize offset = 0;
 
 	//vkCmdBindVertexBuffers(commandBuffer, 0, 1, todo: handle, &offset );
 	//vkCmdDraw(commandBuffer, 4, 1, 0, 0 );
 
-	vkCmdEndRenderPass(commandBuffer);
+	vkCmdEndRenderPass(renderData.commandBuffer);
 
 	if(mApplication.presentQueue != mApplication.graphicsQueue)
 	{
@@ -413,12 +413,12 @@ void VulkanDriver::PrepareFrame(VkCommandBuffer commandBuffer, VkImage image, Vk
 			VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
 			mApplication.queueIndices.presentFamily,
 			mApplication.queueIndices.graphicsFamily,
-			image,
+			renderData.image,
 			imageSubresourceRange
 		);
 
 		vkCmdPipelineBarrier(
-			commandBuffer,
+			renderData.commandBuffer,
 			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 			0,
@@ -433,22 +433,19 @@ void VulkanDriver::PrepareFrame(VkCommandBuffer commandBuffer, VkImage image, Vk
 
 void VulkanDriver::DrawFrame()
 {
-	RenderData r = BuildRenderData();
-	PrepareFrame();
-
 	// Acquire image
 	uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(
 		mApplication.logicalDevice, 
 		mApplication.defaultSwapchain, 
-		std::numeric_limits<uint64_t>::max(), // todo: potentially blocking thread forever is a bit...
+		std::numeric_limits<uint64_t>::max(),
 		mApplication.imageAvailableSemaphore, 
 		VK_NULL_HANDLE, 
 		&imageIndex
 	);
 
     if(result == VK_ERROR_OUT_OF_DATE_KHR){
-		assert(false); // todo:  display dead, recreate swapchain
+		assert(false); // todo: allow resize without breaking
         return;
     }
 	else if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
@@ -456,13 +453,19 @@ void VulkanDriver::DrawFrame()
 		assert(false);
     }
 
+	// Get resources for rendering
+	RenderData renderData = BuildRenderData(imageIndex);
+
+	// Prepare commands
+	PrepareFrameCommandBuffer(renderData);
+
 	VkPipelineStageFlags waitFlags = VK_PIPELINE_STAGE_TRANSFER_BIT;
-	VkSubmitInfo submitInfo;
-	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	VkSubmitInfo submitInfo = VulkanInitalizers::vkSubmitInfo();
 	submitInfo.waitSemaphoreCount = 1;
 	submitInfo.pWaitSemaphores = &mApplication.imageAvailableSemaphore;
 	submitInfo.pWaitDstStageMask = &waitFlags;
 	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &renderData.commandBuffer;
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = &mApplication.imageAvailableSemaphore;
 
@@ -471,7 +474,7 @@ void VulkanDriver::DrawFrame()
 		assert(false);
 	}
 
-	VkPresentInfoKHR presentInfo;
+	VkPresentInfoKHR presentInfo = {};
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 	presentInfo.waitSemaphoreCount = 1;
 	presentInfo.pWaitSemaphores = &mApplication.finishedRenderingSemaphore;

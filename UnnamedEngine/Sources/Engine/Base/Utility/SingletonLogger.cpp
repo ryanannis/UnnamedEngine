@@ -1,8 +1,12 @@
 #include "SingletonLogger.h"
 
+Logger::Logger(std::string channel) :
+	mChannelName(channel)
+{}
+
 void Logger::Log(std::string stringToLog)
 {
-	std::cout << stringToLog << std::endl;
+	std::cout << "[" << mChannelName << "] " << stringToLog << std::endl;
 }
 
 
@@ -32,7 +36,8 @@ void SingletonLogger::RegisterStreamSingleton(std::string channel)
 		// Logging stream already exists!
 		assert(false);
 	}
-	mStreams.emplace(channel, Logger());
+
+	mStreams.emplace(channel, Logger(channel));
 }
 
 Logger& SingletonLogger::Log(std::string channel, LogType type)

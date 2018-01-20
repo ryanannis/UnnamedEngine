@@ -10,12 +10,14 @@
 #include "Engine/Base/Resource/ResourceType.h"
 #include "Engine/Base/Resource/ModelResource.h"
 
-#include "Engine/Graphics/VulkanDriver/VulkanApplication.h"
+struct VulkanApplication;
+VK_DEFINE_HANDLE(VmaAllocator);
+VK_DEFINE_HANDLE(VmaAllocation);
 
 #define NULL_MESH_HANDLE 0;
 
 // todo: implement generational ids
-typedef uint64_t MeshHandle;
+typedef unsigned int MeshHandle;
 
 struct QueuedMeshLoad
 {

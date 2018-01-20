@@ -41,8 +41,6 @@ private:
 	void SetupSwapchainImageViews();
 	void SetupCommandPools();
 	void SetupMemoryPools();
-	void InitializeManagers();
-
 
 	void SetupValidationLayers();
 	bool CheckValidationLayerSupport();

@@ -1,4 +1,4 @@
-#include "VulkanApplicationFactory.h""
+#include "VulkanApplicationFactory.h"
 
 #include <set>
 
@@ -13,17 +13,17 @@
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL ValidationCallback
 (
-	VkDebugReportFlagsEXT flags,
-	VkDebugReportObjectTypeEXT objType,
-	uint64_t obj,
-	size_t location,
-	int32_t code,
-	const char* layerPrefix,
+	VkDebugReportFlagsEXT /*flags*/,
+	VkDebugReportObjectTypeEXT /*objType*/,
+	uint64_t /*obj*/,
+	size_t /*location*/,
+	int32_t /*code*/,
+	const char* /*layerPrefix*/,
 	const char* msg,
-	void* userData
+	void* /*userData*/
 )
 {
-	SingletonLogger::Log(GFX_DRIVER_LOG, LogType::ERROR).Log(msg);
+	SingletonLogger::Log(VULKAN_VALIDATTION_LOG, LogType::ERROR).Log(msg);
 
 	return(VK_FALSE);
 }
@@ -64,12 +64,12 @@ void VulkanApplicationFactory::SetupVulkanInstance()
 	appInfo.apiVersion = VK_API_VERSION_1_0;
 
 	VkInstanceCreateInfo createInfo = {};
-
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
 
 	const auto extensions = GetRequiredInstanceExtensions();
 	createInfo.enabledExtensionCount = extensions.size();
+	createInfo.ppEnabledExtensionNames = extensions.data();
 	
 	if(mDriver->GetDriverSettings().useValidationLayers && !CheckValidationLayerSupport())
 	{
@@ -235,6 +235,13 @@ void VulkanApplicationFactory::SetupSwapchainImageViews()
 {
 	for(size_t i = 0; i < mApplication->swapChainData.size(); i++)
 	{
+		VkImageSubresourceRange subResourceRange = {};
+		subResourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		subResourceRange.baseMipLevel = 0;
+		subResourceRange.levelCount = 1;
+		subResourceRange.baseArrayLayer = 0;
+		subResourceRange.layerCount = 1;
+
 		VkImageViewCreateInfo createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		createInfo.image = mApplication->swapChainData[i].image;
@@ -246,17 +253,13 @@ void VulkanApplicationFactory::SetupSwapchainImageViews()
 		createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
 		createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
 
-		createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		createInfo.subresourceRange.baseMipLevel = 0;
-		createInfo.subresourceRange.levelCount = 1;
-		createInfo.subresourceRange.baseArrayLayer = 0;
-		createInfo.subresourceRange.layerCount = 1;
+		createInfo.subresourceRange = subResourceRange;
 
 		if(vkCreateImageView(
 				mApplication->logicalDevice,
 				&createInfo, 
 				NO_CUSTOM_ALLOCATOR,
-				&mApplication->swapChainData[i].imageViews
+				&mApplication->swapChainData[i].imageView
 			) != VK_SUCCESS)
 		{
 			assert(false);
@@ -300,25 +303,17 @@ void VulkanApplicationFactory::SetupMemoryPools()
 void VulkanApplicationFactory::InitializeApplication()
 {
 	SetupVulkanInstance();
+	SetupValidationLayers();
 
 	SetupSurface();
 
 	SetupPhysicalDevice();
 	SetupLogicalDevice();
-
 	SetupSwapchain();
 	SetupSwapchainImageViews();
 
 	SetupMemoryPools();
 	SetupCommandPools();
-
-	InitializeManagers();
-}
-
-void VulkanApplicationFactory::InitializeManagers()
-{
-	mApplication->shaderManager = std::make_unique<VulkanShaderManager>(mDriver, mDriver->GetResourceManager());
-	mApplication->meshManager = std::make_unique<VulkanMeshManager>(mDriver, mDriver->GetResourceManager());
 }
 
 void VulkanApplicationFactory::SetupPhysicalDevice()
@@ -332,7 +327,7 @@ void VulkanApplicationFactory::SetupPhysicalDevice()
 	vkEnumeratePhysicalDevices(mApplication->instance, &deviceCount, devices.data());
 
 	size_t bestScore = 0;
-	VkPhysicalDevice bestDevice;
+	VkPhysicalDevice bestDevice = VK_NULL_HANDLE;
 
 	for(const auto& device : devices)
 	{
@@ -344,7 +339,7 @@ void VulkanApplicationFactory::SetupPhysicalDevice()
 		}
 	}
 
-	assert(bestScore > 0); // no compatible physical device
+	assert(bestDevice != VK_NULL_HANDLE); // no compatible physical device
 	mApplication->physicalDevice = bestDevice;
 }
 
@@ -509,7 +504,7 @@ void VulkanApplicationFactory::SetupSwapchain()
 
 	const VkSurfaceFormatKHR surfaceFormat = SelectSwapSurfaceFormat(swapChainSupport.formats);
 	const VkPresentModeKHR presentMode = SelectSwapPresentMode(swapChainSupport.presentModes);
-	const VkExtent2D extent = SelectSwapExtent(swapChainSupport.capabilities);
+	const VkExtent2D swapChainExtent = SelectSwapExtent(swapChainSupport.capabilities);
 
 	uint32_t imageCount = swapChainSupport.capabilities.minImageCount;
 	if(imageCount == 0)
@@ -519,8 +514,6 @@ void VulkanApplicationFactory::SetupSwapchain()
 
 	VkSemaphoreCreateInfo semaphoreCreateInfo = {};
 	semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-	semaphoreCreateInfo.flags = 0;
-	semaphoreCreateInfo.pNext = nullptr;
 	
 	if(vkCreateSemaphore(
 		mApplication->logicalDevice,
@@ -536,7 +529,7 @@ void VulkanApplicationFactory::SetupSwapchain()
 		mApplication->logicalDevice, 
 		&semaphoreCreateInfo, 
 		nullptr, 
-		&mApplication->imageAvailableSemaphore
+		&mApplication->finishedRenderingSemaphore
 	) != VK_SUCCESS)
 	{
 		assert(false);
@@ -548,7 +541,7 @@ void VulkanApplicationFactory::SetupSwapchain()
 	createInfo.minImageCount = imageCount;
 	createInfo.imageFormat = surfaceFormat.format;
 	createInfo.imageColorSpace = surfaceFormat.colorSpace;
-	createInfo.imageExtent = extent;
+	createInfo.imageExtent = swapChainExtent;
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
@@ -580,21 +573,23 @@ void VulkanApplicationFactory::SetupSwapchain()
 
 	uint32_t swapchainBufferCount;
 	vkGetSwapchainImagesKHR(mApplication->logicalDevice, mApplication->defaultSwapchain, &swapchainBufferCount, nullptr);
-	mApplication->swapChainData.resize(imageCount);
+	mApplication->swapChainData.resize(swapchainBufferCount);
+
+	std::vector<VkImage> swapChainImages(swapchainBufferCount);
+	vkGetSwapchainImagesKHR(
+		mApplication->logicalDevice, 
+		mApplication->defaultSwapchain, 
+		&swapchainBufferCount, 
+		swapChainImages.data()
+	);
 
 	for(size_t i = 0; i < swapchainBufferCount; i++)
 	{
-		uint32_t numberOfSwapchainImagesToFetch = 1;
-		vkGetSwapchainImagesKHR(
-			mApplication->logicalDevice, 
-			mApplication->defaultSwapchain, 
-			&numberOfSwapchainImagesToFetch, 
-			&mApplication->swapChainData[i].image
-		);
+		mApplication->swapChainData[i].image = swapChainImages[i];
 	}
 
 	mApplication->defaultSwapchainFormat = surfaceFormat.format;
-	mApplication->defaultSwapchainExtent = extent;
+	mApplication->defaultSwapchainExtent = swapChainExtent;
 }
 
 std::vector<char*> VulkanApplicationFactory::GetRequiredInstanceExtensions()

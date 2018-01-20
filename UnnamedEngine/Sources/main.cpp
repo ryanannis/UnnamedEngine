@@ -20,7 +20,7 @@ int main(int, char* [])
 	ResourceType<LevelResource> level("Levels/Sponza/sponza.ul");
 	ResourceType<EntityResource> player("Test/BasicPlayer/TestPlayer");
 	c.GetTarget()->LoadIntoLevel(level);
-	Entity& e = c.GetTarget()->GetRegionAdmin()->CreateEntity(player, Vector3f(2, 2, 2), Vector3f(0, 0, 0), false);
+	Entity e = c.GetTarget()->GetRegionAdmin()->CreateEntity(player, Vector3f(2, 2, 2), Vector3f(0, 0, 0), false);
 	auto camera = c.GetTarget()->GetRegionAdmin()->GetEntityAdmin()->AddComponent<CameraComponent>(e);
 	c.GetTarget()->GetGameClient()->SetLocalPlayerEntity(e);
 

@@ -45,17 +45,19 @@ void ShaderResource::Load(Ptr<ResourceManager> manager)
 	std::string fullURL = shaderURI.GetFilePath();
 	fullURL = fullURL + ".spv";
 
-	ResourceUtil::LoadBinaryFile(fullURL);
+	mShaderBinary = ResourceUtil::LoadBinaryFile(fullURL);
 
 	mReady = true;
 }
 
 const std::vector<char>& ShaderResource::GetShaderBinary() const
 {
+	assert(mReady);
 	return(mShaderBinary);
 }
 
 ShaderType ShaderResource::GetShaderType() const
 {
+	assert(mReady);
 	return(mShaderType);
 }

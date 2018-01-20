@@ -16,7 +16,7 @@ class ResourceManager;
 struct SwapChainImageData
 {
 	VkImage image;
-	VkImageView imageViews;
+	VkImageView imageView;
 	VkFramebuffer framebuffer;
 };
 

@@ -29,6 +29,10 @@ void Renderer::Initialize(const RendererSettings& c)
 	settings.windowManagerExtensions = c.windowManagerExtensions;
 	settings.numExtensions = c.numExtensions;
 	settings.windowManagerSurfaceCreationCallback = c.windowManagerSurfaceCreationCallback;
+	
+	// todo:  interface for application to query graphics driver
+	settings.renderWidth = 1280;
+	settings.renderHeight = 720;
 
 #ifdef NDEBUG
 	settings.useValidationLayers = false;
@@ -98,6 +102,7 @@ Matrix4 Renderer::GetCameraVPMatrix()
 
 void Renderer::Render()
 {
+	mDriver->DrawFrame();
 }
 
 void Renderer::RenderMeshes()

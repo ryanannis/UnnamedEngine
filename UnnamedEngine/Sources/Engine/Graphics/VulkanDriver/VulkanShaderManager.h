@@ -10,10 +10,10 @@
 #include "Engine/Base/Resource/ResourceType.h"
 #include "Engine/Base/Resource/ShaderResource.h"
 
-#include "Engine/Graphics/VulkanDriver/VulkanApplication.h"
+struct VulkanApplication;
 
 // todo: implement generational ids here
-typedef uint64_t ShaderHandle;
+typedef unsigned int ShaderHandle;
 
 struct ShaderInfo
 {
@@ -25,7 +25,7 @@ struct ShaderInfo
 class VulkanShaderManager
 {
 public:
-	VulkanShaderManager(Ptr<ResourceManager> resManager);
+	VulkanShaderManager(Ptr<ResourceManager> resManager, VulkanApplication* application);
 	ShaderHandle CreateShaderModule(URI resourceLocation);
 	ShaderHandle CreateShaderModule(ResourceType<ShaderResource> res);
 	VkShaderModule GetShaderModule(ShaderHandle h);

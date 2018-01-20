@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 #define GFX_DRIVER_LOG "Graphics"
+#define VULKAN_VALIDATTION_LOG "VulkanValidation"
 
 enum class LogType
 {
@@ -14,7 +15,11 @@ enum class LogType
 class Logger
 {
 public:
+	Logger(std::string channel);
 	void Log(std::string stringToLog);
+
+private:
+	std::string mChannelName;
 };
 
 class SingletonLogger : public NonCopyable

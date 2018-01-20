@@ -3,7 +3,7 @@
 VulkanUtils::Mesh::SubmeshBindingDescription VulkanUtils::Mesh::ComputeSubmeshBindingDescription(SubmeshData* submesh)
 {
 	VkVertexInputBindingDescription vertexBindingDescription;
-	vertexBindingDescription.binding = 0;
+	vertexBindingDescription.binding = VERTEX_BINDING_OFFSET;
 	vertexBindingDescription.stride = submesh->GetInterleavedSize();
 	vertexBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
@@ -14,7 +14,7 @@ VulkanUtils::Mesh::SubmeshBindingDescription VulkanUtils::Mesh::ComputeSubmeshBi
 	uint32_t currentLocation = 0;
 
 	// Mesh Vertices
-	VkVertexInputAttributeDescription verticeVertexAttributeDescriptions;
+	VkVertexInputAttributeDescription verticeVertexAttributeDescriptions = {};
 	verticeVertexAttributeDescriptions.location = currentLocation;
 	verticeVertexAttributeDescriptions.binding = vertexBindingDescription.binding;
 	verticeVertexAttributeDescriptions.format = VK_FORMAT_R32G32B32_SFLOAT;
@@ -26,11 +26,11 @@ VulkanUtils::Mesh::SubmeshBindingDescription VulkanUtils::Mesh::ComputeSubmeshBi
 	// Normals
 	if(submesh->properties & HAS_NORMALS_BYTE_OFFSET)
 	{
-		VkVertexInputAttributeDescription verticeVertexAttributeDescriptions;
-		verticeVertexAttributeDescriptions.location = currentLocation;
-		verticeVertexAttributeDescriptions.binding = vertexBindingDescription.binding;
-		verticeVertexAttributeDescriptions.format = VK_FORMAT_R32G32B32_SFLOAT;
-		verticeVertexAttributeDescriptions.offset = currentOffset;
+		VkVertexInputAttributeDescription verticeNormalAttributeDescriptions = {};
+		verticeNormalAttributeDescriptions.location = currentLocation;
+		verticeNormalAttributeDescriptions.binding = vertexBindingDescription.binding;
+		verticeNormalAttributeDescriptions.format = VK_FORMAT_R32G32B32_SFLOAT;
+		verticeNormalAttributeDescriptions.offset = currentOffset;
 
 		currentLocation += 1;
 		currentOffset += 3 * sizeof(float);
@@ -39,11 +39,11 @@ VulkanUtils::Mesh::SubmeshBindingDescription VulkanUtils::Mesh::ComputeSubmeshBi
 	// UVs
 	for(uint32_t i = 0; i < submesh->numUVs; i++)
 	{
-		VkVertexInputAttributeDescription verticeVertexAttributeDescriptions;
-		verticeVertexAttributeDescriptions.location = currentLocation;
-		verticeVertexAttributeDescriptions.binding = vertexBindingDescription.binding;
-		verticeVertexAttributeDescriptions.format = VK_FORMAT_R32G32_SFLOAT;
-		verticeVertexAttributeDescriptions.offset = currentOffset;
+		VkVertexInputAttributeDescription verticeUVAttributeDescriptions = {};
+		verticeUVAttributeDescriptions.location = currentLocation;
+		verticeUVAttributeDescriptions.binding = vertexBindingDescription.binding;
+		verticeUVAttributeDescriptions.format = VK_FORMAT_R32G32_SFLOAT;
+		verticeUVAttributeDescriptions.offset = currentOffset;
 
 		currentLocation += 1;
 		currentOffset += 3 * sizeof(float);
@@ -52,4 +52,6 @@ VulkanUtils::Mesh::SubmeshBindingDescription VulkanUtils::Mesh::ComputeSubmeshBi
 	VulkanUtils::Mesh::SubmeshBindingDescription submeshBinding;
 	submeshBinding.vertexBinding = vertexBindingDescription;
 	submeshBinding.attributeBindings = vertexAttributes;
+
+	return(submeshBinding);
 }

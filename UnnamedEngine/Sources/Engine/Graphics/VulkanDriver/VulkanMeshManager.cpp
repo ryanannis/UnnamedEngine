@@ -4,6 +4,7 @@
 
 #include "Engine/Base/Resource/ResourceManager.h"
 #include "Engine/Graphics/VulkanDriver/VulkanInitializers.h"
+#include "Engine/Graphics/VulkanDriver/VulkanApplication.h"
 
 VulkanMeshManager::VulkanMeshManager(Ptr<ResourceManager> resManager, VulkanApplication* application) :
 	mResourceManager(resManager),
@@ -12,7 +13,7 @@ VulkanMeshManager::VulkanMeshManager(Ptr<ResourceManager> resManager, VulkanAppl
 
 MeshHandle VulkanMeshManager::CreateMesh(URI resourceLocation)
 {
-	return(CreateMesh(resourceLocation));
+	return(CreateMesh(ResourceType<ModelResource>(resourceLocation)));
 }
 
 MeshHandle VulkanMeshManager::CreateMesh(ResourceType<ModelResource> res)
@@ -31,8 +32,6 @@ MeshHandle VulkanMeshManager::CreateMesh(ResourceType<ModelResource> res)
 		assert(false);
 	}
 	
-	const MeshData& modelData = meshResource->GetMeshes();
-
 	auto nextHandle = GetFreeHandle();
 	mHandleMap.insert(std::make_pair(res.GetURI().GetHash(), nextHandle));
 
@@ -81,10 +80,10 @@ void VulkanMeshManager::FlushLoadQueue(VkCommandBuffer commandBuffer)
 				bufferInfo.size = bufferSize;
 				bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
-				VmaAllocationCreateInfo allocInfo = {};
-				allocInfo.usage = VMA_MEMORY_USAGE_CPU_ONLY;
+				VmaAllocationCreateInfo stagingAllocInfo = {};
+				stagingAllocInfo.usage = VMA_MEMORY_USAGE_CPU_ONLY;
 
-				vmaCreateBuffer(mApplication->allocator, &bufferInfo, &allocInfo, &stagingBuffer, &stagingAllocation, nullptr);
+				vmaCreateBuffer(mApplication->allocator, &bufferInfo, &stagingAllocInfo, &stagingBuffer, &stagingAllocation, nullptr);
 
 				// Copy mesh data to CPU-mapped staging buffer
 				void* cpuMappedData;
@@ -97,12 +96,12 @@ void VulkanMeshManager::FlushLoadQueue(VkCommandBuffer commandBuffer)
 				stagingBufferInfo.size = bufferSize;
 				stagingBufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
-				VmaAllocationCreateInfo allocInfo = {};
-				allocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+				VmaAllocationCreateInfo gpuAllocInfo = {};
+				gpuAllocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
 				VkBuffer destinationBuffer;
 				VmaAllocation destinationAllocation;
-				vmaCreateBuffer(mApplication->allocator, &bufferInfo, &allocInfo, &destinationBuffer, &destinationAllocation, nullptr);
+				vmaCreateBuffer(mApplication->allocator, &bufferInfo, &gpuAllocInfo, &destinationBuffer, &destinationAllocation, nullptr);
 				
 				// todo: put in a fence to delete the staging buffers after the copy is performed, this currently LEAKS
 				SubmeshAllocation s;

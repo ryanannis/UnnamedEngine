@@ -1,14 +1,16 @@
 #include "VulkanShaderManager.h"
 
 #include "Engine/Base/Resource/ResourceManager.h"
+#include "Engine/Graphics/VulkanDriver/VulkanApplication.h"
 
-VulkanShaderManager::VulkanShaderManager(Ptr<ResourceManager> resManager) :
-	mResourceManager(resManager)
+VulkanShaderManager::VulkanShaderManager(Ptr<ResourceManager> resManager, VulkanApplication* application) :
+	mResourceManager(resManager),
+	mApplication(application)
 {}
 
 ShaderHandle VulkanShaderManager::CreateShaderModule(URI resourceLocation)
 {
-	return(CreateShaderModule(resourceLocation));
+	return(CreateShaderModule(ResourceType<ShaderResource>(resourceLocation)));
 }
 
 ShaderHandle VulkanShaderManager::CreateShaderModule(ResourceType<ShaderResource> res)
@@ -32,8 +34,8 @@ ShaderHandle VulkanShaderManager::CreateShaderModule(ResourceType<ShaderResource
 	mHandleMap.insert(std::make_pair(res.GetURI().GetHash(), nextHandle));
 
 	// Actually create the shader
-	VkShaderModule module;
-	VkShaderModuleCreateInfo shaderModule;
+	VkShaderModule module;;
+	VkShaderModuleCreateInfo shaderModule = {};
 	shaderModule.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 	shaderModule.codeSize = shaderBytecode.size();
 	shaderModule.pCode = reinterpret_cast<const uint32_t*>(shaderBytecode.data());
@@ -57,7 +59,7 @@ ShaderHandle VulkanShaderManager::CreateShaderModule(ResourceType<ShaderResource
 	// todo:  This is technically a waste of a smart ptr copy and alloc
 }
 
-ShaderHandle VulkanShaderManager::GetShaderModule(ShaderHandle h)
+VkShaderModule VulkanShaderManager::GetShaderModule(ShaderHandle h)
 {
 	assert(h < mShaders.size());
 	return(mShaders[h].module);
@@ -65,12 +67,31 @@ ShaderHandle VulkanShaderManager::GetShaderModule(ShaderHandle h)
 
 VkPipelineShaderStageCreateInfo VulkanShaderManager::GetShaderPipelineInfo(ShaderHandle h)
 {
-	VkPipelineShaderStageCreateInfo shaderStage;
-	shaderStage.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	shaderStage.stage = VK_SHADER_STAGE_VERTEX_BIT;
+	ShaderInfo shaderInfo = mShaders[h];
+	
+	VkShaderStageFlagBits stage;
+	if(shaderInfo.type == ShaderType::VERTEX)
+	{
+		stage = VK_SHADER_STAGE_VERTEX_BIT;
+	}
+	else if(shaderInfo.type == ShaderType::FRAGMENT)
+	{
+		stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+	}
+	else if(shaderInfo.type == ShaderType::GEOMETRY)
+	{
+		stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+	}
+	else if(shaderInfo.type == ShaderType::COMPUTE)
+	{
+		stage = VK_SHADER_STAGE_COMPUTE_BIT;
+	}
+
+	VkPipelineShaderStageCreateInfo shaderStage = {};
+	shaderStage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	shaderStage.stage = stage;
 	shaderStage.module = mShaders[h].module;
 	shaderStage.pName = "main";
-	shaderStage.pSpecializationInfo = nullptr;
 	
 	return(shaderStage);
 }

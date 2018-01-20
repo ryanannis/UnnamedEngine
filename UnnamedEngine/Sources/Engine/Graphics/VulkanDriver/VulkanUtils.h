@@ -5,6 +5,9 @@
 
 #define NO_CUSTOM_ALLOCATOR nullptr
 
+//todo:  remove this when we create a pipeline manager and make big buffers
+#define VERTEX_BINDING_OFFSET 0
+
 namespace VulkanUtils
 {
 	namespace Mesh

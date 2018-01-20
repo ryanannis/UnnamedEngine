@@ -14,7 +14,7 @@
  */
 namespace VulkanInitalizers
 {
-	inline VkPipelineLayoutCreateInfo vkPipelineLayoutCreateInfo()
+	static inline VkPipelineLayoutCreateInfo vkPipelineLayoutCreateInfo()
 	{
 		VkPipelineLayoutCreateInfo vkPipelineLayoutCreateInfo = {};
 
@@ -23,7 +23,7 @@ namespace VulkanInitalizers
 		return(vkPipelineLayoutCreateInfo);
 	}
 
-	inline VkViewport vkViewport(float width, float height)
+	static inline VkViewport vkViewport(float width, float height)
 	{
 		VkViewport viewport = {};
 
@@ -37,7 +37,7 @@ namespace VulkanInitalizers
 		return(viewport);
 	}
 
-	inline VkPipelineRasterizationStateCreateInfo vkPipelineRasterizationStateCreateInfo(
+	static inline VkPipelineRasterizationStateCreateInfo vkPipelineRasterizationStateCreateInfo(
 		VkPolygonMode polygonMode,
 		VkCullModeFlags cullMode,
 		VkFrontFace frontFace
@@ -53,7 +53,7 @@ namespace VulkanInitalizers
 		return(pipelineRasterizationStateCreateInfo);
 	}
 
-	inline VkPipelineViewportStateCreateInfo vkPipelineViewportStateCreateInfo(
+	static inline VkPipelineViewportStateCreateInfo vkPipelineViewportStateCreateInfo(
 		uint32_t viewportCount
 	)
 	{
@@ -66,7 +66,7 @@ namespace VulkanInitalizers
 		return(pipelineViewportStateCreateInfo);
 	}
 
-	inline VkPipelineMultisampleStateCreateInfo vkPipelineMultisampleStateCreateInfo(
+	static inline VkPipelineMultisampleStateCreateInfo vkPipelineMultisampleStateCreateInfo(
 		VkSampleCountFlagBits rasterizationSamples
 	)
 	{
@@ -78,7 +78,7 @@ namespace VulkanInitalizers
 		return(pipelineMultisampleStateCreateInfo);
 	}
 
-	inline VkPipelineColorBlendAttachmentState vkPipelineColorBlendAttachmentState(
+	static inline VkPipelineColorBlendAttachmentState vkPipelineColorBlendAttachmentState(
 		VkBool32 blendEnable,
 		VkColorComponentFlags colorWriteMask
 	)
@@ -91,7 +91,7 @@ namespace VulkanInitalizers
 		return(pipelineColorBlendAttachmentState);
 	}
 
-	inline VkPipelineInputAssemblyStateCreateInfo vkPipelineInputAssemblyStateCreateInfo(
+	static inline VkPipelineInputAssemblyStateCreateInfo vkPipelineInputAssemblyStateCreateInfo(
 		VkPrimitiveTopology primitiveTopology,
 		VkBool32 primitiveRestartEnable,
 		VkPipelineInputAssemblyStateCreateFlags flags = 0
@@ -100,13 +100,14 @@ namespace VulkanInitalizers
 		VkPipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo = {};
 
 		pipelineInputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+		pipelineInputAssemblyStateCreateInfo.topology = primitiveTopology;
 		pipelineInputAssemblyStateCreateInfo.primitiveRestartEnable = primitiveRestartEnable;
 		pipelineInputAssemblyStateCreateInfo.flags = flags;
 
 		return(pipelineInputAssemblyStateCreateInfo);
 	}
 
-	inline VkGraphicsPipelineCreateInfo vkGraphicsPipelineCreateInfo(
+	static inline VkGraphicsPipelineCreateInfo vkGraphicsPipelineCreateInfo(
 		VkPipelineLayout layout,
 		VkRenderPass renderPass,
 		VkPipelineCreateFlags flags = 0
@@ -124,7 +125,7 @@ namespace VulkanInitalizers
 		return(graphicsPipelineCreateInfo);
 	}
 
-	inline VkPipelineColorBlendStateCreateInfo vkPipelineColorBlendStateCreateInfo()
+	static inline VkPipelineColorBlendStateCreateInfo vkPipelineColorBlendStateCreateInfo()
 	{
 		VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo = {};
 
@@ -133,7 +134,7 @@ namespace VulkanInitalizers
 		return(pipelineColorBlendStateCreateInfo);
 	}
 
-	inline VkPipelineVertexInputStateCreateInfo vkPipelineVertexInputStateCreateInfo()
+	static inline VkPipelineVertexInputStateCreateInfo vkPipelineVertexInputStateCreateInfo()
 	{
 		VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo = {};
 
@@ -142,7 +143,7 @@ namespace VulkanInitalizers
 		return(pipelineVertexInputStateCreateInfo);
 	}
 
-	inline VkCommandBufferBeginInfo vkCommandBufferBeginInfo(
+	static inline VkCommandBufferBeginInfo vkCommandBufferBeginInfo(
 		VkCommandBufferUsageFlags flags = 0
 	)
 	{
@@ -154,7 +155,7 @@ namespace VulkanInitalizers
 		return(commandBufferBeginInfo);
 	}
 
-	inline VkBufferCreateInfo vkBufferCreateInfo()
+	static inline VkBufferCreateInfo vkBufferCreateInfo()
 	{
 		VkBufferCreateInfo bufferCreateInfo = {};
 
@@ -163,7 +164,7 @@ namespace VulkanInitalizers
 		return(bufferCreateInfo);
 	}
 
-	inline VkImageMemoryBarrier vkImageMemoryBarrier(
+	static inline VkImageMemoryBarrier vkImageMemoryBarrier(
 		VkAccessFlags srcAccessMask,
 		VkAccessFlags dstAccessMask,
 		VkImageLayout oldLayout,
@@ -183,12 +184,13 @@ namespace VulkanInitalizers
 		imageMemoryBarrier.newLayout = newLayout;
 		imageMemoryBarrier.srcQueueFamilyIndex = srcQueueFamilyIndex;
 		imageMemoryBarrier.dstQueueFamilyIndex = dstQueueFamilyIndex;
-
+		imageMemoryBarrier.image = image;
+		imageMemoryBarrier.subresourceRange = subresourceRange;
 
 		return(imageMemoryBarrier);
 	}
 
-	inline VkImageSubresourceRange vkImageSubresourceRange(
+	static inline VkImageSubresourceRange vkImageSubresourceRange(
 		VkImageAspectFlags    aspectMask,
 		uint32_t              baseMipLevel = 0,
 		uint32_t              levelCount = 1,
@@ -198,6 +200,7 @@ namespace VulkanInitalizers
 	{
 		VkImageSubresourceRange imageSubresourceRange = {};
 
+		imageSubresourceRange.aspectMask = aspectMask;
 		imageSubresourceRange.baseMipLevel = baseMipLevel;
 		imageSubresourceRange.levelCount = levelCount;
 		imageSubresourceRange.baseArrayLayer = baseArrayLayer;
@@ -206,7 +209,7 @@ namespace VulkanInitalizers
 		return(imageSubresourceRange);
 	}
 
-	inline VkRenderPassBeginInfo vkRenderPassBeginInfo(
+	static inline VkRenderPassBeginInfo vkRenderPassBeginInfo(
 		VkRenderPass renderPass,
 		VkFramebuffer framebuffer,
 		VkRect2D renderArea,
@@ -217,16 +220,16 @@ namespace VulkanInitalizers
 		VkRenderPassBeginInfo renderPassBeginInfo = {};
 
 		renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassBeginInfo.renderPass;
-		renderPassBeginInfo.framebuffer;
-		renderPassBeginInfo.renderArea;
-		renderPassBeginInfo.clearValueCount;
-		renderPassBeginInfo.pClearValues;
+		renderPassBeginInfo.renderPass = renderPass;
+		renderPassBeginInfo.framebuffer = framebuffer;
+		renderPassBeginInfo.renderArea = renderArea;
+		renderPassBeginInfo.clearValueCount = clearValueCount;
+		renderPassBeginInfo.pClearValues = pClearValues;
 
 		return(renderPassBeginInfo);
 	}
 
-	inline VkRect2D vkRect2DScissor(float width, float height)
+	static inline VkRect2D vkRect2DScissor(uint32_t width, uint32_t height)
 	{
 		VkRect2D rect2D = {};
 		
@@ -235,7 +238,7 @@ namespace VulkanInitalizers
 		return(rect2D);
 	}
 
-	inline VkFramebufferCreateInfo vkFramebufferCreateInfo(
+	static inline VkFramebufferCreateInfo vkFramebufferCreateInfo(
 		VkRenderPass renderPass,
 		uint32_t attachmentCount,
 		const VkImageView* pAttachments,
@@ -260,18 +263,21 @@ namespace VulkanInitalizers
 		return(framebufferCreateinfo);
 	}
 
-	inline VkSubmitInfo vkSubmitInfo(
+	static inline VkSubmitInfo vkSubmitInfo(
 		uint32_t commandBufferCount,
 		const VkCommandBuffer* pCommandBuffers
 	)
 	{
 		VkSubmitInfo submitInfo = {};
 
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 		submitInfo.commandBufferCount = commandBufferCount;
 		submitInfo.pCommandBuffers = pCommandBuffers;
+	
+		return(submitInfo);
 	}
 
-	inline VkFenceCreateInfo vkFenceCreateInfo(VkFenceCreateFlags flags = 0)
+	static inline VkFenceCreateInfo vkFenceCreateInfo(VkFenceCreateFlags flags = 0)
 	{
 		VkFenceCreateInfo fenceCreateInfo = {};
 
@@ -281,7 +287,7 @@ namespace VulkanInitalizers
 		return(fenceCreateInfo);
 	}
 
-	inline VkCommandPoolCreateInfo vkCommandPoolCreateInfo(
+	static inline VkCommandPoolCreateInfo vkCommandPoolCreateInfo(
 		VkCommandPoolCreateFlags flags,
 		uint32_t queueFamilyIndex
 	)
@@ -295,7 +301,7 @@ namespace VulkanInitalizers
 		return(commandPoolCreateInfo);
 	}
 
-	inline VkCommandBufferAllocateInfo vkCommandBufferAllocateInfo(
+	static inline VkCommandBufferAllocateInfo vkCommandBufferAllocateInfo(
 		VkCommandPool commandPool,
 		VkCommandBufferLevel level,
 		uint32_t commandBufferCount = 1
@@ -305,8 +311,41 @@ namespace VulkanInitalizers
 
 		commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		commandBufferAllocateInfo.commandPool = commandPool;
+		commandBufferAllocateInfo.level = level;
 		commandBufferAllocateInfo.commandBufferCount = commandBufferCount;
 
 		return(commandBufferAllocateInfo);
+	}
+
+	static inline VkSubpassDependency vkSubpassDependency(
+		uint32_t srcSubpass,
+		uint32_t dstSubpass,
+		VkPipelineStageFlags srcStageMask,
+		VkPipelineStageFlags dstStageMask,
+		VkAccessFlags srcAccessMask,
+		VkAccessFlags dstAccessMask,
+		VkDependencyFlags dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT
+	)
+	{
+		VkSubpassDependency subpassDependency = {};
+
+		subpassDependency.srcSubpass = srcSubpass;
+		subpassDependency.dstSubpass = dstSubpass;
+		subpassDependency.srcStageMask = srcStageMask;
+		subpassDependency.dstStageMask = dstStageMask;
+		subpassDependency.srcAccessMask = srcAccessMask;
+		subpassDependency.dstAccessMask = dstAccessMask;
+		subpassDependency.dependencyFlags = dependencyFlags;
+
+		return(subpassDependency);
+	}
+
+	static inline VkSubmitInfo vkSubmitInfo()
+	{
+		VkSubmitInfo submitInfo = {};
+
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+		return(submitInfo);
 	}
 }

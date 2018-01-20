@@ -1,12 +1,19 @@
 #pragma once
 #include "Engine/Base/Common/Common.h"
 #include "Engine/Graphics/VulkanDriver/VulkanApplication.h"
+#include "Engine/Graphics/VulkanDriver/VulkanUtils.h"
 
 #include <functional>
 
 #include <vulkan\vulkan.h>
 
 class ResourceManager;
+
+struct SubmeshRenderGroup
+{
+	std::vector<SubmeshData *> submeshesToRender;
+	VulkanUtils::Mesh::SubmeshBindingDescription bindingDescripion;
+};
 
 struct DriverSettings
 {
@@ -28,13 +35,13 @@ struct DriverSettings
  */
 struct RenderData
 {
+	VkImage image;
 	VkFramebuffer framebuffer;
     VkCommandBuffer commandBuffer;
     VkSemaphore imageAvailableSemaphore;
     VkSemaphore finishedRenderingSemaphore;
     VkFence fence;
 };
-
 
 class VulkanDriver
 {
@@ -46,16 +53,16 @@ public:
 	Ptr<ResourceManager> GetResourceManager();
 
 	void Cleanup();
-	RenderData BuildRenderData();
-	void PrepareFrame(VkCommandBuffer commandBuffer, VkImage image, VkImageView imageView, VkFramebuffer framebuffer);
+	RenderData BuildRenderData(uint32_t swapChainIndex);
+	void PrepareFrameCommandBuffer(const RenderData& r);
 	void DrawFrame();
 	void RenderGeometry();
 
+
 	// Temp 
 	VkPipelineLayout CreatePipelineLayout();
-	void CreatePipeline();
-	void CreateFramebuffers();
-	VkFramebuffer CreateFramebuffer(VkImageView image_view);
+	void CreatePipeline(VulkanUtils::Mesh::SubmeshBindingDescription bindingDescription);
+	VkFramebuffer CreateFramebuffer(VkImageView imageView);
 	void CreateRenderPass();
 
 

@@ -31,6 +31,7 @@ int StaticRegister()
 	SingletonLogger::RegisterStream("General");
 	SingletonLogger::RegisterStream("Loader");
 	SingletonLogger::RegisterStream("Graphics");
+	SingletonLogger::RegisterStream("VulkanValidation");
 
 	const int DUMMY = 0;
 	return(DUMMY);
