@@ -6,6 +6,8 @@
 
 #include "Engine/Graphics/VulkanDriver/VulkanDriver.h"
 #include "Engine/Graphics/VulkanDriver/VulkanExtensionDefs.h"
+#include "Engine/Graphics/VulkanDriver/VulkanInitializers.h"
+#include "Engine/Graphics/VulkanDriver/VulkanUtils.h"
 
 #include "vk_mem_alloc.h"
 
@@ -52,6 +54,8 @@ void VulkanApplicationFactory::SetupVulkanInstance()
 {
 	// End test
 	VkApplicationInfo appInfo = {};
+
+	// todo: this information should be pulled from cmake
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	appInfo.pApplicationName = "UnnnamedEngine";
 	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -218,18 +222,22 @@ void VulkanApplicationFactory::SetupLogicalDevice()
 
 void VulkanApplicationFactory::SetupSurface()
 {
-	auto retCode = mDriver->GetDriverSettings().windowManagerSurfaceCreationCallback(mApplication->instance, nullptr, &mApplication->surface);
+	auto retCode = mDriver->GetDriverSettings().windowManagerSurfaceCreationCallback(
+		mApplication->instance,
+		nullptr,
+		&mApplication->surface
+	);
+
 	assert(retCode == VK_SUCCESS);
 }
 
 void VulkanApplicationFactory::SetupSwapchainImageViews()
 {
-	mApplication->swapchainImageViews.resize(mApplication->swapChainImages.size());
-	for(size_t i = 0; i < mApplication->swapChainImages.size(); i++)
+	for(size_t i = 0; i < mApplication->swapChainData.size(); i++)
 	{
 		VkImageViewCreateInfo createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		createInfo.image = mApplication->swapChainImages[i];
+		createInfo.image = mApplication->swapChainData[i].image;
 		createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		createInfo.format = mApplication->defaultSwapchainFormat;
 
@@ -244,11 +252,11 @@ void VulkanApplicationFactory::SetupSwapchainImageViews()
 		createInfo.subresourceRange.baseArrayLayer = 0;
 		createInfo.subresourceRange.layerCount = 1;
 
-		if(
-			vkCreateImageView(
+		if(vkCreateImageView(
 				mApplication->logicalDevice,
-				&createInfo, nullptr,
-				&mApplication->swapchainImageViews[i]
+				&createInfo, 
+				NO_CUSTOM_ALLOCATOR,
+				&mApplication->swapChainData[i].imageViews
 			) != VK_SUCCESS)
 		{
 			assert(false);
@@ -258,13 +266,23 @@ void VulkanApplicationFactory::SetupSwapchainImageViews()
 
 void VulkanApplicationFactory::SetupCommandPools()
 {
-	// At present graphics is not multithreaded so there is only a single non-locked command pool sitting on the main thread...
-	VkCommandPoolCreateInfo commandPoolCreateInfo;
-	commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT | VK_COMMAND_POOL_CREATE_TRANSIENT_BIT;
-	commandPoolCreateInfo.queueFamilyIndex = mApplication->queueIndices.presentFamily;
+	VkCommandPoolCreateInfo presentCommandPoolCreateInfo = VulkanInitalizers::vkCommandPoolCreateInfo(
+		VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT | VK_COMMAND_POOL_CREATE_TRANSIENT_BIT,
+		mApplication->queueIndices.presentFamily
+	);
 
-	if(vkCreateCommandPool(mApplication->logicalDevice, &commandPoolCreateInfo, nullptr, &mApplication->presentCommandPool) != VK_SUCCESS)
+	if(vkCreateCommandPool(mApplication->logicalDevice, &presentCommandPoolCreateInfo, nullptr, &mApplication->presentCommandPool) != VK_SUCCESS)
+	{
+		assert(false);
+	}
+
+
+	VkCommandPoolCreateInfo graphicsCommandPoolCreateInfo = VulkanInitalizers::vkCommandPoolCreateInfo(
+		VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT | VK_COMMAND_POOL_CREATE_TRANSIENT_BIT,
+		mApplication->queueIndices.graphicsFamily
+	);
+
+	if(vkCreateCommandPool(mApplication->logicalDevice, &graphicsCommandPoolCreateInfo, nullptr, &mApplication->graphicsCommandPool) != VK_SUCCESS)
 	{
 		assert(false);
 	}
@@ -279,61 +297,22 @@ void VulkanApplicationFactory::SetupMemoryPools()
 	vmaCreateAllocator(&allocatorInfo, &mApplication->allocator);
 }
 
-void VulkanApplicationFactory::SetupCommandBuffers()
-{
-	const uint32_t numImages = mApplication->swapChainImages.size();
-	mApplication->presentationCommandBuffers.resize(numImages);
-
-	VkCommandBufferAllocateInfo commandBufferAllocateInfo = {};
-	commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	commandBufferAllocateInfo.commandPool = mApplication->presentCommandPool;
-	commandBufferAllocateInfo.commandPool = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	commandBufferAllocateInfo.commandBufferCount = numImages;
-
-	if(vkAllocateCommandBuffers(
-		mApplication->logicalDevice, 
-		&commandBufferAllocateInfo, 
-		mApplication->presentationCommandBuffers.data()
-	) != VK_SUCCESS)
-	{
-		assert(false);
-	}
-}
-
-VulkanVertexBuffer VulkanApplicationFactory::CreateVertexBuffer(VkDeviceSize size)
-{
-	VkBufferCreateInfo bufferInfo = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
-	bufferInfo.size = size;
-	bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-	
-	VmaAllocationCreateInfo allocInfo = {};
-	allocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
-	
-	VulkanVertexBuffer vertexBuffer;
-
-	vmaCreateBuffer(
-		mApplication->allocator, 
-		&bufferInfo, 
-		&allocInfo, 
-		&vertexBuffer.buffer, 
-		&vertexBuffer.allocation, 
-		nullptr
-	);
-	
-	return(vertexBuffer);
-}
-
 void VulkanApplicationFactory::InitializeApplication()
 {
-	InitializeManagers();
+	SetupVulkanInstance();
+
 	SetupSurface();
+
 	SetupPhysicalDevice();
 	SetupLogicalDevice();
-	SetupDefaultSwapchain();
-	SetupCommandBuffers();
+
+	SetupSwapchain();
 	SetupSwapchainImageViews();
+
 	SetupMemoryPools();
 	SetupCommandPools();
+
+	InitializeManagers();
 }
 
 void VulkanApplicationFactory::InitializeManagers()
@@ -486,8 +465,7 @@ VkSurfaceFormatKHR VulkanApplicationFactory::SelectSwapSurfaceFormat(const std::
 
 	for(const auto& availableFormat : availableFormats)
 	{
-		if
-		(
+		if(
 			availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM && 
 			availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR
 		)
@@ -496,6 +474,7 @@ VkSurfaceFormatKHR VulkanApplicationFactory::SelectSwapSurfaceFormat(const std::
 		}
 	}
 
+	// We didn't find any format
 	assert(false);
 	return(availableFormats[0]);
 }
@@ -523,7 +502,7 @@ VkExtent2D VulkanApplicationFactory::SelectSwapExtent(const VkSurfaceCapabilitie
 	}
 }
 
-void VulkanApplicationFactory::SetupDefaultSwapchain()
+void VulkanApplicationFactory::SetupSwapchain()
 {
 	SwapChainSupportDetails swapChainSupport = CheckSwapChainSupport(mApplication->physicalDevice);
 	assert(!swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty());
@@ -543,12 +522,22 @@ void VulkanApplicationFactory::SetupDefaultSwapchain()
 	semaphoreCreateInfo.flags = 0;
 	semaphoreCreateInfo.pNext = nullptr;
 	
-	if(vkCreateSemaphore(mApplication->logicalDevice, &semaphoreCreateInfo, nullptr, &mApplication->imageAvailableSemaphore) != VK_SUCCESS)
+	if(vkCreateSemaphore(
+		mApplication->logicalDevice,
+		&semaphoreCreateInfo,
+		nullptr,
+		&mApplication->imageAvailableSemaphore
+	) != VK_SUCCESS)
 	{
 		assert(false);
 	}
 
-	if(vkCreateSemaphore(mApplication->logicalDevice, &semaphoreCreateInfo, nullptr, &mApplication->imageAvailableSemaphore) != VK_SUCCESS)
+	if(vkCreateSemaphore(
+		mApplication->logicalDevice, 
+		&semaphoreCreateInfo, 
+		nullptr, 
+		&mApplication->imageAvailableSemaphore
+	) != VK_SUCCESS)
 	{
 		assert(false);
 	}
@@ -589,10 +578,20 @@ void VulkanApplicationFactory::SetupDefaultSwapchain()
 		assert(false);
 	}
 
-	uint32_t swapchainImageCount;
-	vkGetSwapchainImagesKHR(mApplication->logicalDevice, mApplication->defaultSwapchain, &swapchainImageCount, nullptr);
-	mApplication->swapChainImages.resize(imageCount);
-	vkGetSwapchainImagesKHR(mApplication->logicalDevice, mApplication->defaultSwapchain, &swapchainImageCount, mApplication->swapChainImages.data());
+	uint32_t swapchainBufferCount;
+	vkGetSwapchainImagesKHR(mApplication->logicalDevice, mApplication->defaultSwapchain, &swapchainBufferCount, nullptr);
+	mApplication->swapChainData.resize(imageCount);
+
+	for(size_t i = 0; i < swapchainBufferCount; i++)
+	{
+		uint32_t numberOfSwapchainImagesToFetch = 1;
+		vkGetSwapchainImagesKHR(
+			mApplication->logicalDevice, 
+			mApplication->defaultSwapchain, 
+			&numberOfSwapchainImagesToFetch, 
+			&mApplication->swapChainData[i].image
+		);
+	}
 
 	mApplication->defaultSwapchainFormat = surfaceFormat.format;
 	mApplication->defaultSwapchainExtent = extent;

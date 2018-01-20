@@ -53,5 +53,6 @@ typedef glm::quat Quat;
 
 #define M_PI 3.14159265358979323846
 #define FL_PI 3.14159265358979323846f
+#define NULL_HANDLE 0
 
 constexpr size_t INVALID_INDEX = static_cast<size_t>(-1);

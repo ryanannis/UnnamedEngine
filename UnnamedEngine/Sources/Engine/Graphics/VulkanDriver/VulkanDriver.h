@@ -23,15 +23,30 @@ struct DriverSettings
 	size_t numExtensions;
 };
 
+/*
+ * Data used for the process of a graphics queue building and submission.
+ */
+struct RenderData
+{
+	VkFramebuffer framebuffer;
+    VkCommandBuffer commandBuffer;
+    VkSemaphore imageAvailableSemaphore;
+    VkSemaphore finishedRenderingSemaphore;
+    VkFence fence;
+};
+
+
 class VulkanDriver
 {
 public:
 	VulkanDriver(Ptr<ResourceManager> resourceManager);
 	void Initialize(const DriverSettings& driverSettings);
+
 	const DriverSettings& GetDriverSettings();
 	Ptr<ResourceManager> GetResourceManager();
 
 	void Cleanup();
+	RenderData BuildRenderData();
 	void PrepareFrame(VkCommandBuffer commandBuffer, VkImage image, VkImageView imageView, VkFramebuffer framebuffer);
 	void DrawFrame();
 	void RenderGeometry();

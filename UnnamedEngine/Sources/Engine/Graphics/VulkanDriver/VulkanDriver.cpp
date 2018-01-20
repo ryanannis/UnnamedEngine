@@ -284,6 +284,26 @@ void VulkanDriver::Cleanup()
 	vkDestroyInstance(mApplication.instance, nullptr);
 }
 
+RenderData VulkanDriver::BuildRenderData()
+{
+	VkCommandBuffer commandBuffer;
+	VkCommandBufferAllocateInfo commandBufferAllocateInfo = VulkanInitalizers::vkCommandBufferAllocateInfo(
+		mApplication.GetGraphicsCommandPool(),
+		VK_COMMAND_BUFFER_LEVEL_PRIMARY
+	);
+	vkAllocateCommandBuffers(mApplication.logicalDevice, &commandBufferAllocateInfo, &commandBuffer);
+
+	VkFenceCreateInfo fenceInfo = VulkanInitalizers::vkFenceCreateInfo();
+	VkFence fence;
+	vkCreateFence(mApplication.logicalDevice, &fenceInfo, nullptr, &fence);
+
+	// this will do more when we have multithreaded queue submission       
+	RenderData renderData = {};
+	renderData.commandBuffer = commandBuffer;
+	renderData.fence = fence;
+	renderData.framebuffer = mApplication
+}
+
 void VulkanDriver::PrepareFrame(VkCommandBuffer commandBuffer, VkImage image, VkImageView imageView, VkFramebuffer framebuffer)
 {
 	VkCommandBufferBeginInfo commandBufferBeginInfo = 
@@ -413,6 +433,7 @@ void VulkanDriver::PrepareFrame(VkCommandBuffer commandBuffer, VkImage image, Vk
 
 void VulkanDriver::DrawFrame()
 {
+	RenderData r = BuildRenderData();
 	PrepareFrame();
 
 	// Acquire image
@@ -427,7 +448,7 @@ void VulkanDriver::DrawFrame()
 	);
 
     if(result == VK_ERROR_OUT_OF_DATE_KHR){
-		assert(false); // todo:  recreate swapchain
+		assert(false); // todo:  display dead, recreate swapchain
         return;
     }
 	else if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)

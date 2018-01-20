@@ -95,7 +95,6 @@ namespace VulkanInitalizers
 		VkPrimitiveTopology primitiveTopology,
 		VkBool32 primitiveRestartEnable,
 		VkPipelineInputAssemblyStateCreateFlags flags = 0
-
 	)
 	{
 		VkPipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo = {};
@@ -280,5 +279,34 @@ namespace VulkanInitalizers
 		fenceCreateInfo.flags = flags;
 
 		return(fenceCreateInfo);
+	}
+
+	inline VkCommandPoolCreateInfo vkCommandPoolCreateInfo(
+		VkCommandPoolCreateFlags flags,
+		uint32_t queueFamilyIndex
+	)
+	{
+		VkCommandPoolCreateInfo commandPoolCreateInfo = {};
+
+		commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		commandPoolCreateInfo.flags = flags;
+		commandPoolCreateInfo.queueFamilyIndex = queueFamilyIndex;
+
+		return(commandPoolCreateInfo);
+	}
+
+	inline VkCommandBufferAllocateInfo vkCommandBufferAllocateInfo(
+		VkCommandPool commandPool,
+		VkCommandBufferLevel level,
+		uint32_t commandBufferCount = 1
+	)
+	{
+		VkCommandBufferAllocateInfo commandBufferAllocateInfo = {};
+
+		commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		commandBufferAllocateInfo.commandPool = commandPool;
+		commandBufferAllocateInfo.commandBufferCount = commandBufferCount;
+
+		return(commandBufferAllocateInfo);
 	}
 }

@@ -13,6 +13,13 @@ VK_DEFINE_HANDLE(VmaAllocation);
 
 class ResourceManager;
 
+struct SwapChainImageData
+{
+	VkImage image;
+	VkImageView imageViews;
+	VkFramebuffer framebuffer;
+};
+
 struct RenderingResources
 {
     VkFramebuffer framebuffer;
@@ -65,13 +72,12 @@ struct VulkanApplication
 	VkFormat defaultSwapchainFormat;
 	VkExtent2D defaultSwapchainExtent;
 	VmaAllocator allocator;
-	std::vector<VkImage> swapChainImages;
-	std::vector<VkImageView> swapchainImageViews;
+
+	std::vector<SwapChainImageData> swapChainData;
 
 	VkCommandPool graphicsCommandPool;
 	VkCommandPool presentCommandPool;
 
-	std::vector<VkCommandBuffer> presentationCommandBuffers;
 	QueueFamilyIndices queueIndices;
 	VkQueue graphicsQueue;
 	VkQueue presentQueue;

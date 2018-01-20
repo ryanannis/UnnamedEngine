@@ -3,6 +3,8 @@
 #include <vulkan\vulkan.h>
 #include "Formats/MeshFormat.h"
 
+#define NO_CUSTOM_ALLOCATOR nullptr
+
 namespace VulkanUtils
 {
 	namespace Mesh
