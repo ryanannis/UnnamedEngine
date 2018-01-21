@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include "Engine/Graphics/VulkanDriver/VulkanCommon.h"
+
 #include "Engine/Base/Utility/SingletonLogger.h"
 #include "Engine/Graphics/VulkanDriver/VulkanApplicationFactory.h"
 #include "Engine/Base/Resource/ResourceManager.h"
@@ -54,7 +56,7 @@ void VulkanDriver::CreateRenderPass()
 	attachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 	attachmentDescription.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	attachmentDescription.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	attachmentDescription.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+	attachmentDescription.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	attachmentDescription.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
 	VkAttachmentReference colorAttachments = {};
@@ -213,6 +215,17 @@ void VulkanDriver::CreatePipeline(VulkanUtils::Mesh::SubmeshBindingDescription b
 	colorBlendStateCreateInfo.blendConstants[2] = 0.f;
 	colorBlendStateCreateInfo.blendConstants[3] = 0.f;
 
+	std::vector<VkDynamicState> dynamicStates = {
+      VK_DYNAMIC_STATE_VIEWPORT,
+      VK_DYNAMIC_STATE_SCISSOR,
+    };
+
+	VkPipelineDynamicStateCreateInfo dynamicStateCreateInfo = {};
+	dynamicStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+	dynamicStateCreateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
+	dynamicStateCreateInfo.pDynamicStates = dynamicStates.data();
+
+
 	VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo =
 		VulkanInitalizers::vkGraphicsPipelineCreateInfo(
 			pipelineLayout,
@@ -228,6 +241,7 @@ void VulkanDriver::CreatePipeline(VulkanUtils::Mesh::SubmeshBindingDescription b
 	graphicsPipelineCreateInfo.pRasterizationState = &rasterizationStateCreateInfo;
 	graphicsPipelineCreateInfo.pMultisampleState = &multisamplingStateCreateInfo;
 	graphicsPipelineCreateInfo.pColorBlendState = &colorBlendStateCreateInfo;
+	graphicsPipelineCreateInfo.pDynamicState = &dynamicStateCreateInfo;
 
 	// todo: will leak
 	if(vkCreateGraphicsPipelines(
@@ -288,15 +302,10 @@ RenderData VulkanDriver::BuildRenderData(uint32_t swapChainIndex)
 	);
 	vkAllocateCommandBuffers(mApplication.logicalDevice, &commandBufferAllocateInfo, &commandBuffer);
 
-	VkFenceCreateInfo fenceInfo = VulkanInitalizers::vkFenceCreateInfo();
-	VkFence fence;
-	vkCreateFence(mApplication.logicalDevice, &fenceInfo, nullptr, &fence);
-
 	VkFramebuffer framebuffer = CreateFramebuffer(mApplication.swapChainData[swapChainIndex].imageView);
 
 	RenderData renderData = {};
 	renderData.commandBuffer = commandBuffer;
-	renderData.fence = fence;
 	renderData.framebuffer = framebuffer;
 	renderData.imageAvailableSemaphore = mApplication.imageAvailableSemaphore;
 	renderData.finishedRenderingSemaphore = mApplication.finishedRenderingSemaphore;
@@ -429,10 +438,17 @@ void VulkanDriver::PrepareFrameCommandBuffer(const RenderData& renderData)
 			&drawPresentbarrier
 		);
 	}
+
+	vkEndCommandBuffer(renderData.commandBuffer);
 }
 
 void VulkanDriver::DrawFrame()
 {
+
+	VkFenceCreateInfo fenceInfo = VulkanInitalizers::vkFenceCreateInfo();
+	VkFence fence;
+	vkCreateFence(mApplication.logicalDevice, &fenceInfo, nullptr, &fence);
+
 	// Acquire image
 	uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(
@@ -440,9 +456,13 @@ void VulkanDriver::DrawFrame()
 		mApplication.defaultSwapchain, 
 		std::numeric_limits<uint64_t>::max(),
 		mApplication.imageAvailableSemaphore, 
-		VK_NULL_HANDLE, 
+		fence, 
 		&imageIndex
 	);
+
+	// Get resources for rendering
+	RenderData renderData = BuildRenderData(imageIndex);
+
 
     if(result == VK_ERROR_OUT_OF_DATE_KHR){
 		assert(false); // todo: allow resize without breaking
@@ -452,9 +472,6 @@ void VulkanDriver::DrawFrame()
 	{
 		assert(false);
     }
-
-	// Get resources for rendering
-	RenderData renderData = BuildRenderData(imageIndex);
 
 	// Prepare commands
 	PrepareFrameCommandBuffer(renderData);
@@ -467,7 +484,7 @@ void VulkanDriver::DrawFrame()
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &renderData.commandBuffer;
 	submitInfo.signalSemaphoreCount = 1;
-	submitInfo.pSignalSemaphores = &mApplication.imageAvailableSemaphore;
+	submitInfo.pSignalSemaphores = &mApplication.finishedRenderingSemaphore;
 
 	if(vkQueueSubmit(mApplication.presentQueue, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
 	{
@@ -486,6 +503,14 @@ void VulkanDriver::DrawFrame()
 	{
 		assert(false);
 	}
+
+	vkWaitForFences(
+		mApplication.logicalDevice,
+		1,
+		&fence,
+		VK_TRUE,
+		DEFAULT_FENCE_TIMEOUT
+	);
 }
 
 void VulkanDriver::RenderGeometry()

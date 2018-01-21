@@ -49,6 +49,7 @@ namespace VulkanInitalizers
 		pipelineRasterizationStateCreateInfo.polygonMode = polygonMode;
 		pipelineRasterizationStateCreateInfo.cullMode = cullMode;
 		pipelineRasterizationStateCreateInfo.frontFace = frontFace;
+		pipelineRasterizationStateCreateInfo.lineWidth = 1.f;
 
 		return(pipelineRasterizationStateCreateInfo);
 	}

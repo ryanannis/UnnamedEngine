@@ -39,8 +39,7 @@ struct RenderData
 	VkFramebuffer framebuffer;
     VkCommandBuffer commandBuffer;
     VkSemaphore imageAvailableSemaphore;
-    VkSemaphore finishedRenderingSemaphore;
-    VkFence fence;
+	VkSemaphore finishedRenderingSemaphore;
 };
 
 class VulkanDriver
@@ -57,7 +56,6 @@ public:
 	void PrepareFrameCommandBuffer(const RenderData& r);
 	void DrawFrame();
 	void RenderGeometry();
-
 
 	// Temp 
 	VkPipelineLayout CreatePipelineLayout();
