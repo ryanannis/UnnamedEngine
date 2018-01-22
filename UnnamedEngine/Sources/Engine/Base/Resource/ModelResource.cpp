@@ -7,12 +7,10 @@
 #include "Engine/Base/Resource/ResourceType.h"
 #include "Engine/Base/Resource/ResourceManager.h"
 
-
 ModelResource::ModelResource(URI uri) : 
 	Resource(uri),
 	mReady(false)
-{
-}
+{}
 
 ModelResource::~ModelResource()
 {

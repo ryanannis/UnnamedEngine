@@ -1,7 +1,5 @@
 #include "VulkanMeshManager.h"
 
-#include "vk_mem_alloc.h"
-
 #include "Engine/Base/Resource/ResourceManager.h"
 #include "Engine/Graphics/VulkanDriver/VulkanInitializers.h"
 #include "Engine/Graphics/VulkanDriver/VulkanApplication.h"
@@ -51,6 +49,26 @@ MeshInfo VulkanMeshManager::GetMeshInfo(MeshHandle h)
 	return(mModels[h]);
 }
 
+std::vector<SubmeshAllocation> VulkanMeshManager::GetMeshesWithLayout(const MeshLayout& meshLayout)
+{
+	std::vector<SubmeshAllocation> submeshes;
+
+	// todo:  this may be able to be improved by chucking submeshes in seperate arrays and
+	// sorting by format
+	for(const MeshInfo& model : mModels)
+	{
+		for(const SubmeshAllocation& submesh : model.submeshAllocations)
+		{
+			if(meshLayout.numUVs == submesh.numUVs && submesh.meshFlags == meshLayout.properties)
+			{
+				submeshes.push_back(submesh);
+			}
+		}
+	}
+
+	return(submeshes);
+}
+
 void VulkanMeshManager::FlushLoadQueue(VkCommandBuffer commandBuffer)
 {
 	while(!mLoadQueue.empty())
@@ -68,7 +86,13 @@ void VulkanMeshManager::FlushLoadQueue(VkCommandBuffer commandBuffer)
 			SubmeshAllocation submeshAllocation = {};
 
 			const SubmeshData& submesh = modelData.submeshes[i];
-			const uint32_t bufferSize = submesh.GetTotalBufferSize();
+			const uint32_t bufferSize = submesh.GetVerticeBufferSize() + submesh.GetIndicesBufferSize();
+		
+			const uint32_t verticesBufferSize = submesh.GetVerticeBufferSize();
+			const uint32_t indicesBufferSize = submesh.GetIndicesBufferSize();
+
+			const uint32_t verticesBufferOffset = 0;
+			const uint32_t indicesBufferOffset = submesh.GetVerticeBufferSize();
 
 			// For static models without animation we use device-local memory
 			if(meshLoad.model->IsStaticMesh())
@@ -85,10 +109,23 @@ void VulkanMeshManager::FlushLoadQueue(VkCommandBuffer commandBuffer)
 
 				vmaCreateBuffer(mApplication->allocator, &bufferInfo, &stagingAllocInfo, &stagingBuffer, &stagingAllocation, nullptr);
 
-				// Copy mesh data to CPU-mapped staging buffer
-				void* cpuMappedData;
-				vmaMapMemory(mApplication->allocator, stagingAllocation, &cpuMappedData);
-				memcpy(cpuMappedData, submesh.interleavedData,  bufferSize);
+				StagingBuffer stagingBufferStore{
+					stagingBuffer,
+					stagingAllocation
+				};
+
+				mStagingBuffers.push(stagingBufferStore);
+
+				// Copy mesh data to host-mapped staging buffer
+				void* hostMappedData;
+				vmaMapMemory(mApplication->allocator, stagingAllocation, &hostMappedData);
+				
+				void* hostVerticesAddr = static_cast<void*>(static_cast<char*>(hostMappedData) + verticesBufferOffset);
+				void* hostIndicesAddr = static_cast<void*>(static_cast<char*>(hostMappedData) + indicesBufferOffset);
+				
+				memcpy(hostVerticesAddr, submesh.interleavedData, verticesBufferSize);
+				memcpy(hostIndicesAddr, submesh.interleavedData, indicesBufferSize);
+
 				vmaUnmapMemory(mApplication->allocator, stagingAllocation);
 
 				/* Create GPU-local buffer*/
@@ -101,10 +138,17 @@ void VulkanMeshManager::FlushLoadQueue(VkCommandBuffer commandBuffer)
 
 				VkBuffer destinationBuffer;
 				VmaAllocation destinationAllocation;
-				vmaCreateBuffer(mApplication->allocator, &bufferInfo, &gpuAllocInfo, &destinationBuffer, &destinationAllocation, nullptr);
+				assert(vmaCreateBuffer(mApplication->allocator, &bufferInfo, &gpuAllocInfo, &destinationBuffer, &destinationAllocation, nullptr));
 				
-				// todo: put in a fence to delete the staging buffers after the copy is performed, this currently LEAKS
+				// todo: delete staging buffers after they finish copying
 				SubmeshAllocation s;
+				s.allocation = destinationAllocation;
+				s.buffer = destinationBuffer;
+				s.numUVs = submesh.numUVs;
+				s.meshFlags = submesh.properties;
+				s.verticesOffset = verticesBufferOffset;
+				s.indicesOffset = indicesBufferOffset;
+
 				submeshAllocations.push_back(s);
 
 				VkBufferCopy copyRegion = {};
@@ -127,6 +171,23 @@ void VulkanMeshManager::FlushLoadQueue(VkCommandBuffer commandBuffer)
 	}
 }
 
+void VulkanMeshManager::DeleteMesh(MeshHandle)
+{
+	// todo: implement
+}
+
+/* Deletes staging buffer memory no longer in use.  Requires queue synchronization 
+ * with the command buffer submitted via FlushLoadQueue() */
+void VulkanMeshManager::Clean()
+{
+	while(!mStagingBuffers.empty())
+	{
+		StagingBuffer stagingBuffer = mStagingBuffers.top();
+		vmaDestroyBuffer(mApplication->allocator, stagingBuffer.buffer, stagingBuffer.allocation);
+		mStagingBuffers.pop();
+	}
+}
+
 MeshHandle VulkanMeshManager::GetFreeHandle()
 {
 	if(mFreedHandles.size() != 0)
@@ -140,4 +201,14 @@ MeshHandle VulkanMeshManager::GetFreeHandle()
 	mModels.resize(nextNewHandle + 1);
 
 	return(nextNewHandle);
+}
+
+VkDeviceSize SubmeshAllocation::GetVerticesOffset() const
+{
+	return(verticesOffset);
+}
+
+VkDeviceSize SubmeshAllocation::GetIndicesOffset() const
+{
+	return(indicesOffset);
 }

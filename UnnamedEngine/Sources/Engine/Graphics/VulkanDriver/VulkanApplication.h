@@ -8,8 +8,7 @@
 #include "Engine/Graphics/VulkanDriver/VulkanShaderManager.h"
 #include "Engine/Graphics/VulkanDriver/VulkanMeshManager.h"
 
-VK_DEFINE_HANDLE(VmaAllocator);
-VK_DEFINE_HANDLE(VmaAllocation);
+#include "vk_mem_alloc.h"
 
 class ResourceManager;
 

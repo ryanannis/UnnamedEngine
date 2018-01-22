@@ -10,14 +10,25 @@
 #include "Engine/Base/Resource/ResourceType.h"
 #include "Engine/Base/Resource/ModelResource.h"
 
+#include "vk_mem_alloc.h"
+
 struct VulkanApplication;
-VK_DEFINE_HANDLE(VmaAllocator);
-VK_DEFINE_HANDLE(VmaAllocation);
 
 #define NULL_MESH_HANDLE 0;
 
 // todo: implement generational ids
 typedef unsigned int MeshHandle;
+
+struct MeshLayout
+{
+	uint64_t properties;
+	uint32_t numUVs;
+};
+
+static MeshLayout UE_MESHLAYOUT_NORMALS_2UV = {
+	HAS_NORMALS_BYTE_OFFSET,
+	2
+};
 
 struct QueuedMeshLoad
 {
@@ -27,8 +38,19 @@ struct QueuedMeshLoad
 
 struct SubmeshAllocation
 {
+	VkDeviceSize GetVerticesOffset() const;
+	VkDeviceSize GetIndicesOffset() const;
+
 	VmaAllocation allocation;
 	VkBuffer buffer;
+
+	VkDeviceSize verticesOffset;
+	VkDeviceSize indicesOffset;
+	uint32_t numIndices;
+
+	// Mesh properties
+	uint64_t meshFlags;
+	uint32_t numUVs;
 };
 
 struct MeshInfo
@@ -42,6 +64,12 @@ struct MeshInfo
 	std::vector<SubmeshAllocation> submeshAllocations;
 };
 
+struct StagingBuffer
+{
+	VkBuffer buffer;
+	VmaAllocation allocation;
+};
+
 // Note:  
 class VulkanMeshManager
 {
@@ -50,9 +78,11 @@ public:
 	MeshHandle CreateMesh(URI resourceLocation);
 	MeshHandle CreateMesh(ResourceType<ModelResource> res);
 	MeshInfo GetMeshInfo(MeshHandle h);
+	std::vector<SubmeshAllocation> GetMeshesWithLayout(const MeshLayout& meshLayout);
 
 	void FlushLoadQueue(VkCommandBuffer buffer);
-	//void DeleteMesh(MeshHandle h);
+	void DeleteMesh(MeshHandle);
+	void Clean();
 
 private:
 
@@ -61,6 +91,8 @@ private:
 
 	std::unordered_map<URIHashType, MeshHandle> mHandleMap;
 	std::vector<MeshInfo> mModels;
+
+	std::stack<StagingBuffer> mStagingBuffers;
 
 	// todo:  do we even need handles?
 	std::stack<MeshHandle> mFreedHandles;

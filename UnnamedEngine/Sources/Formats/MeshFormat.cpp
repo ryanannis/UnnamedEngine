@@ -65,7 +65,12 @@ uint32_t SubmeshData::GetInterleavedSize() const
 	return(interleavedVerticeDataSize);
 }
 
-uint32_t SubmeshData::GetTotalBufferSize() const
+uint32_t SubmeshData::GetVerticeBufferSize() const
 {
 	return(GetInterleavedSize() * numVertices);
+}
+
+uint32_t SubmeshData::GetIndicesBufferSize() const
+{
+	return(sizeof(float) * numIndices);
 }

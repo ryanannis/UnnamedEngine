@@ -13,6 +13,8 @@
 
 #include <glad/glad.h> // haven't abstracted the enums yet
 
+#include <vulkan/vulkan.h>
+
 static size_t sGraphicsHandleCt;
 
 Renderer::Renderer(Ptr<Context> c) :

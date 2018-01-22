@@ -12,9 +12,6 @@
 #include "Engine/Graphics/VulkanDriver/VulkanInitializers.h"
 #include "Engine/Graphics/VulkanDriver/VulkanEngineResources.h"
 
-#define VMA_IMPLEMENTATION
-#include "vk_mem_alloc.h"
-
 VulkanDriver::VulkanDriver(Ptr<ResourceManager> resourceManager) :
 	mResourceManager(resourceManager)
 {
@@ -225,7 +222,6 @@ void VulkanDriver::CreatePipeline(VulkanUtils::Mesh::SubmeshBindingDescription b
 	dynamicStateCreateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
 	dynamicStateCreateInfo.pDynamicStates = dynamicStates.data();
 
-
 	VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo =
 		VulkanInitalizers::vkGraphicsPipelineCreateInfo(
 			pipelineLayout,
@@ -390,9 +386,6 @@ void VulkanDriver::PrepareFrameCommandBuffer(const RenderData& renderData)
 		&clearValue
 	);
 
-	vkCmdBeginRenderPass(renderData.commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-	vkCmdBindPipeline(renderData.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, mTempGraphicsPipeline);
-
 	VkViewport viewport = VulkanInitalizers::vkViewport(
 		static_cast<float>(GetDriverSettings().renderWidth),
 		static_cast<float>(GetDriverSettings().renderHeight)
@@ -407,9 +400,11 @@ void VulkanDriver::PrepareFrameCommandBuffer(const RenderData& renderData)
 	vkCmdSetScissor(renderData.commandBuffer, 0, 1, &viewportScissor);
 
 	VkDeviceSize offset = 0;
+	
+	vkCmdBeginRenderPass(renderData.commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBindPipeline(renderData.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, mTempGraphicsPipeline);
 
-	//vkCmdBindVertexBuffers(commandBuffer, 0, 1, todo: handle, &offset );
-	//vkCmdDraw(commandBuffer, 4, 1, 0, 0 );
+	RenderGeometry(renderData.commandBuffer);
 
 	vkCmdEndRenderPass(renderData.commandBuffer);
 
@@ -513,6 +508,18 @@ void VulkanDriver::DrawFrame()
 	);
 }
 
-void VulkanDriver::RenderGeometry()
+void VulkanDriver::RenderGeometry(VkCommandBuffer commandBuffer)
 {
+	std::vector<SubmeshAllocation> meshes = mApplication.meshManager->GetMeshesWithLayout(UE_MESHLAYOUT_NORMALS_2UV);
+	for(size_t i = 0; i < meshes.size(); i++)
+	{
+		const SubmeshAllocation allocation = meshes[i];
+		const VkDeviceSize verticesOffset = allocation.GetVerticesOffset();
+		const VkDeviceSize indicesOffset = allocation.GetIndicesOffset();
+
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, &allocation.buffer, &verticesOffset);
+		vkCmdBindIndexBuffer(commandBuffer, allocation.buffer, indicesOffset, VK_INDEX_TYPE_UINT32);
+		
+		vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(allocation.numIndices), 1, 0, 0, 0);
+	}
 }

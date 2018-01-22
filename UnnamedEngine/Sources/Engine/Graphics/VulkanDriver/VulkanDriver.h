@@ -55,7 +55,7 @@ public:
 	RenderData BuildRenderData(uint32_t swapChainIndex);
 	void PrepareFrameCommandBuffer(const RenderData& r);
 	void DrawFrame();
-	void RenderGeometry();
+	void RenderGeometry(VkCommandBuffer command);
 
 	// Temp 
 	VkPipelineLayout CreatePipelineLayout();

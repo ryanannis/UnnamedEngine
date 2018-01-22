@@ -9,8 +9,6 @@
 #include "Engine/Graphics/VulkanDriver/VulkanInitializers.h"
 #include "Engine/Graphics/VulkanDriver/VulkanUtils.h"
 
-#include "vk_mem_alloc.h"
-
 static VKAPI_ATTR VkBool32 VKAPI_CALL ValidationCallback
 (
 	VkDebugReportFlagsEXT /*flags*/,
