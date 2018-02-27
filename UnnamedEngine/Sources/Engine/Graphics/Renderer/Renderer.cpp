@@ -25,7 +25,7 @@ Renderer::Renderer(Ptr<Context> c) :
 // This comes in after the resource manager is done
 void Renderer::Initialize(const RendererSettings& c)
 {
-	mDriver = std::make_unique<VulkanDriver>(mContext->GetResourceManager());
+	mDriver = std::make_unique<VulkanDriver>();
 
 	DriverSettings settings;
 	settings.windowManagerExtensions = c.windowManagerExtensions;
@@ -104,15 +104,6 @@ Matrix4 Renderer::GetCameraVPMatrix()
 
 void Renderer::Render()
 {
-	for(GraphicsData g : mGraphicsData)
-	{
-		if(!g.mesh.IsNull())
-		{
-			mDriver->RenderMesh(g.mesh);
-		}
-	}
-
-	mDriver->DrawFrame();
 }
 
 void Renderer::RenderMeshes()

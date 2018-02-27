@@ -75,5 +75,5 @@ uint32_t SubmeshData::GetVerticeBufferSize() const
 
 uint32_t SubmeshData::GetIndicesBufferSize() const
 {
-	return(sizeof(float) * numIndices);
+	return(sizeof(uint32_t) * numIndices);
 }

@@ -3,6 +3,9 @@
 ![Alt text](/Screenshots/ss01.png "Engine Screenshot")
 *Yes, this is the best image I could find.*
 
+**Warning:  Why is the entire screen white?** 
+
+Go back to 90a4738f9742ac2bd9b3b22ce2ee1b4d923be564.  I've currently deleted the entire renderer due to bad design and am redoing it.  (I should really be using Git branching).
 
 ## What is this?
 
@@ -15,11 +18,6 @@ It is a personal project of Ryan Annis.
 Install the Vulkan SDK https://www.lunarg.com/vulkan-sdk/ and ensure the environment variable $VULKAN_SDK is set in your PATH.
 
 The program can then be built using CMakeLists.txt in the root folder.  This requiress a C++17 compiler and has been tested on Windows 10 with Microsoft Visual Studio 2017.
-
-**Warning:  Where are the Textures?** 
-
-OGL->Vulkan renderer refactor is in progress in main branch.  New texture pipeline is NOT setup so scenes will currently render WITHOUT textures.
- 
 
 ## Roadmap
 
