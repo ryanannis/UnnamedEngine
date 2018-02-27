@@ -80,6 +80,7 @@ public:
 	MeshInfo GetMeshInfo(MeshHandle h);
 	std::vector<SubmeshAllocation> GetMeshesWithLayout(const MeshLayout& meshLayout);
 
+	bool RequiresFlush();
 	void FlushLoadQueue(VkCommandBuffer buffer);
 	void DeleteMesh(MeshHandle);
 	void Clean();

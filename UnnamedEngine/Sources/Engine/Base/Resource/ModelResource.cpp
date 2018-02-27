@@ -39,5 +39,6 @@ const MeshData& ModelResource::GetMeshes() const
 void ModelResource::Load(Ptr<ResourceManager> manager)
 {
 	mData = ModelLoader::LoadModel(GetURI());
+	mReady = true;
 }
 

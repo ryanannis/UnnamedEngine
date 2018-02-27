@@ -123,6 +123,32 @@ void VulkanDriver::CreateRenderPass()
 void VulkanDriver::RenderMesh(ResourceType<ModelResource> m)
 {
 	mApplication.meshManager->CreateMesh(m);
+
+	if(mApplication.meshManager->RequiresFlush())
+	{
+		VkCommandBuffer commandBuffer;
+		VkCommandBufferAllocateInfo commandBufferAllocateInfo = VulkanInitalizers::vkCommandBufferAllocateInfo(
+			mApplication.GetGraphicsCommandPool(),
+			VK_COMMAND_BUFFER_LEVEL_PRIMARY
+		);
+		vkAllocateCommandBuffers(mApplication.logicalDevice, &commandBufferAllocateInfo, &commandBuffer);
+
+		VkCommandBufferBeginInfo commandBufferBeginInfo =
+			VulkanInitalizers::vkCommandBufferBeginInfo(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+
+		VkSubmitInfo submitInfo = {};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = &commandBuffer;
+
+		vkBeginCommandBuffer(commandBuffer, &commandBufferBeginInfo);
+		mApplication.meshManager->FlushLoadQueue(commandBuffer);
+		vkEndCommandBuffer(commandBuffer);
+
+		vkQueueSubmit(mApplication.graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+		vkQueueWaitIdle(mApplication.graphicsQueue);
+	}
+
 }
 
 VkPipelineLayout VulkanDriver::CreatePipelineLayout()
@@ -444,7 +470,6 @@ void VulkanDriver::PrepareFrameCommandBuffer(const RenderData& renderData)
 
 void VulkanDriver::DrawFrame()
 {
-
 	VkFenceCreateInfo fenceInfo = VulkanInitalizers::vkFenceCreateInfo();
 	VkFence fence;
 	vkCreateFence(mApplication.logicalDevice, &fenceInfo, nullptr, &fence);

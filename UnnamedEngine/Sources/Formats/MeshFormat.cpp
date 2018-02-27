@@ -15,7 +15,10 @@ void SubmeshData::Release()
 {
 	free(interleavedData);
 	free(indices);
-	free(materialRef);
+	if(materialRef != nullptr)
+	{
+		//free(materialRef);
+	}
 }
 
 void MeshData::Release()

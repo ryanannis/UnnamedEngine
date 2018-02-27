@@ -29,12 +29,13 @@ const MeshData PrivateLoadModel(URI uri)
 	for(size_t i = 0; i < d.numSubmeshes; i++)
 	{
 		SubmeshData& currentSubmesh = submeshData[i];
-		t.read(reinterpret_cast<char*>(&submeshData->properties), sizeof(uint32_t));
-		t.read(reinterpret_cast<char*>(&submeshData->numVertices), sizeof(uint32_t));
-		t.read(reinterpret_cast<char*>(&submeshData->numUVs), sizeof(uint32_t));
-		t.read(reinterpret_cast<char*>(&submeshData->numIndices), sizeof(uint32_t));
-		const auto interleavedDataSize = submeshData->GetInterleavedSize() * submeshData->numVertices;
-		const auto indiceDataSize = submeshData->numIndices * sizeof(uint32_t);
+		t.read(reinterpret_cast<char*>(&currentSubmesh.properties), sizeof(uint32_t));
+		t.read(reinterpret_cast<char*>(&currentSubmesh.numVertices), sizeof(uint32_t));
+		t.read(reinterpret_cast<char*>(&currentSubmesh.numUVs), sizeof(uint32_t));
+		t.read(reinterpret_cast<char*>(&currentSubmesh.numIndices), sizeof(uint32_t));
+
+		const auto interleavedDataSize = currentSubmesh.GetInterleavedSize() * currentSubmesh.numVertices;
+		const auto indiceDataSize = currentSubmesh.numIndices * sizeof(uint32_t);
 
 		float* interleavedData = static_cast<float*>(malloc(interleavedDataSize));
 		uint32_t* indiceData = static_cast<uint32_t*>(malloc(indiceDataSize));

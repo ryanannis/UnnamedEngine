@@ -20,10 +20,10 @@ void MeshPreprocessor::PreprocessMesh(URI i)
 	// todo:  might need stronger binary serialization abstraction for doing networking
 	{
 		std::ofstream ostrm(filename, std::ios::binary);
-		ostrm.write(reinterpret_cast<const char*>(&MESH_FORMAT_HEADER), sizeof(MESH_FORMAT_HEADER));
+		ostrm.write(reinterpret_cast<const char*>(&MESH_FORMAT_HEADER), sizeof(uint32_t));
 
 		const size_t numSubmeshes = m.numSubmeshes;
-		ostrm.write(reinterpret_cast<const char*>(&numSubmeshes), sizeof(numSubmeshes));
+		ostrm.write(reinterpret_cast<const char*>(&numSubmeshes), sizeof(uint32_t));
 		for(size_t i = 0; i < numSubmeshes; i++)
 		{
 			const SubmeshData& submesh = m.submeshes[i];
@@ -31,16 +31,15 @@ void MeshPreprocessor::PreprocessMesh(URI i)
 			assert(submesh.indices);
 			assert(submesh.interleavedData);
 
-			ostrm.write(reinterpret_cast<const char*>(&submesh.properties), sizeof(submesh.properties));
-			ostrm.write(reinterpret_cast<const char*>(&submesh.numVertices), sizeof(submesh.numVertices));
-			ostrm.write(reinterpret_cast<const char*>(&submesh.indices), sizeof(submesh.numIndices));
-			ostrm.write(reinterpret_cast<const char*>(&submesh.numUVs), sizeof(submesh.numUVs));
+			ostrm.write(reinterpret_cast<const char*>(&submesh.properties), sizeof(uint32_t));
+			ostrm.write(reinterpret_cast<const char*>(&submesh.numVertices), sizeof(uint32_t));
+			ostrm.write(reinterpret_cast<const char*>(&submesh.numUVs), sizeof(uint32_t));
+			ostrm.write(reinterpret_cast<const char*>(&submesh.numIndices), sizeof(uint32_t));
 			
 			const uint32_t interleavedVerticeDataSize = submesh.GetInterleavedSize();
-			
-			const auto fuck = submesh.interleavedData;
+			const auto interleavedSizeTotal = interleavedVerticeDataSize * submesh.numVertices;
 
-			ostrm.write(reinterpret_cast<const char*>(submesh.interleavedData), interleavedVerticeDataSize * submesh.numVertices);
+			ostrm.write(reinterpret_cast<const char*>(submesh.interleavedData), interleavedSizeTotal);
 			ostrm.write(reinterpret_cast<const char*>(submesh.indices), sizeof(uint32_t) * submesh.numIndices);
 			
 			// todo:  write material

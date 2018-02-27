@@ -37,6 +37,8 @@ MeshHandle VulkanMeshManager::CreateMesh(ResourceType<ModelResource> res)
 	meshInfo.handle = NULL_MESH_HANDLE;
 	meshInfo.submeshAllocations = std::vector<SubmeshAllocation>();
 
+	mLoadQueue.push(QueuedMeshLoad{ meshInfo.handle, meshResource });
+
 	return(nextHandle);
 
 	// Let the mesh fall out of scope from the regular resource manager.
@@ -67,6 +69,11 @@ std::vector<SubmeshAllocation> VulkanMeshManager::GetMeshesWithLayout(const Mesh
 	}
 
 	return(submeshes);
+}
+
+bool VulkanMeshManager::RequiresFlush()
+{
+	return(!mLoadQueue.empty());
 }
 
 void VulkanMeshManager::FlushLoadQueue(VkCommandBuffer commandBuffer)
@@ -100,14 +107,19 @@ void VulkanMeshManager::FlushLoadQueue(VkCommandBuffer commandBuffer)
 				// Create CPU-visible staging buffer
 				VkBuffer stagingBuffer;
 				VmaAllocation stagingAllocation;
-				VkBufferCreateInfo bufferInfo = VulkanInitalizers::vkBufferCreateInfo();
-				bufferInfo.size = bufferSize;
-				bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+
+				VkBufferCreateInfo staginBufferInfo = VulkanInitalizers::vkBufferCreateInfo();
+				staginBufferInfo.size = bufferSize;
+				staginBufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
 				VmaAllocationCreateInfo stagingAllocInfo = {};
 				stagingAllocInfo.usage = VMA_MEMORY_USAGE_CPU_ONLY;
 
-				vmaCreateBuffer(mApplication->allocator, &bufferInfo, &stagingAllocInfo, &stagingBuffer, &stagingAllocation, nullptr);
+				const VkResult staging_result = vmaCreateBuffer(mApplication->allocator, &staginBufferInfo, &stagingAllocInfo, &stagingBuffer, &stagingAllocation, nullptr);
+				if(staging_result != VK_SUCCESS)
+				{
+					assert(false);
+				}
 
 				StagingBuffer stagingBufferStore{
 					stagingBuffer,
@@ -117,7 +129,7 @@ void VulkanMeshManager::FlushLoadQueue(VkCommandBuffer commandBuffer)
 				mStagingBuffers.push(stagingBufferStore);
 
 				// Copy mesh data to host-mapped staging buffer
-				void* hostMappedData;
+				void* hostMappedData = submesh.interleavedData;
 				vmaMapMemory(mApplication->allocator, stagingAllocation, &hostMappedData);
 				
 				void* hostVerticesAddr = static_cast<void*>(static_cast<char*>(hostMappedData) + verticesBufferOffset);
@@ -129,16 +141,21 @@ void VulkanMeshManager::FlushLoadQueue(VkCommandBuffer commandBuffer)
 				vmaUnmapMemory(mApplication->allocator, stagingAllocation);
 
 				/* Create GPU-local buffer*/
-				VkBufferCreateInfo stagingBufferInfo = VulkanInitalizers::vkBufferCreateInfo();
-				stagingBufferInfo.size = bufferSize;
-				stagingBufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+				VkBufferCreateInfo resultBufferInfo = VulkanInitalizers::vkBufferCreateInfo();
+				resultBufferInfo.size = bufferSize;
+				resultBufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
 				VmaAllocationCreateInfo gpuAllocInfo = {};
 				gpuAllocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
 				VkBuffer destinationBuffer;
 				VmaAllocation destinationAllocation;
-				assert(vmaCreateBuffer(mApplication->allocator, &bufferInfo, &gpuAllocInfo, &destinationBuffer, &destinationAllocation, nullptr));
+
+				const VkResult gpuBufferResult = vmaCreateBuffer(mApplication->allocator, &resultBufferInfo, &gpuAllocInfo, &destinationBuffer, &destinationAllocation, nullptr);
+				if(gpuBufferResult != VK_SUCCESS)
+				{
+					assert(false);
+				}
 				
 				// todo: delete staging buffers after they finish copying
 				SubmeshAllocation s;
