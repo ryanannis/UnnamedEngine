@@ -511,7 +511,8 @@ void VulkanDriver::DrawFrame()
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = &mApplication.finishedRenderingSemaphore;
 
-	if(vkQueueSubmit(mApplication.presentQueue, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
+	const VkResult presentQueueResult = vkQueueSubmit(mApplication.presentQueue, 1, &submitInfo, VK_NULL_HANDLE);
+	if(presentQueueResult != VK_SUCCESS)
 	{
 		assert(false);
 	}
@@ -524,7 +525,8 @@ void VulkanDriver::DrawFrame()
 	presentInfo.pSwapchains = &mApplication.defaultSwapchain;
 	presentInfo.pImageIndices = &imageIndex;
 
-	if(vkQueuePresentKHR(mApplication.presentQueue, &presentInfo) != VK_SUCCESS)
+	VkResult presentRes = vkQueuePresentKHR(mApplication.presentQueue, &presentInfo);
+	if(presentRes != VK_SUCCESS)
 	{
 		assert(false);
 	}
@@ -540,7 +542,7 @@ void VulkanDriver::DrawFrame()
 
 void VulkanDriver::RenderGeometry(VkCommandBuffer commandBuffer)
 {
-	std::vector<SubmeshAllocation> meshes = mApplication.meshManager->GetMeshesWithLayout(UE_MESHLAYOUT_NORMALS_2UV);
+	std::vector<SubmeshAllocation> meshes = mApplication.meshManager->GetMeshesWithLayout(UE_MESHLAYOUT_NORMALS_1UV);
 	for(size_t i = 0; i < meshes.size(); i++)
 	{
 		const SubmeshAllocation allocation = meshes[i];

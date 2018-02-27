@@ -66,7 +66,7 @@ std::vector<SubmeshAllocation> VulkanMeshManager::GetMeshesWithLayout(const Mesh
 				submeshes.push_back(submesh);
 			}
 		}
-	}
+	}	
 
 	return(submeshes);
 }
@@ -136,14 +136,14 @@ void VulkanMeshManager::FlushLoadQueue(VkCommandBuffer commandBuffer)
 				void* hostIndicesAddr = static_cast<void*>(static_cast<char*>(hostMappedData) + indicesBufferOffset);
 				
 				memcpy(hostVerticesAddr, submesh.interleavedData, verticesBufferSize);
-				memcpy(hostIndicesAddr, submesh.interleavedData, indicesBufferSize);
+				memcpy(hostIndicesAddr, submesh.indices, indicesBufferSize);
 
 				vmaUnmapMemory(mApplication->allocator, stagingAllocation);
 
 				/* Create GPU-local buffer*/
 				VkBufferCreateInfo resultBufferInfo = VulkanInitalizers::vkBufferCreateInfo();
 				resultBufferInfo.size = bufferSize;
-				resultBufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+				resultBufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT  | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
 				VmaAllocationCreateInfo gpuAllocInfo = {};
 				gpuAllocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
@@ -158,10 +158,11 @@ void VulkanMeshManager::FlushLoadQueue(VkCommandBuffer commandBuffer)
 				}
 				
 				// todo: delete staging buffers after they finish copying
-				SubmeshAllocation s;
+				SubmeshAllocation s = {};
 				s.allocation = destinationAllocation;
 				s.buffer = destinationBuffer;
 				s.numUVs = submesh.numUVs;
+				s.numIndices = submesh.numIndices;
 				s.meshFlags = submesh.properties;
 				s.verticesOffset = verticesBufferOffset;
 				s.indicesOffset = indicesBufferOffset;
@@ -183,6 +184,7 @@ void VulkanMeshManager::FlushLoadQueue(VkCommandBuffer commandBuffer)
 				submeshAllocation.allocation = destinationAllocation;
 			}
 		}
+		mModels[meshLoad.handle].submeshAllocations = submeshAllocations;
 
 		mLoadQueue.pop();
 	}

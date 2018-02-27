@@ -25,6 +25,11 @@ struct MeshLayout
 	uint32_t numUVs;
 };
 
+static MeshLayout UE_MESHLAYOUT_NORMALS_1UV = {
+	HAS_NORMALS_BYTE_OFFSET,
+	1
+};
+
 static MeshLayout UE_MESHLAYOUT_NORMALS_2UV = {
 	HAS_NORMALS_BYTE_OFFSET,
 	2
