@@ -120,6 +120,11 @@ void VulkanDriver::CreateRenderPass()
 	}
 }
 
+void VulkanDriver::RenderMesh(ResourceType<ModelResource> m)
+{
+	mApplication.meshManager->CreateMesh(m);
+}
+
 VkPipelineLayout VulkanDriver::CreatePipelineLayout()
 {	
 	VkPipelineLayoutCreateInfo layoutCreateInfo = VulkanInitalizers::vkPipelineLayoutCreateInfo();

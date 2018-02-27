@@ -30,6 +30,12 @@ public:
 		return(mURI);
 	}
 
+	// todo:  better way of nulling out
+	bool IsNull() const
+	{
+		return(mURI.IsEmpty());
+	}
+
 
 private:
 	URI mURI;

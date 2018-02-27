@@ -62,7 +62,7 @@ public:
 	void CreatePipeline(VulkanUtils::Mesh::SubmeshBindingDescription bindingDescription);
 	VkFramebuffer CreateFramebuffer(VkImageView imageView);
 	void CreateRenderPass();
-
+	void RenderMesh(ResourceType<ModelResource> m);
 
 private:
 	VulkanApplication mApplication;

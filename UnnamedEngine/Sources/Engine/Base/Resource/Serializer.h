@@ -13,7 +13,7 @@ class EntityResource;
 
 #define SERIALIZE(serializer, name, var) \
 if(serializer.GetSerializationState() == SerializationState::SERIALIZING){ \
-	serializer.Serialize(name, var);											   \
+	serializer.Serialize(name, var);								       \
 }																		   \
 else{																	   \
 	serializer.Deserialize(name, var);									   \
@@ -46,6 +46,21 @@ public:
 		return(*this);
 	}
 	
+	template <typename T>
+	void Deserialize(std::string name, ResourceType<T>& ref)
+	{
+		auto leaf = mSerializationTree.leaves.find(name);
+		if(leaf != mSerializationTree.leaves.end())
+		{
+			auto typedLeaf = dynamic_cast<PropTreeLeaf<URI>*>(leaf->second);
+			if(typedLeaf)
+			{
+				ref = ResourceType<T>(typedLeaf->Get());
+			}
+		}
+		// otherwise, the component doesn't exist - this is ok, just means we use default
+	}
+
 	template <typename T>
 	void Deserialize(std::string name, T& ref)
 	{

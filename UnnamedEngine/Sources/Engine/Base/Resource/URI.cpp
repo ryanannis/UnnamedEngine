@@ -6,8 +6,23 @@
 
 static const std::string DATA_FILE_EXTENSION = "udf";
 
+URI::URI()
+{
+	mIsEmpty = true;
+}
+
 URI::URI(const std::string strURI)
 {
+	if(strURI == "")
+	{
+		mIsEmpty = true;
+	}
+	else
+	{
+		mIsEmpty = false;
+	}
+	
+
 	// Do a pass to normalize all '\\' stuff into nice '/'s
 	// Todo - could do this inplace...
 	std::stringstream ss;
@@ -101,4 +116,9 @@ std::string URI::GetSerialized() const
 {
 	//todo
 	return(GetFilePath());
+}
+
+bool URI::IsEmpty() const
+{
+	return(mIsEmpty);
 }

@@ -64,7 +64,7 @@ Entity RegionAdmin::CreateEntity(const ResourceType<EntityResource>& res, Vector
 			auto handle = mContext->GetRenderer()->GenerateGraphicsData();
 			renderComponent->handle = handle;
 			auto& gd = mContext->GetRenderer()->GetGraphicsData(handle);
-			gd.mesh = renderComponent->mesh;
+			gd.mesh = ResourceType<ModelResource>(renderComponent->mesh);
 			gd.rotation = rotation;
 			gd.translation = position;
 		}

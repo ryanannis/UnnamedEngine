@@ -104,6 +104,14 @@ Matrix4 Renderer::GetCameraVPMatrix()
 
 void Renderer::Render()
 {
+	for(GraphicsData g : mGraphicsData)
+	{
+		if(!g.mesh.IsNull())
+		{
+			mDriver->RenderMesh(g.mesh);
+		}
+	}
+
 	mDriver->DrawFrame();
 }
 
