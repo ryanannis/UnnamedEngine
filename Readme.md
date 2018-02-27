@@ -6,7 +6,7 @@
 
 ## What is this?
 
-This is a game engine inspired by the architecture of Overwatch    https://www.gdcvault.com/play/1024653/Networking-Scripted-Weapons-and-Abilities.
+This is a game engine (in VERY EARLY STAGES) inspired by the architecture of Overwatch    https://www.gdcvault.com/play/1024653/Networking-Scripted-Weapons-and-Abilities.
 
 It is a personal project of Ryan Annis.
 
@@ -31,12 +31,13 @@ It is difficult to give a roadmap at present as the project is in very early sta
 - Data driven resource management and static registration system.
 - Strongly typed data specialization language, binary serialization for data files and meshes.
 - Level format & loading.
-- Multithreaded ECS framework and component memory management.
+- Efficient ECS framework and component memory management.
 - Input system.
 - Basic Vulkan renderer.
 
 ### Short Term Goals
 
+-  Remove stringy references to resources & serialized field IDs.
 -  More generalized render pass system.(https://www.gdcvault.com/play/1024612/FrameGraph-Extensible-Rendering-Architecture-in).
 -  Deferred voxel cone real time global illumination (http://leifnode.com/2015/05/voxel-cone-traced-global-illumination/).
 -  Asset loading deferrment (asset loading is currently blocking).
