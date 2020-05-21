@@ -3,10 +3,6 @@
 ![Alt text](/Screenshots/ss01.png "Engine Screenshot")
 *Yes, this is the best image I could find.*
 
-**Warning:  Why is the entire screen white?** 
-
-Go back to 90a4738f9742ac2bd9b3b22ce2ee1b4d923be564.  I've currently deleted the entire renderer due to bad design and am redoing it.  (I should really be using Git branching).
-
 ## What is this?
 
 This is a game engine (in VERY EARLY STAGES) inspired by the architecture of Overwatch    https://www.gdcvault.com/play/1024653/Networking-Scripted-Weapons-and-Abilities.
